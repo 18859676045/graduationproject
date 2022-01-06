@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qxf.mapper.CourseMapper">
+
+	<!--查询列表-->
+	<select id="getListByPage" parameterType="string" resultType="com.qxf.pojo.ShixiCourse">
+		SELECT DISTINCT sct.id,
+	 	s.name,s.phone,sct.score,c.start_stime AS startStime,c.`name` As cname,c.end_etime AS endEtime,t.`name` AS tname,t.phone AS tphone
+		from
+		t_student s ,
+		t_student_course_teacher sct,
+		t_course c,
+		t_course_teacher ct,
+		t_teacher t
+		where s.id = sct.student_id
+		<if test=" name != null and name != '' ">
+			AND s.name like CONCAT('%',#{name},'%')
+		</if>
+		and t.id = sct.teacher_id
+		and c.id = sct.course_id
+	</select>
+
+    <!--查询学生所有未选课程-->
+	<select id="getNotSelectedCourse" parameterType="string" resultType="com.qxf.pojo.Course">
+		SELECT
+			ct.id,
+			c. NAME,
+			t. NAME teachersName,
+			c.credit,
+			(
+				SELECT
+					d.dict_value
+				FROM
+					t_sys_dict d
+				WHERE
+					d.dict_type_code = 'COURSE_TYPE'
+				AND d.dict_code = c.course_type
+			) AS courseTypeName
+		FROM
+			t_teacher t
+		INNER JOIN t_course_teacher ct ON t.id = ct.teacher_id
+		INNER JOIN t_course c ON ct.course_id = c.id
+		AND c.id not IN (SELECT g.course_id
+			FROM t_grade g WHERE g.student_id = #{studentId})
+	  ORDER BY c.credit DESC
+	</select>
+
+	<!--查询学生所有已选课程-->
+	<select id="getSelectedCourse" parameterType="string" resultType="com.qxf.pojo.Course">
+		SELECT
+			c. NAME,
+			t. NAME teachersName,
+			c.credit,
+			(select t1.score from t_grade t1 WHERE t1.course_id=c.id) score,
+            (select t1.`status` from t_grade t1 WHERE t1.course_id=c.id) status,
+			(
+				SELECT
+					d.dict_value
+				FROM
+					t_sys_dict d
+				WHERE
+					d.dict_type_code = 'COURSE_TYPE'
+				AND d.dict_code = c.course_type
+			) AS courseTypeName
+		FROM
+			t_teacher t
+		INNER JOIN t_course_teacher ct ON t.id = ct.teacher_id
+		INNER JOIN t_course c ON ct.course_id = c.id
+		AND c.id IN (SELECT g.course_id
+			FROM t_grade g WHERE g.teacher_id = t.id and g.student_id = #{studentId})
+	    ORDER BY c.credit DESC
+	</select>
+
+	<!--查询某个老师讲授的所有课程，包括已经评定成绩的课程-->
+	<select id="getCourseByTeacher" parameterType="string" resultType="com.qxf.pojo.Course">
+			SELECT
+				ct.id,
+				c.name,
+				c.credit,
+				(select d.dict_value from t_sys_dict d WHERE d.dict_type_code='COURSE_TYPE' AND d.dict_code=c.course_type) AS courseTypeName,
+				(select count(*) from t_grade t1 WHERE t1.course_id=c.id) studentNum
+				FROM t_course c
+			  INNER JOIN t_course_teacher ct ON c.id = ct.course_id
+			  INNER JOIN t_teacher t ON ct.teacher_id = t.id
+			AND t.id=#{teacherId}
+	</select>
+</mapper>
