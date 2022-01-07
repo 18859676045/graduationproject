@@ -30,6 +30,8 @@
 						 <el-submenu :index="index+''">
 							 <template slot="title"><!--<i :class="item.iconCls"></i>-->{{item.name}}</template>
 <!--                             index跳转-->
+
+<!--                             child.name展示名称-->
 							 <el-menu-item v-for="child in item.children" :index="child.url" :key="child.url" v-if="true">{{child.url}}</el-menu-item>
 						 </el-submenu>
 						 <el-menu-item v-if="item.url!='/' && item.children.length>0" :index="item.children[0].url">{{item.children[0].name}}</el-menu-item>

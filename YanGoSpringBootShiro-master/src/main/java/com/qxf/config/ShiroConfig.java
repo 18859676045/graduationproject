@@ -6,6 +6,7 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
@@ -48,13 +49,18 @@ public class ShiroConfig {
         // 拦截器
         Map<String,String> filterMap = new LinkedHashMap<>();
         // 可以匿名访问
-        filterMap.put("/user/login", "anon");
-        filterMap.put("/user/logout", "anon");
-        filterMap.put("/user/uploadHander", "anon");
+//        filterMap.put("/user/login", "anon");
+//        filterMap.put("/user/logout", "anon");
+//        filterMap.put("/user/uploadHander", "anon");
 //         需要认证才可以访问
-        filterMap.put("/*", "authc");
-        filterMap.put("/**", "authc");
-        filterMap.put("/*.*", "authc");
+//        filterMap.put("/*", "authc");
+//        filterMap.put("/**", "authc");
+//        filterMap.put("/*.*", "authc");
+        //测试
+        filterMap.put("/*", "anon");
+        filterMap.put("/**", "anon");
+        filterMap.put("/*.*", "anon");
+
         sffb.setFilterChainDefinitionMap(filterMap);
 
         log.info("====================== shrio拦截器工厂注入成功 =====================");
@@ -73,6 +79,19 @@ public class ShiroConfig {
         securityManager.setRealm(authRealm());
         return securityManager;
     }
+    /**
+     * 自定义session，后期有条件用jwt
+     */
+    @Bean
+    public DefaultWebSessionManager getDefaultWebSessionManager() {
+        DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
+//        defaultWebSessionManager.setGlobalSessionTimeout(1000 * 60);// 会话过期时间，单位：毫秒(在无操作时开始计时)--->一分钟,用于测试
+        defaultWebSessionManager.setGlobalSessionTimeout(86400000);//一天
+        defaultWebSessionManager.setSessionValidationSchedulerEnabled(true);
+        defaultWebSessionManager.setSessionIdCookieEnabled(true);
+        return defaultWebSessionManager;
+    }
+
 
     /**
      *  配置自定义的权限登录器

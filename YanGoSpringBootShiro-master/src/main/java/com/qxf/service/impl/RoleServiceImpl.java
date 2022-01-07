@@ -23,6 +23,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     /**
+     * @desc: 查询所有的角色
+     */
+    public List<Role> findAllRole() {
+        return super.baseMapper.findAllRoles();
+    }
+
+
+
+
+    /**
      * @desc: 新增角色
      */
     @Transactional

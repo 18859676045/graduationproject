@@ -2,7 +2,9 @@ package com.qxf.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.qxf.ftp.UploadUtil;
+import com.qxf.pojo.Role;
 import com.qxf.pojo.User;
+import com.qxf.service.RoleService;
 import com.qxf.service.UserService;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ExcelUtil;
@@ -37,6 +39,9 @@ public class UserController extends BaseController {
     private UserService userService;
 
     Map<String, String> uploadImg;
+
+    @Autowired
+    private RoleService roleService;
 
     /**
      * 上传用户头像
@@ -211,6 +216,9 @@ public class UserController extends BaseController {
                 return ResultUtil.result(EnumCode.INTERNAL_SERVER_ERROR.getValue(),"空数据，导入失败");
             }
 
+            //查询数据库的所有角色并且赋值
+            List<Role> allRoles = roleService.findAllRoles();
+
             for (int i=0;i<list.size();i++){
                 String[] values = list.get(i);
                 //这里只导入了3列数据：姓名、邮箱和是否可用（0、1），其他列可自行导入，现转换格式再写入数据库，比如：
@@ -218,11 +226,38 @@ public class UserController extends BaseController {
                 User user = new User();
                 user.setUsername(values[0]);
                 user.setEmail(values[1]);
-                user.setEnable(values[2] == null ? 1 : Integer.valueOf(values[2]));
+//                user.setEnable(values[2] == null ? 1 : Integer.valueOf(values[2]));
+                //判断是否激活
+                if (values[5].equals("是") ){
+                    user.setEnable(1);
+                }else {
+                    user.setEnable(0);
+                }
                 user.setCreateTime(new Date());
+                //UUID设置用户的id
                 user.setId(UUID.randomUUID().toString().replace("-",""));
+                //初始密码均设置a123456
                 user.setPassword("a123456");
-                user.setRoleId("3");
+
+                for (int i1 = 0; i1 < allRoles.size(); i1++) {
+                    Role role = allRoles.get(i1);
+                    if (role.getName().equals(values[4])){
+                        user.setRoleId(role.getId());
+                    }
+                }
+                //若没有数据库中的角色，则直接添加为学生
+                if (values[4].isEmpty()){
+                    user.setRoleId("3");
+                }
+//                if (values[4].equals("管理员")){
+//                    user.setRoleId("1");
+//                }else if (values[4].equals("导师")){
+//                    user.setRoleId("2");
+//                }else if (values[4].equals("学生")){
+//                    user.setRoleId("3");
+//                }else if (values[4].equals("教学秘书")){
+//                    user.setRoleId("a4ea24e68fc342c2a52286702061a022");
+//                }
                 userService.addUser(user);
             }
         }

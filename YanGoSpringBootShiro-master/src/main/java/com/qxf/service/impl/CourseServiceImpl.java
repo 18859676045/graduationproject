@@ -3,10 +3,7 @@ package com.qxf.service.impl;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.qxf.exception.MyException;
-import com.qxf.hiswww.dao.TCourseMapper;
-import com.qxf.hiswww.dao.TCourseTeacherMapper;
-import com.qxf.hiswww.dao.TStudentCourseTeacherMapper;
-import com.qxf.hiswww.dao.TStudentMapper;
+import com.qxf.hiswww.dao.*;
 import com.qxf.hiswww.domain.*;
 import com.qxf.mapper.CourseMapper;
 import com.qxf.pojo.*;
@@ -19,6 +16,7 @@ import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -161,4 +159,82 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     public List<Course> getCourseByTeacher(Page<Course> page, String teacherId) {
         return super.baseMapper.getCourseByTeacher(page,teacherId);
     }
+    /**
+     * 所有用户：公司管理company,查看学生岗位详情
+     */
+    @Autowired
+    TStudentCourseTeacherMapper tctmMapper;
+    @Autowired
+    TTeacherMapper tTeacherMapper;
+    @Autowired
+    TCompanyMapper tCompanyMapper;
+
+    public ShiXiBigPojo findOnePost(String id){
+
+        TStudentCourseTeacher tsct = tctmMapper.selectByPrimaryKey(id);
+
+        //实习信息
+        TCourse tCourse = tCourseMapper.selectByPrimaryKey(tsct.getCourseId());
+        //获取学生主键
+        String studentId = tsct.getStudentId();
+        //学生信息
+        TStudent tStudent = tStudentMapper.selectByPrimaryKey(studentId);
+        //老师信息
+        TTeacher tTeacher = tTeacherMapper.selectByPrimaryKey(tsct.getTeacherId());
+        //公司信息
+        TCompanyExample tCompanyExample = new TCompanyExample();
+        tCompanyExample.or().andStudnetIdEqualTo(studentId).andCourseIdEqualTo(tsct.getCourseId());
+        TCompany company = tCompanyMapper.selectOneByExampleWithBLOBs(tCompanyExample);
+        ShiXiBigPojo shiXiBigPojo = new ShiXiBigPojo();
+        //成绩
+        shiXiBigPojo.setScore(tsct.getScore());
+        if (!StringUtils.isEmpty(company)){
+            shiXiBigPojo.setGid(company.getId());
+            shiXiBigPojo.setGcompanyName(company.getCompanyName());
+            shiXiBigPojo.setGstudentsPost(company.getStudentsPost());
+            shiXiBigPojo.setGoutSupervisor(company.getOutSupervisor());
+            shiXiBigPojo.setGoutorPhone(company.getOutorPhone());
+            shiXiBigPojo.setGstudnetId(company.getStudnetId());
+            shiXiBigPojo.setGcDescribe(company.getcDescribe());
+            shiXiBigPojo.setSupervisorPost(company.getSupervisorPost());
+            shiXiBigPojo.setCourseId(company.getCourseId());
+        }
+        //放入老师信息
+        shiXiBigPojo.setTid(tTeacher.getId());
+        shiXiBigPojo.setTname(tTeacher.getName());
+        shiXiBigPojo.setTsex(tTeacher.getSex());
+        shiXiBigPojo.setTage(tTeacher.getAge());
+        shiXiBigPojo.setTtitle(tTeacher.getTitle());
+        shiXiBigPojo.setTemail(tTeacher.getEmail());
+        shiXiBigPojo.setTphotoUrl(tTeacher.getPhotoUrl());
+        shiXiBigPojo.setTphone(tTeacher.getPhone());
+        //放入学生信息表
+        shiXiBigPojo.setSage(tStudent.getAge());
+        shiXiBigPojo.setSid(tStudent.getId());
+        shiXiBigPojo.setSemail(tStudent.getEmail());
+        shiXiBigPojo.setSclazzId(tStudent.getClazzId());
+        shiXiBigPojo.setSinstituteId(tStudent.getInstituteId());
+        shiXiBigPojo.setSmajorId(tStudent.getMajorId());
+        shiXiBigPojo.setSphotoUrl(tStudent.getPhotoUrl());
+        shiXiBigPojo.setSphone(tStudent.getPhone());
+        shiXiBigPojo.setSsex(tStudent.getSex());
+        shiXiBigPojo.setStudentNumber(tStudent.getStudentNumber());
+        shiXiBigPojo.setSname(tStudent.getName());
+        //放入实习信息表
+        shiXiBigPojo.setCid(tCourse.getId());
+        shiXiBigPojo.setCcourseType(tCourse.getCourseType());
+        shiXiBigPojo.setCendEtime(tCourse.getEndEtime());
+        shiXiBigPojo.setCstartStime(tCourse.getStartStime());
+        shiXiBigPojo.setCname(tCourse.getName());
+//        Map map = new HashMap();
+        //封装四个数据集合
+//        map.put("student",tStudent);map.put("teacher",tTeacher); map.put("company",company);map.put("course",tCourse);
+        return shiXiBigPojo;
+
+
+    }
+
+
+
+
 }

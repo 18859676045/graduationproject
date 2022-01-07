@@ -246,8 +246,8 @@
 			    handleDownLoad() {
 			      window.location.href = `/file/download?fileName=` + this.form.fileName
 			    },
-			      handleExceed(files, fileList) {
-			        this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+			      handleExceed(files, fileList) {//当前限制选择 5 个文件，本次选择了 1 个文件，共选择了 2 个文件
+			        this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
 			      },
 			      beforeRemove(file, fileList) {
 			        return this.$confirm(`确定移除 ${ file.name }？`);

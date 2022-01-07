@@ -48,20 +48,29 @@
 	    prop="phone"
 	    label="联系方式" sortable>
 	  </el-table-column>
-<!-- 			<el-table-column
-			      fixed="right"
-			      label="操作"
-						width="180px"
-						align="center">
-			      <template slot-scope="scope">
-			      	<el-button
-							  @click.native="selDetails(scope.row.id)"
-			          type="text"
-			          size="small">
-			          属性明细
-			        </el-button>
-			      </template>
-			  </el-table-column> -->
+<!--                <template slot-scope="scope">-->
+<!--                    <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>-->
+<!--                    <el-button type="text" size="small">编辑</el-button>-->
+<!--                </template>-->
+<!-- 			<el-table-column fixed="right" label="操作" width="180px" align="center">-->
+<!--			      <template slot-scope="scope">-->
+<!--			      	<el-button @click.native="editOne(scope.row.id)" type="text" size="small">-->
+<!--			          编辑-->
+<!--			        </el-button>-->
+<!--                      <el-button @click.native="selDetails(scope.row.id)" type="text" size="small">-->
+<!--                          查看详情-->
+<!--                      </el-button>-->
+<!--			      </template>-->
+<!--			  </el-table-column>-->
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button
+                                size="mini"
+                                @click="selDetails(scope.row.id)">详情</el-button>
+                    </template>
+                </el-table-column>
+
+
     </el-table>
 		</el-col>
 
@@ -109,55 +118,7 @@
 				</el-option>
 			</el-select>
 		</el-form-item>
-<!-- 		<el-form-item label="报名时间">
-			<el-date-picker
-					v-model="attr.signStime2"
-					type="date"
-					:picker-options="pickerBeginDateBefore"
-					format="yyyy-MM-dd"
-					placeholder="实习开始时间">
-			</el-date-picker>
-		</el-form-item>
-		<el-form-item label="至" label-width="25px">
-			<el-date-picker
-					v-model="attr.signEtime2"
-					type="date"
-					format="yyyy-MM-dd"
-					:picker-options="pickerBeginDateAfter"
-					placeholder="实习结束时间">
-			</el-date-picker>
-		</el-form-item>
-		<el-form-item label="考试时间">
-			<el-date-picker
-					v-model="attr.examStime2"
-					type="date"
-					:picker-options="pickerBeginDateBefore2"
-					format="yyyy-MM-dd"
-					placeholder="考试开始时间">
-			</el-date-picker>
-		</el-form-item>
-		<el-form-item label="至" label-width="25px">
-			<el-date-picker
-					v-model="attr.examEtime2"
-					type="date"
-					format="yyyy-MM-dd"
-					:picker-options="pickerBeginDateAfter2"
-					placeholder="考试结束时间">
-			</el-date-picker>
-		</el-form-item>	 -->
 
-<!--		<el-form-item label="实习开始" prop="signStime2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">-->
-<!--			<el-input type="date" v-model="attr.signStime2"></el-input>-->
-<!--		</el-form-item>-->
-<!--		<el-form-item label="实习结束" prop="signEtime2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">-->
-<!--			<el-input type="date" v-model="attr.signEtime2"> </el-input>-->
-<!--		</el-form-item>-->
-<!--		<el-form-item label="考试开始" prop="examStime2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">-->
-<!--			<el-input type="date" v-model="attr.examStime2"></el-input>-->
-<!--		</el-form-item>-->
-<!--		<el-form-item label="考试结束" prop="examEtime2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">-->
-<!--			<el-input type="date" v-model="attr.examEtime2"></el-input>-->
-<!--		</el-form-item>-->
 	</el-form>
  </div>
 	<div slot="footer" class="dialog-footer">
@@ -166,6 +127,88 @@
 		<el-button type="primary" @click="submitForm('attr')">确 定</el-button>
 	</div>
 </el-dialog>
+
+        <!-- 详情和修改 -->
+        <el-dialog  title="实习学生详情" :visible.sync="dialogDetailEditvisble" width="1100px">
+            <div style="width:600px;margin: 0 auto">
+
+
+                <el-form ref="attr" :model="DetailEditvisbleMessage" :inline="false" label-width="170px" class="demo-ruleForm" label-position="left">
+                    <el-form-item label="实习类型" prop="ccourseType" :rules="[{ required: true, message: '请选择实习类型', trigger: 'change,blur' }]">
+                        <el-select v-model="DetailEditvisbleMessage.ccourseType" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="item in courseTypes"
+                                    :key="item.dictCode"
+                                    :label="item.dictValue"
+                                    :value="item.dictCode">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="学生姓名" prop="sname" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.sname" placeholder="请输入学生姓名" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="学生手机号" prop="studentNumber" :rules="[{ required: true, message: '请输入学生手机号', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.studentNumber" placeholder="请输入学生手机号" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="学生邮件" prop="temail" :rules="[{ required: true, message: '请输入学生邮件', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.temail" placeholder="请输入学生邮件" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="成绩" prop="score" :rules="[{ required: true, message: '请输入成绩', trigger: 'blur' },{validator: 'regexp', pattern: /^([1-9][0-9]{0,1}|100)$/, message: '成绩只能是1-100之间的整数', trigger: 'change,blur'}]">
+                        <el-input  type="number" v-model="DetailEditvisbleMessage.score" placeholder="请输入成绩" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="实习导师" prop="tid" :rules="[{ required: true, message: '至少选择一名实习导师', trigger: 'change,blur' }]">
+                        <el-select v-model="DetailEditvisbleMessage.tid" filterable placeholder="请选择实习导师">
+                            <el-option
+                                    v-for="item in teachers"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="导师手机号" prop="tphone" :rules="[{ required: true, message: '请输入导师手机号', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.tphone" placeholder="请输入导师手机号" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="公司名称" prop="gcompanyName">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.gcompanyName" placeholder="请输入公司名称" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="公司简介" prop="gcDescribe">
+                        <el-input type="textarea" v-model="DetailEditvisbleMessage.gcDescribe" placeholder="公司简介，框可下拉放大"></el-input>
+                    </el-form-item>
+                    <el-form-item label="校外导师名称" prop="goutSupervisor">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.goutSupervisor" placeholder="请输入校外导师名称" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="校外导师联系方式" prop="goutorPhone">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.goutorPhone" placeholder="请输入校外导师联系方式" auto-complete="off"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="实习时间" prop="">
+                        <el-date-picker
+                                v-model="value1"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期">
+                        </el-date-picker>
+                    </el-form-item>
+                </el-form>
+
+
+
+
+
+
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogDetailEditvisble = false">取 消</el-button>
+                <el-button type="primary" @click="submitForm('attr')">提交</el-button>
+            </div>
+        </el-dialog>
+
+
+
+
+
 
 	</el-row>
 
@@ -210,6 +253,45 @@ export default {
 			page2: 1,
 			dialogTableVisible1: false,
 			dialogFormVisible1: false,
+            dialogDetailEditvisble:false,
+            DetailEditvisbleMessage: {
+			    score:'',
+          //公司表
+          gid:'', gcompanyName:'', supervisorPost:'',
+          gstudentsPost:'',
+          goutSupervisor:'',
+          goutorPhone:'',
+          gstudnetId:'',
+          gcDescribe:'',
+          //老师表
+          tid:'',
+          tname:'',
+          tsex:'',
+          tage:'',
+          ttitle:'',
+          temail:'',
+          tphotoUrl:'',
+          tphone:'',
+          //学生表
+          sid:'',
+          studentNumber:'',
+          sname:'',
+          ssex:'',
+          sage:'',
+          sphone:'',
+          semail:'',
+          sphotoUrl:'',
+          sclazzId:'',
+          smajorId:'',
+          sinstituteId:'',
+          //实习表
+          cid:'',
+          cname:'',
+          cstartStime:'',
+          cendEtime:'',
+          ccourseType:'',
+            },
+
 			dialogFormVisible2: false,
 			innerVisible: false,
 			attrIds: [], // 属性ids集合
@@ -454,30 +536,35 @@ export default {
           _this.message(true,data.data.msg,'error')
  			}
 		},
-		// 查询属性明细
+		// 实习详情明细
 		async selDetails(id) {
-			let _this = this
-			_this.dialogTableVisible1 = true
-			_this.attrId = id
-			let params = {
-				id: id,
-				pageSize: _this.pageSize2,
-				startPage: _this.startPage2
-			}
-			let data = await http.get('SysApi/v1/findAttributesDetailByPage', params)
+
+            this.dialogDetailEditvisble = true
+            this.getCourseType()
+            this.getAllTeacher ()
+		    console.log(id)
+            let params = {
+            	id: id,
+            }
+			let data = await http.get('course/company', params)
 
 			if(!data.data) {
 				return
 			}
-
+			//this.data ={…res.data.第一个对象名,…res.data.第二个对象名}
 			if (data.data.status === 200) {
-				 _this.tableData2 = data.data.data
-				 _this.total2 = data.data.total
+				 this.DetailEditvisbleMessage = data.data.data
+                console.log(data.data.data)
 			} else {
 				_this.message(true,data.data.msg,'error')
-				_this.formData2 = []
 			}
 		},
+        //编辑按钮
+        editOne(id){
+		    console.log(id)
+        },
+
+
 		// 删除属性明细
 		async delDetails() {
       let _this = this

@@ -1,12 +1,20 @@
 package com.qxf.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.qxf.hiswww.dao.TStudentCourseTeacherMapper;
+import com.qxf.hiswww.dao.TStudentMapper;
+import com.qxf.hiswww.domain.ShiXiBigPojo;
+import com.qxf.hiswww.domain.TCompany;
+import com.qxf.hiswww.domain.TStudentCourseTeacher;
 import com.qxf.pojo.Course;
 import com.qxf.pojo.ShixiCourse;
 import com.qxf.pojo.User;
 import com.qxf.service.CourseService;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ResultUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: WangWeiWen
@@ -52,6 +61,7 @@ public class CourseController {
         }
         return courseService.deleteCourse(ids);
     }
+
 
     //学生：我的未选课程
     @GetMapping("/choice")
@@ -100,6 +110,18 @@ public class CourseController {
         return ResultUtil.result(EnumCode.NO_Count.getValue(), "您没有成绩",null,null);
     }
     }
+
+    //所有用户：公司管理company,查看学生岗位详情
+    @GetMapping("/company")
+    public Object findOnePost(String id){
+        try {
+            ShiXiBigPojo shiXiBigPojo = courseService.findOnePost(id);
+            return ResultUtil.result(EnumCode.OK.getValue(), "请求成功", JSONArray.toJSON(shiXiBigPojo));
+        }catch (Exception e){
+            return ResultUtil.result(EnumCode.BAD_REQUEST.getValue(), "参数错误",null,null);
+        }
+    }
+
 
 
 }

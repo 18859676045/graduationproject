@@ -127,10 +127,11 @@ let router = [
 	{
 	    path: '/',
 	    component: Home,
-	    name: '课程管理',
+	    name: '实习管理',
 	    iconCls: 'icon iconfont icon-dic-manager',
 	    children: [
-	        { path: '/course/list', component: CourseList, name: '课程列表' },
+	        { path: '/course/list', component: CourseList, name: '实习列表' },
+			{ path: '/course/center', component: questionManager, name: '消息通知' }
 	    ]
 	},
 	{

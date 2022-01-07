@@ -2,6 +2,7 @@ package com.qxf.exception;
 
 import com.alibaba.fastjson.JSONArray;
 import com.qxf.controller.BaseController;
+import com.qxf.controller.LoginController;
 import com.qxf.pojo.OperateRecord;
 import com.qxf.service.OperateRecordService;
 import com.qxf.utils.EnumCode;
@@ -29,6 +30,8 @@ public class ExceptionHandle extends BaseController {
 
     @Autowired
     private OperateRecordService operatingRecordService;
+    @Autowired
+    LoginController loginController;
 
     private final  static Logger log = LoggerFactory.getLogger(ExceptionHandle.class);
 
@@ -61,7 +64,9 @@ public class ExceptionHandle extends BaseController {
         }
         else {
             log.info("系统异常 {}",e);
-            return ResultUtil.result(-1, "未知错误");
+//            loginController.logout();
+//            return ResultUtil.result(-1, "未知错误");
+            return ResultUtil.result(-1,"登陆过期，请重新登陆");
         }
     }
 }

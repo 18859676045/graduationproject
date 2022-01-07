@@ -30,7 +30,7 @@ public enum  EnumCode {
     /**
      * 400请求参数出错
      */
-    BAD_REQUEST(400, "请求参数出错"),
+    BAD_REQUEST(400, "请求参数出错,请稍后再试"),
     /**
      * 401没有登录
      */
