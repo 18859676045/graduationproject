@@ -3,6 +3,7 @@ package com.qxf.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.qxf.hiswww.domain.ShiXiBigPojo;
+import com.qxf.hiswww.domain.TCourse;
 import com.qxf.pojo.Course;
 import com.qxf.pojo.ShixiCourse;
 
@@ -21,6 +22,7 @@ public interface CourseService extends IService<Course>{
     Object addCourse(ShixiCourse course) throws ParseException;
 
     ShiXiBigPojo findOnePost(String id);
+    Object editBigPojo(ShiXiBigPojo shiXiBigPojo);
 
     Object deleteCourse(String[] ids);
 

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.qxf.exception.MyException;
 import com.qxf.mapper.StudentMapper;
-import com.qxf.pojo.Major;
 import com.qxf.pojo.Student;
 import com.qxf.pojo.User;
 import com.qxf.pojo.UserRole;
@@ -46,16 +45,16 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     @Override
     public Object addStudent(Student student) {
         //生成学号：年份+学院代码+专业代码+四位随机数字，从1000开始
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+08:00"));
-        Integer year = calendar.get(Calendar.YEAR);
-        String instituteNumber = instituteService.selectById(student.getInstituteId().trim()).getInstituteNumber();
-        String majorNumber = majorService.selectById(student.getMajorId().trim()).getMajorNumber();
-        Integer total = this.getStudentCount(student.getMajorId().trim());  //本专业学生总数
-        String number = "1000";   //随机数字起始
-        if(total!=null){
-            number = ""+(1000+total);
-        }
-        String studentNumber = year + instituteNumber +majorNumber + number;   //学号
+//        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+08:00"));
+//        Integer year = calendar.get(Calendar.YEAR);
+//        String instituteNumber = instituteService.selectById(student.getInstituteId().trim()).getInstituteNumber();
+//        String majorNumber = majorService.selectById(student.getMajorId().trim()).getMajorNumber();
+//        Integer total = this.getStudentCount(student.getMajorId().trim());  //本专业学生总数
+//        String number = "1000";   //随机数字起始
+//        if(total!=null){
+//            number = ""+(1000+total);
+//        }
+        String studentNumber = student.getStudentNumber();   //学号
 
         //判断要插入的学生是否存在
         Map<String,Object> map = new HashMap<>();

@@ -124,6 +124,7 @@
             <version>${fastjson.version}</version>
         </dependency>
 
+
         <!-- AOP处理 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -217,6 +218,17 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
 <!--            <version>1.18.18</version>-->
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+        <!--fastDfs文件管理依赖-->
+        <dependency>
+            <groupId>org.csource</groupId>
+            <artifactId>fastdfs-client-java</artifactId>
+            <version>1.27-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

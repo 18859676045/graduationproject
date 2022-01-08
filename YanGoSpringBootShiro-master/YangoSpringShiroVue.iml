@@ -139,5 +139,8 @@
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-configuration-processor:1.5.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.google:android-json:0.0.20131108.vaadin1" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.16.18" level="project" />
+    <orderEntry type="library" name="Maven: javax.mail:mail:1.4.7" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.csource:fastdfs-client-java:1.27-SNAPSHOT" level="project" />
   </component>
 </module>

@@ -2,6 +2,7 @@ package com.qxf.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.qxf.hiswww.domain.TUser;
 import com.qxf.pojo.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,4 +59,9 @@ public interface UserService extends IService<User>{
      * 用户修改用户个人信息
      */
     Object editUserInfo(User user);
+    /**
+     * 根据id查询用户
+     */
+    TUser findbyId(String id);
+
 }

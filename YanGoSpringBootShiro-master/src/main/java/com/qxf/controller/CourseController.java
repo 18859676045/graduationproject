@@ -17,10 +17,7 @@ import com.qxf.utils.ResultUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
@@ -38,7 +35,7 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    //管理员：课程列表
+    //管理员：实习列表
     @GetMapping("/list")
     public Object getListByPage(Integer startPage,Integer pageSize,String name){
         Page<ShixiCourse> page = new Page<>(startPage,pageSize);
@@ -46,10 +43,16 @@ public class CourseController {
         return ResultUtil.result(EnumCode.OK.getValue(),"请求成功",list,page.getTotal());
     }
 
-    //管理员：添加新课程
+    //管理员：添加新实习
     @PostMapping("/add")
     public Object addCourse(ShixiCourse course) throws ParseException {
         return courseService.addCourse(course);
+    }
+    //管理员：修改实习信息
+    @PostMapping("/editBigPojo")
+    public Object editBigPojo(ShiXiBigPojo shiXiBigPojo) throws Exception{
+
+        return courseService.editBigPojo(shiXiBigPojo);
     }
 
     //管理员：删除课程

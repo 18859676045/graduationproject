@@ -14,8 +14,10 @@ public class ShixiCourse {
      private String id;
      private String name;
      private String phone;
-     @TableField("course_type")
+     private String sEmail;
+     private String tEmail;
      private String courseType;
+     private String studentNumber;
      private int score;
      private Date startStime;
      private String cname;

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.qxf.exception.MyException;
+import com.qxf.hiswww.dao.TUserMapper;
+import com.qxf.hiswww.domain.TUser;
 import com.qxf.mapper.RoleMapper;
 import com.qxf.mapper.UserMapper;
 import com.qxf.pojo.*;
@@ -167,6 +169,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         return ResultUtil.result(EnumCode.INTERNAL_SERVER_ERROR.getValue(), "修改失败");
     }
 
+    @Autowired
+    TUserMapper tUserMapper;
+    @Override
+    public TUser findbyId(String id) {
+        TUser tUser = tUserMapper.selectByPrimaryKey(id);
+
+        return tUser;
+    }
+
     @Override
     public List<User> findAllUser(User user) {
         return super.baseMapper.findAllUser(user);
@@ -179,4 +190,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     public User findUserByUsername(String username){
         return super.baseMapper.findUserByUsername(username);
     }
+
+
+
+
 }
