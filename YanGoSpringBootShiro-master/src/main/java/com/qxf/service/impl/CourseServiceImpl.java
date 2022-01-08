@@ -13,13 +13,17 @@ import com.qxf.service.GradeService;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ResultUtil;
 import org.apache.shiro.SecurityUtils;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -45,7 +49,6 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     CourseMapper courseMapper;
 
 
-
     @Override
     public List<ShixiCourse> getListByPage(Page<ShixiCourse> page, String name) {
 //        TStudentExample tStudentExample = new TStudentExample();
@@ -55,12 +58,9 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
 //        st.or().andStudentIdEqualTo(Students.getId());
 //        tStudentCourseTeacherMapper.selectByExample(st);
 
-        return courseMapper.getListByPage(page,name);
+        return courseMapper.getListByPage(page, name);
     }
 
-    public List<Course> selectCourseByPage(Page<Course> page,String name){
-        return null;
-    }
 
 
     @Transactional
@@ -68,8 +68,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     public Object addCourse(ShixiCourse course) throws ParseException {
         //查询学生
         TStudentExample tStudentExample = new TStudentExample();
-        tStudentExample.or().andNameEqualTo(course.getName());
+        tStudentExample.or().andNameEqualTo(course.getName()).andStudentNumberEqualTo(course.getStudentNumber());
+
         TStudent tStudent = tStudentMapper.selectOneByExampleSelective(tStudentExample);
+        if (StringUtils.isEmpty(tStudent)) {
+            return ResultUtil.result(EnumCode.NO_PERSON.getValue(), "信息有误");
+        }
         //查询实习类型课程
         String courseType = course.getCourseType();
         TCourseExample tCourseExample = new TCourseExample();
@@ -78,25 +82,24 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
 
         //插入t_student_course_teacher中间表，一门课程可以有多个任课老师
         String[] teacherIds = course.getTeacherIds();
-        if(teacherIds!=null && teacherIds.length>0){
-            for (int i=0;i<teacherIds.length;i++){
+        if (teacherIds != null && teacherIds.length > 0) {
+            for (int i = 0; i < teacherIds.length; i++) {
                 TStudentCourseTeacher tStudentCourseTeacher = new TStudentCourseTeacher();//新建中间表
                 tStudentCourseTeacher.setCourseId(tCourse.getId());//插入课程ID
                 try {
                     tStudentCourseTeacher.setStudentId(tStudent.getId());//插入学生id
-                }catch (Exception e){
-                        return ResultUtil.result(EnumCode.NO_PERSON.getValue(), "没有这个学生",null);
+                } catch (Exception e) {
+                    return ResultUtil.result(EnumCode.NO_PERSON.getValue(), "没有这个学生", null);
                 }
 
                 tStudentCourseTeacher.setTeacherId(teacherIds[i]);//插入老师id
                 tStudentCourseTeacher.setScore(course.getScore());//插入分数
-                tStudentCourseTeacherMapper.insert(tStudentCourseTeacher);
+                tStudentCourseTeacherMapper.insertSelective(tStudentCourseTeacher);
             }
         }
 
 
-
-        return ResultUtil.result(EnumCode.OK.getValue(),"新增成功");
+        return ResultUtil.result(EnumCode.OK.getValue(), "新增成功");
     }
 
     @Override
@@ -105,7 +108,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
             for (int i = 0; i < ids.length; i++) {
                 tStudentCourseTeacherMapper.deleteByPrimaryKey(ids[i]);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResultUtil.result(EnumCode.delete_error.getValue(), "删除失败");
         }
         return ResultUtil.result(EnumCode.OK.getValue(), "删除成功");
@@ -114,12 +117,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     @Override
     public List<Course> getNotSelectedCourse(Page<Course> page, String studentId) {
 
-        return super.baseMapper.getNotSelectedCourse(page,studentId);
+        return super.baseMapper.getNotSelectedCourse(page, studentId);
     }
 
     @Override
     public List<Course> getSelectedCourse(Page<Course> page, String studentId) {
-        return super.baseMapper.getSelectedCourse(page,studentId);
+        return super.baseMapper.getSelectedCourse(page, studentId);
     }
 
     @Transactional
@@ -127,23 +130,23 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     public Object addCourseToStudent(Course course) {
         String studentId = ((User) SecurityUtils.getSubject().getPrincipal()).getId();  //学生id
         String[] ctIds = course.getIds();    //课程-老师中间表的id
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         List<CourseTeacher> list = new ArrayList<>();
         //判断是否选择了一门课程的两个以上老师的课
-        if(ctIds != null && ctIds.length>0){
-            for (int i=0;i<ctIds.length;i++){
+        if (ctIds != null && ctIds.length > 0) {
+            for (int i = 0; i < ctIds.length; i++) {
                 CourseTeacher courseTeacher = courseTeacherService.selectById(ctIds[i]);
-                if(map.containsValue(courseTeacher.getCourseId())){
+                if (map.containsValue(courseTeacher.getCourseId())) {
                     throw new MyException(ResultUtil.result(EnumCode.BAD_REQUEST.getValue(), "一门课程只能选择一个老师", null));
                 }
-                map.put("cid"+i,courseTeacher.getCourseId());
+                map.put("cid" + i, courseTeacher.getCourseId());
                 list.add(courseTeacher);
             }
         }
 
         //将学生、课程、老师信息插入到成绩表中，表示该学生选了那些老师的那些课
-        if(list != null && list.size()>0){
-            for (CourseTeacher ct: list){
+        if (list != null && list.size() > 0) {
+            for (CourseTeacher ct : list) {
                 Grade grade = new Grade();
                 grade.setStudentId(studentId);
                 grade.setCourseId(ct.getCourseId());
@@ -152,13 +155,14 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
                 gradeService.insert(grade);
             }
         }
-        return ResultUtil.result(EnumCode.OK.getValue(),"添加成功");
+        return ResultUtil.result(EnumCode.OK.getValue(), "添加成功");
     }
 
     @Override
     public List<Course> getCourseByTeacher(Page<Course> page, String teacherId) {
-        return super.baseMapper.getCourseByTeacher(page,teacherId);
+        return super.baseMapper.getCourseByTeacher(page, teacherId);
     }
+
     /**
      * 所有用户：公司管理company,查看学生岗位详情
      */
@@ -169,7 +173,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     @Autowired
     TCompanyMapper tCompanyMapper;
 
-    public ShiXiBigPojo findOnePost(String id){
+    public ShiXiBigPojo findOnePost(String id) {
 
         TStudentCourseTeacher tsct = tctmMapper.selectByPrimaryKey(id);
 
@@ -186,9 +190,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         tCompanyExample.or().andStudnetIdEqualTo(studentId).andCourseIdEqualTo(tsct.getCourseId());
         TCompany company = tCompanyMapper.selectOneByExampleWithBLOBs(tCompanyExample);
         ShiXiBigPojo shiXiBigPojo = new ShiXiBigPojo();
-        //成绩
+        //老师实习学生，成绩评价表
         shiXiBigPojo.setScore(tsct.getScore());
-        if (!StringUtils.isEmpty(company)){
+        shiXiBigPojo.setStcId(tsct.getId());
+        shiXiBigPojo.setTeacherEstimate(tsct.getTeacherEstimate());
+
+        //公司表
+        if (!StringUtils.isEmpty(company)) {
             shiXiBigPojo.setGid(company.getId());
             shiXiBigPojo.setGcompanyName(company.getCompanyName());
             shiXiBigPojo.setGstudentsPost(company.getStudentsPost());
@@ -230,9 +238,105 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         //封装四个数据集合
 //        map.put("student",tStudent);map.put("teacher",tTeacher); map.put("company",company);map.put("course",tCourse);
         return shiXiBigPojo;
-
-
     }
+    @Autowired
+    TSysDictMapper tSysDictMapper;
+
+
+    //修改实习信息
+    @Transactional
+    public Object editBigPojo(ShiXiBigPojo shiXiBigPojo) {
+        TStudentExample tStudentExample = new TStudentExample();
+        tStudentExample.or().andNameEqualTo(shiXiBigPojo.getSname()).andNameEqualTo(shiXiBigPojo.getSname());
+        //查询是否有这个学生，进行修改
+        TStudent tStudent = tStudentMapper.selectOneByExample(tStudentExample);
+        if (StringUtils.isEmpty(tStudent)) {
+            return ResultUtil.result(EnumCode.NO_STUDENT.getValue(), "添加失败", null);
+        }
+        //根据实习类型,实习的开始和结束的时间判断是否有这个实习，
+        //如果没有这个实习课程则新增，有的话就直接获取主键
+        TCourseExample tCourseExample = new TCourseExample();
+        LocalDate date1 = this.strConvertL(shiXiBigPojo.getValidateTime()[0].substring(0, 10));
+        LocalDate date2 = this.strConvertL(shiXiBigPojo.getValidateTime()[1].substring(0, 10));
+        tCourseExample.or().andCourseTypeEqualTo(shiXiBigPojo.getCcourseType())
+                .andStartStimeEqualTo(date1).
+                andEndEtimeEqualTo(date2);
+        TCourse tCourse = tCourseMapper.selectOneByExample(tCourseExample);
+        String courseId = null;
+        //当为空时，新增一个实习课程course类
+        if(StringUtils.isEmpty(tCourse)){
+                TCourse course = new TCourse();
+                course.setId(UUID.randomUUID().toString().replace("-",""));
+                course.setStartStime(date1);
+                course.setEndEtime(date2);
+                course.setName(shiXiBigPojo.getCname());
+                course.setCourseType(shiXiBigPojo.getCcourseType());
+                tCourseMapper.insertSelective(course);
+        }else {
+            courseId = tCourse.getId();
+        }
+
+        //根据主键修改学生实习老师表
+        TStudentCourseTeacher tStudentCourseTeacher = tStudentCourseTeacherMapper.selectByPrimaryKey(shiXiBigPojo.getStcId());
+        tStudentCourseTeacher.setStudentId(tStudent.getId());
+        tStudentCourseTeacher.setCourseId(courseId);
+        tStudentCourseTeacher.setTeacherId(shiXiBigPojo.getTid());
+        tStudentCourseTeacher.setScore(shiXiBigPojo.getScore());
+        tStudentCourseTeacher.setTeacherEstimate(shiXiBigPojo.getTeacherEstimate());
+        tStudentCourseTeacherMapper.updateByPrimaryKeySelective(tStudentCourseTeacher);
+        //修改学生信息
+        tStudent.setEmail(shiXiBigPojo.getSemail());
+        tStudent.setPhone(shiXiBigPojo.getSphone());
+        tStudentMapper.updateByPrimaryKeySelective(tStudent);
+        //修改公司信息
+        String companyId = shiXiBigPojo.getGid();
+        TCompany tCompany = tCompanyMapper.selectByPrimaryKey(companyId);
+        //公司没信息则新插入
+        if (StringUtils.isEmpty(tCompany)) {
+            TCompany company = new TCompany();
+            company.setId(UUID.randomUUID().toString().replace("-",""));
+            company.setCompanyName(shiXiBigPojo.getGcompanyName());
+            company.setStudentsPost(shiXiBigPojo.getGstudentsPost());
+            company.setcDescribe(shiXiBigPojo.getGcDescribe());
+            company.setOutSupervisor(shiXiBigPojo.getGoutSupervisor());
+            company.setSupervisorPost(shiXiBigPojo.getSupervisorPost());
+            company.setOutorPhone(shiXiBigPojo.getGoutorPhone());
+            company.setStudnetId(tStudent.getId());
+            company.setCourseId(courseId);
+            tCompanyMapper.insertSelective(company);
+        } else {
+            //有信息则根据主键修改
+            tCompany.setCompanyName(shiXiBigPojo.getGcompanyName());
+            tCompany.setStudentsPost(shiXiBigPojo.getGstudentsPost());
+            tCompany.setcDescribe(shiXiBigPojo.getGcDescribe());
+            tCompany.setOutSupervisor(shiXiBigPojo.getGoutSupervisor());
+            tCompany.setSupervisorPost(shiXiBigPojo.getGoutSupervisor());
+            tCompany.setOutorPhone(shiXiBigPojo.getGoutorPhone());
+            tCompany.setStudnetId(tStudent.getId());
+            tCompany.setCourseId(courseId);
+            tCompanyMapper.updateByPrimaryKeySelective(tCompany);
+        }
+        //老师表
+        TTeacher tTeacher= new TTeacher();
+        tTeacher.setName(shiXiBigPojo.getTname());
+        tTeacher.setEmail(shiXiBigPojo.getTemail());
+        tTeacher.setPhone(shiXiBigPojo.getTphone());
+        tTeacherMapper.updateByPrimaryKeySelective(tTeacher);
+
+        return ResultUtil.result(EnumCode.OK.getValue(), "添加成功");
+    }
+
+    //字符串转换localdate
+    public static LocalDate strConvertL(String dateStr) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate parse = LocalDate.parse(dateStr, fmt);
+        return parse;
+    }
+    //localdate转换字符串
+    public static String lformattedStr(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
 
 
 

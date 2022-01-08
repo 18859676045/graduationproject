@@ -102,7 +102,7 @@
 	<el-dialog title="新增学生" :visible.sync="dialogFormVisible1">
 	<div style="width:60%;margin: 0 auto">
 	<el-form ref="attr" :model="attr" :inline="false" label-width="90px" class="demo-ruleForm">
-		
+
 	<el-form-item label="所属学院" prop="instituteId2" :rules="[{ required: true, message: '请输入学院', trigger: 'blur' }]">
 		<el-select v-model="attr.instituteId2" filterable placeholder="请选择" @change="getMajorData">
 			<el-option
@@ -112,7 +112,7 @@
 				:value="item.id">
 			</el-option>
 	   </el-select>
-	</el-form-item>	
+	</el-form-item>
 	<el-form-item label="所属专业" prop="majorId2" :rules="[{ required: true, message: '请输入专业', trigger: 'blur' }]">
 		<el-select v-model="attr.majorId2" filterable placeholder="请选择" @change="getClazzData">
 			<el-option
@@ -122,7 +122,7 @@
 				:value="item.id">
 			</el-option>
 	   </el-select>
-	</el-form-item>	
+	</el-form-item>
 	<el-form-item label="所属班级" prop="clazzId2" :rules="[{ required: true, message: '请输入班级', trigger: 'blur' }]">
 		<el-select v-model="attr.clazzId2" filterable placeholder="请选择">
 			<el-option
@@ -132,10 +132,16 @@
 				:value="item.id">
 			</el-option>
 	   </el-select>
-	</el-form-item>	
+	</el-form-item>
 	<el-form-item label="姓名" prop="name2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
 		<el-input  type="text" v-model="attr.name2" placeholder="请输入学生姓名" auto-complete="off"></el-input>
 	</el-form-item>
+    <el-form-item label="学号" prop="studentNumber" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
+            <el-input  type="text" v-model="attr.studentNumber" placeholder="请输入学生学号" auto-complete="off"></el-input>
+    </el-form-item>
+        <el-form-item label="邮箱" prop="email" :rules="[{ required: true, message: '请输入邮箱', trigger: 'blur' }]">
+            <el-input  type="text" v-model="attr.email" placeholder="请输入学生邮箱" auto-complete="off"></el-input>
+        </el-form-item>
 	<el-form-item label="性别" prop="sex2" :rules="[{ required: true, message: '请输入性别', trigger: 'blur' }]">
 		<el-select v-model="attr.sex2" filterable placeholder="请选择">
 			<el-option
@@ -176,6 +182,8 @@ export default {
 			},
 			attr: {
 				name2: '',
+                studentNumber:'',
+                email:'',
 				sex2: '',
 				age2: '',
 				phone2: '',
@@ -257,7 +265,7 @@ export default {
 				  _this.institutes = []
 				}
 			},
-			
+
 		//获取专业列表
 		async getMajorData (){
 			let _this = this
@@ -273,9 +281,9 @@ export default {
 			 } else {
 			  _this.message(true,data.data.msg,'error')
 			  _this.majors = []
-			}			
+			}
 		},
-		
+
 		//获取班级列表
 		async getClazzData (){
 			let _this = this
@@ -291,7 +299,7 @@ export default {
 			 } else {
 			  _this.message(true,data.data.msg,'error')
 			  _this.clazzs = []
-			}			
+			}
 		},
 		// 查询性别列表
 		async getSexData () {
@@ -310,7 +318,7 @@ export default {
 				  _this.sexs = []
 				}
 			},
-		
+
 		// 添加属性表单提交
 		submitForm(formName) {
 			this.$refs[formName].validate((valid) => {
@@ -331,6 +339,8 @@ export default {
 			let _this = this
 			let params = {
 				name: _this.attr.name2,
+                studentNumber:_this.attr.studentNumber,
+                email:_this.attr.email,
 				sex: _this.attr.sex2,
 				age: _this.attr.age2,
 				phone: _this.attr.phone2,

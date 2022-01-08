@@ -68,6 +68,21 @@
                                 size="mini"
                                 @click="selDetails(scope.row.id)">详情</el-button>
                     </template>
+
+                </el-table-column>
+                <el-table-column label="邮件消息提醒">
+                    <template slot-scope="scope">
+                        <el-button
+                                size="danger"
+                                @click="setGrade(scope.row.TEmail)">导师打分</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column label="邮件消息通知">
+                    <template slot-scope="scope">
+                        <el-button
+                                size="danger"
+                                @click="fillIn (scope.row.SEmail)">学生填写信息</el-button>
+                    </template>
                 </el-table-column>
 
 
@@ -105,6 +120,9 @@
 		<el-form-item label="学生姓名" prop="name2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
 			<el-input  type="text" v-model="attr.name2" placeholder="请输入学生姓名" auto-complete="off"></el-input>
 		</el-form-item>
+        <el-form-item label="学生学号" prop="name2" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
+            <el-input  type="text" v-model="attr.studentNumber" placeholder="请输入学生学号" auto-complete="off"></el-input>
+        </el-form-item>
 		<el-form-item label="成绩" prop="credit2" :rules="[{ required: true, message: '请输入成绩', trigger: 'blur' },{validator: 'regexp', pattern: /^([1-9][0-9]{0,1}|100)$/, message: '成绩只能是1-100之间的整数', trigger: 'change,blur'}]">
 			<el-input  type="number" v-model="attr.credit2" placeholder="请输入成绩" auto-complete="off"></el-input>
 		</el-form-item>
@@ -133,6 +151,8 @@
             <div style="width:600px;margin: 0 auto">
 
 
+
+
                 <el-form ref="attr" :model="DetailEditvisbleMessage" :inline="false" label-width="170px" class="demo-ruleForm" label-position="left">
                     <el-form-item label="实习类型" prop="ccourseType" :rules="[{ required: true, message: '请选择实习类型', trigger: 'change,blur' }]">
                         <el-select v-model="DetailEditvisbleMessage.ccourseType" filterable placeholder="请选择">
@@ -147,14 +167,56 @@
                     <el-form-item label="学生姓名" prop="sname" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
                         <el-input  type="text" v-model="DetailEditvisbleMessage.sname" placeholder="请输入学生姓名" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="学生手机号" prop="studentNumber" :rules="[{ required: true, message: '请输入学生手机号', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.studentNumber" placeholder="请输入学生手机号" auto-complete="off"></el-input>
+                    <el-form-item label="学生学号" prop="studentNumber" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.studentNumber" placeholder="请输入学生学号" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="学生邮件" prop="temail" :rules="[{ required: true, message: '请输入学生邮件', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.temail" placeholder="请输入学生邮件" auto-complete="off"></el-input>
+                    <el-form-item label="学生手机号" prop="sphone" :rules="[{ required: true, message: '请输入学生手机号', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.sphone" placeholder="请输入学生手机号" auto-complete="off"></el-input>
                     </el-form-item>
+                    <el-form-item label="学生邮箱" prop="semail" :rules="[{ required: true, message: '请输入学生邮箱', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.semail" placeholder="请输入学生邮箱" auto-complete="off"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="公司名称" prop="gcompanyName">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.gcompanyName" placeholder="请输入公司名称" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="学生岗位" prop="gstudentsPost">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.gstudentsPost" placeholder="请输入学生岗位" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="公司简介" prop="gcDescribe">
+                        <el-input type="textarea" v-model="DetailEditvisbleMessage.gcDescribe" placeholder="公司简介，框可下拉放大"></el-input>
+                    </el-form-item>
+                    <el-form-item label="校外导师名称" prop="goutSupervisor">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.goutSupervisor" placeholder="请输入校外导师名称" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="校外导师岗位" prop="supervisorPost">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.supervisorPost" placeholder="请输入校外导师岗位" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="校外导师联系方式" prop="goutorPhone">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.goutorPhone" placeholder="请输入校外导师联系方式" auto-complete="off"></el-input>
+                    </el-form-item>
+
+
+                    <el-form-item label="实习时间" prop="validateTime" >
+                        <!--                        <p>组件值：{{ DetailEditvisbleMessage.validateTime }}</p>-->
+                        <el-date-picker
+                                v-model="DetailEditvisbleMessage.validateTime"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                @blur="changePackageTime"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+
+
+<!--                    <div v-if="DetailEditvisbleMessage.sid == null">-->
                     <el-form-item label="成绩" prop="score" :rules="[{ required: true, message: '请输入成绩', trigger: 'blur' },{validator: 'regexp', pattern: /^([1-9][0-9]{0,1}|100)$/, message: '成绩只能是1-100之间的整数', trigger: 'change,blur'}]">
                         <el-input  type="number" v-model="DetailEditvisbleMessage.score" placeholder="请输入成绩" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="导师评语" prop="teacherEstimate">
+                        <el-input type="textarea" v-model="DetailEditvisbleMessage.teacherEstimate" placeholder="导师评语，框可下拉放大"></el-input>
                     </el-form-item>
                     <el-form-item label="实习导师" prop="tid" :rules="[{ required: true, message: '至少选择一名实习导师', trigger: 'change,blur' }]">
                         <el-select v-model="DetailEditvisbleMessage.tid" filterable placeholder="请选择实习导师">
@@ -169,29 +231,17 @@
                     <el-form-item label="导师手机号" prop="tphone" :rules="[{ required: true, message: '请输入导师手机号', trigger: 'blur' }]">
                         <el-input  type="text" v-model="DetailEditvisbleMessage.tphone" placeholder="请输入导师手机号" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="公司名称" prop="gcompanyName">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.gcompanyName" placeholder="请输入公司名称" auto-complete="off"></el-input>
+                    <el-form-item label="导师邮箱" prop="temail" :rules="[{ required: true, message: '请输入导师邮箱', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.temail" placeholder="请输入导师邮箱" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="公司简介" prop="gcDescribe">
-                        <el-input type="textarea" v-model="DetailEditvisbleMessage.gcDescribe" placeholder="公司简介，框可下拉放大"></el-input>
-                    </el-form-item>
-                    <el-form-item label="校外导师名称" prop="goutSupervisor">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.goutSupervisor" placeholder="请输入校外导师名称" auto-complete="off"></el-input>
-                    </el-form-item>
-                    <el-form-item label="校外导师联系方式" prop="goutorPhone">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.goutorPhone" placeholder="请输入校外导师联系方式" auto-complete="off"></el-input>
-                    </el-form-item>
+<!--                    </div>-->
 
-                    <el-form-item label="实习时间" prop="">
-                        <el-date-picker
-                                v-model="value1"
-                                type="daterange"
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期">
-                        </el-date-picker>
-                    </el-form-item>
+
                 </el-form>
+
+
+
+
 
 
 
@@ -201,7 +251,7 @@
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogDetailEditvisble = false">取 消</el-button>
-                <el-button type="primary" @click="submitForm('attr')">提交</el-button>
+                <el-button type="primary" @click="submitForm1('submitBigPojo')">提交</el-button>
             </div>
         </el-dialog>
 
@@ -221,10 +271,13 @@ import http from '../../utils/http'
 export default {
 	data() {
 		return {
+            value1: '',
+
 			filters: {
 				keyword1: ''
 			},
 			attr: {
+                studentNumber:'',
 				name2: '',
 				courseType2: '',
 				credit2: '',
@@ -256,6 +309,8 @@ export default {
             dialogDetailEditvisble:false,
             DetailEditvisbleMessage: {
 			    score:'',
+                teacherEstimate:'',
+                stcId:'',
           //公司表
           gid:'', gcompanyName:'', supervisorPost:'',
           gstudentsPost:'',
@@ -290,6 +345,7 @@ export default {
           cstartStime:'',
           cendEtime:'',
           ccourseType:'',
+          validateTime:[]
             },
 
 			dialogFormVisible2: false,
@@ -332,6 +388,7 @@ export default {
 		}
 	},
 	methods: {
+
 		// 查询属性
 		async getFormData1 () {
 			let _this = this
@@ -398,6 +455,7 @@ export default {
 
 		// 添加属性表单提交
 		submitForm(formName) {
+            debugger
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
 					this.addCourse()
@@ -414,25 +472,12 @@ export default {
 		// 新增属性
 		async addCourse() {
 			let _this = this
-			let stime = _this.attr.signStime2
-			let etime = _this.attr.signEtime2
-			if(stime>etime){
-				 _this.message(true,'实习开始时间不能在实习结束时间之后','error')
-				 return
-			}
-			stime = _this.attr.examStime2
-			etime =  _this.attr.examEtime2
-			// if(stime>etime){
-			// 	 _this.message(true,'考试开始时间不能在考试结束时间之后','error')
-			// 	 return
-			// }
 			let params = {
+			    studentNumber: _this.attr.studentNumber,
 				name: _this.attr.name2,
 				courseType: _this.attr.courseType2,
-                score: _this.attr.credit2,
+                // score: _this.attr.credit2,
 				teacherIds: _this.attr.teacherIds,
-				// startStime: _this.attr.signStime2,
-				// endEtime: _this.attr.signEtime2,
 			}
 			let data = await http.post("course/add", params)
 
@@ -505,39 +550,91 @@ export default {
 		},
 
 		// 属性明细表单提交
-		submitForm1(formName) {
-			this.$refs[formName].validate((valid) => {
-				if (valid) {
-					this.addDetail()
-				} else {
-					console.log('error submit!!');
-					return false
-				}
-			})
-		},
+		// submitForm1(formName) {
+		// 	this.$refs[formName].validate((valid) => {
+		// 		if (valid) {
+		// 			this.addDetail()
+		// 		} else {
+		// 			console.log('error submit!!');
+		// 			return false
+		// 		}
+		// 	})
+		// },
 		// 添加属性明细
-		async addDetail() {
-			 let _this = this
-			 let params = {
-				 id: _this.attrId,
-				 name: _this.detail.name
-			 }
-			 let data = await http.post('SysApi/v1/addAttributeDetail', params)
+		// async addDetail() {
+		// 	 let _this = this
+		// 	 let params = {
+		// 		 id: _this.attrId,
+		// 		 name: _this.detail.name
+		// 	 }
+		// 	 let data = await http.post('SysApi/v1/addAttributeDetail', params)
+        //
+		// 	 if(!data.data) {
+		// 	 	return
+		// 	 }
+        //
+		// 	 if (data.data.status === 200) {
+ 		// 		  _this.resetForm('detail')
+        //    _this.message(true,data.data.msg,'success')
+ 		// 			_this.selDetails(this.attrId)
+ 		// 	} else {
+        //   _this.message(true,data.data.msg,'error')
+ 		// 	}
+		// },
+        //提醒导师打分
+        async setGrade(email){
+            let _this=this;
+		    console.log(email)
+            if (email == null){
+                _this.message(true,"该用户没有邮箱信息",'error')
+            }
+            else {
 
-			 if(!data.data) {
-			 	return
-			 }
+                let params = {
+                    email: email,
+                }
+                let data = await http.post('message/send', params)
 
-			 if (data.data.status === 200) {
- 				  _this.resetForm('detail')
-           _this.message(true,data.data.msg,'success')
- 					_this.selDetails(this.attrId)
- 			} else {
-          _this.message(true,data.data.msg,'error')
- 			}
-		},
-		// 实习详情明细
+                if(!data.data) {
+                    return
+                }
+                if (data.data.status === 200) {
+                    _this.message(true,data.data.msg,'success')
+                } else {
+                    _this.message(true,data.data.msg,'error')
+                }
+            }
+        },
+        //提醒学生
+        async fillIn(email){
+            let _this = this;
+		    console.log(email)
+            if (email == null){
+                _this.message(true,"该用户没有邮箱信息",'error')
+            }
+            else {
+                let params = {
+                    email: email,
+                }
+                let data = await http.post('message/send', params)
+
+                if (!data.data) {
+                    return
+                }
+                if (data.data.status === 200) {
+                    _this.message(true, data.data.msg, 'success')
+                } else {
+                    _this.message(true, data.data.msg, 'error')
+                }
+            }
+        },
+
+
+
+
+        // 实习详情明细
 		async selDetails(id) {
+		    let _this=this;
 
             this.dialogDetailEditvisble = true
             this.getCourseType()
@@ -553,16 +650,94 @@ export default {
 			}
 			//this.data ={…res.data.第一个对象名,…res.data.第二个对象名}
 			if (data.data.status === 200) {
-				 this.DetailEditvisbleMessage = data.data.data
-                console.log(data.data.data)
+			    let _data = data.data.data
+				 this.DetailEditvisbleMessage = _data
+                // let dateArray = new Array();
+                // dateArray.push( data.data.data.cstartStime, data.data.data.cendEtime)
+                // this.DetailEditvisbleMessage.validateTime = dateArray
+               this.$set(this.DetailEditvisbleMessage,"validateTime",[""+_data.cstartStime+"",""+_data.cendEtime+""])
+
 			} else {
 				_this.message(true,data.data.msg,'error')
 			}
 		},
-        //编辑按钮
-        editOne(id){
-		    console.log(id)
+        //编辑提交按钮
+        submitForm1(formName){
+            console.log(formName)
+            console.log(this.DetailEditvisbleMessage)
+            //表单验证，后期优化
+            // this.$refs[formName].validate((valid) => {
+            //     if (valid) {
+            //         alert('submit!');
+            //     } else {
+            //         console.log('error submit!!');
+            //         return false;
+            //     }
+            // });
+            this.editBigPojo()
         },
+        async editBigPojo(){
+            let _this=this;
+         // let data2 =   JSON.stringify(this.DetailEditvisbleMessage)
+            let params = {
+                score:this.DetailEditvisbleMessage.score,
+                teacherEstimate:this.DetailEditvisbleMessage.teacherEstimate,
+                stcId:this.DetailEditvisbleMessage.stcId,
+                //公司表
+                gid:this.DetailEditvisbleMessage.gid,
+                gcompanyName:this.DetailEditvisbleMessage.gcompanyName,
+                supervisorPost:this.DetailEditvisbleMessage.supervisorPost,
+                gstudentsPost:this.DetailEditvisbleMessage.gstudentsPost,
+                goutSupervisor:this.DetailEditvisbleMessage.goutSupervisor,
+                goutorPhone:this.DetailEditvisbleMessage.goutorPhone,
+                gstudnetId:this.DetailEditvisbleMessage.gstudnetId,
+                gcDescribe:this.DetailEditvisbleMessage.gcDescribe,
+                //老师表
+                tid:this.DetailEditvisbleMessage.tid,
+                tname:this.DetailEditvisbleMessage.tname,
+                tsex:this.DetailEditvisbleMessage.tsex,
+                tage:this.DetailEditvisbleMessage.tage,
+                ttitle:this.DetailEditvisbleMessage.ttitle,
+                temail:this.DetailEditvisbleMessage.temail,
+                tphotoUrl:this.DetailEditvisbleMessage.tphotoUrl,
+                tphone:this.DetailEditvisbleMessage.tphone,
+                //学生表
+                sid:this.DetailEditvisbleMessage.sid,
+                studentNumber:this.DetailEditvisbleMessage.studentNumber,
+                sname:this.DetailEditvisbleMessage.sname,
+                ssex:this.DetailEditvisbleMessage.ssex,
+                sage:this.DetailEditvisbleMessage.sage,
+                sphone:this.DetailEditvisbleMessage.sphone,
+                semail:this.DetailEditvisbleMessage.semail,
+                sphotoUrl:this.DetailEditvisbleMessage.sphotoUrl,
+                sclazzId:this.DetailEditvisbleMessage.sclazzId,
+                smajorId:this.DetailEditvisbleMessage.smajorId,
+                sinstituteId:this.DetailEditvisbleMessage.sinstituteId,
+                //实习表
+                cid:this.DetailEditvisbleMessage.cid,
+                courseId:this.DetailEditvisbleMessage.cid,
+                cname:this.DetailEditvisbleMessage.cname,
+                // cstartStime:this.DetailEditvisbleMessage.cstartStime,
+                // cendEtime:this.DetailEditvisbleMessage.cendEtime,
+                ccourseType:this.DetailEditvisbleMessage.ccourseType,
+                validateTime:this.DetailEditvisbleMessage.validateTime
+            }
+            let data = await http.post("course/editBigPojo",params )
+
+            if(!data.data) {
+                return
+            }
+
+            if (data.data.status === 200) {
+                _this.resetForm('attr')
+                _this.dialogFormVisible1=false
+                _this.message(true,data.data.msg,'success')
+                _this.getFormData1()
+            } else {
+                _this.message(true,data.data.msg,'error')
+            }
+        },
+
 
 
 		// 删除属性明细

@@ -90,7 +90,7 @@
 	<el-dialog title="新增老师" :visible.sync="dialogFormVisible1">
 	<div style="width:60%;margin: 0 auto">
 	<el-form ref="attr" :model="attr" :inline="false" label-width="90px" class="demo-ruleForm">
-		
+
 <!-- 	<el-form-item label="所属学院" prop="instituteId2" :rules="[{ required: true, message: '请输入学院', trigger: 'blur' }]">
 		<el-select v-model="attr.instituteId2" filterable placeholder="请选择" @change="getMajorData">
 			<el-option
@@ -100,7 +100,7 @@
 				:value="item.id">
 			</el-option>
 	   </el-select>
-	</el-form-item>	
+	</el-form-item>
 	<el-form-item label="所属专业" prop="majorId2" :rules="[{ required: true, message: '请输入专业', trigger: 'blur' }]">
 		<el-select v-model="attr.majorId2" filterable placeholder="请选择" @change="getClazzData">
 			<el-option
@@ -110,7 +110,7 @@
 				:value="item.id">
 			</el-option>
 	   </el-select>
-	</el-form-item>	
+	</el-form-item>
 	<el-form-item label="所属班级" prop="clazzId2" :rules="[{ required: true, message: '请输入班级', trigger: 'blur' }]">
 		<el-select v-model="attr.clazzId2" filterable placeholder="请选择">
 			<el-option
@@ -121,8 +121,8 @@
 			</el-option>
 	   </el-select>
 	</el-form-item>	 -->
-	<el-form-item label="姓名" prop="name2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
-		<el-input  type="text" v-model="attr.name2" placeholder="请输入学生姓名" auto-complete="off"></el-input>
+	<el-form-item label="姓名" prop="name2" :rules="[{ required: true, message: '请输入老师姓名', trigger: 'blur' }]">
+		<el-input  type="text" v-model="attr.name2" placeholder="请输入老师姓名" auto-complete="off"></el-input>
 	</el-form-item>
 	<el-form-item label="性别" prop="sex2" :rules="[{ required: true, message: '请选择性别', trigger: 'blur' }]">
 		<el-select v-model="attr.sex2" filterable placeholder="请选择">
@@ -134,12 +134,15 @@
 			</el-option>
 	   </el-select>
 	</el-form-item>
-	<el-form-item label="年龄" prop="age2" :rules="[{ required: true, message: '请输入学生年龄', trigger: 'blur' },{validator: 'regexp', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|120)$/, message: '年龄只能是0-120之间的整数', trigger: 'change,blur'}]">
-		<el-input  type="number" v-model="attr.age2" placeholder="请输入学生年龄" auto-complete="off"></el-input>
+	<el-form-item label="年龄" prop="age2" :rules="[{ required: true, message: '请输入老师年龄', trigger: 'blur' },{validator: 'regexp', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|120)$/, message: '年龄只能是0-120之间的整数', trigger: 'change,blur'}]">
+		<el-input  type="number" v-model="attr.age2" placeholder="请输入老师年龄" auto-complete="off"></el-input>
 	</el-form-item>
-	<el-form-item label="联系电话" prop="phone2" :rules="[{ required: true, message: '请输入学生联系电话', trigger: 'blur' },{validator: 'regexp', pattern: /^[1][3,4,5,7,8,9][0-9]{9}$/, message: '手机号码不正确', trigger: 'change,blur'}]">
-		<el-input  type="text" v-model="attr.phone2" placeholder="请输入学生联系电话" auto-complete="off"></el-input>
+	<el-form-item label="联系电话" prop="phone2" :rules="[{ required: true, message: '请输入老师联系电话', trigger: 'blur' },{validator: 'regexp', pattern: /^[1][3,4,5,7,8,9][0-9]{9}$/, message: '手机号码不正确', trigger: 'change,blur'}]">
+		<el-input  type="text" v-model="attr.phone2" placeholder="请输入老师联系电话" auto-complete="off"></el-input>
 	</el-form-item>
+        <el-form-item label="老师邮箱" prop="email" :rules="[{ required: true, message: '请输入老师邮箱', trigger: 'blur' }]">
+            <el-input  type="text" v-model="attr.email" placeholder="请输入老师邮箱" auto-complete="off"></el-input>
+        </el-form-item>
 	<el-form-item label="职称" prop="title2" :rules="[{ required: true, message: '请选择职称', trigger: 'blur' }]">
 		<el-select v-model="attr.title2" filterable placeholder="请选择">
 			<el-option
@@ -149,7 +152,7 @@
 				:value="item.dictCode">
 			</el-option>
 	   </el-select>
-	</el-form-item>	
+	</el-form-item>
 	</el-form>
  </div>
 	<div slot="footer" class="dialog-footer">
@@ -207,6 +210,7 @@ export default {
 				keyword1: ''
 			},
 			attr: {
+                email:'',
 				name2: '',
 				sex2: '',
 				age2: '',
@@ -289,7 +293,7 @@ export default {
 				  _this.institutes = []
 				}
 			},
-			
+
 		//获取专业列表
 		async getMajorData (){
 			let _this = this
@@ -305,9 +309,9 @@ export default {
 			 } else {
 			  _this.message(true,data.data.msg,'error')
 			  _this.majors = []
-			}			
+			}
 		},
-		
+
 		//获取班级列表
 		async getClazzData (){
 			let _this = this
@@ -323,7 +327,7 @@ export default {
 			 } else {
 			  _this.message(true,data.data.msg,'error')
 			  _this.clazzs = []
-			}			
+			}
 		},
 		// 查询性别列表
 		async getSexData () {
@@ -358,7 +362,7 @@ export default {
 				  _this.message(true,data.data.msg,'error')
 				  _this.titles = []
 				}
-			},		
+			},
 		// 添加属性表单提交
 		submitForm(formName) {
 			this.$refs[formName].validate((valid) => {
@@ -378,6 +382,7 @@ export default {
 		async addInstitute() {
 			let _this = this
 			let params = {
+			    email: _this.attr.email,
 				name: _this.attr.name2,
 				sex: _this.attr.sex2,
 				age: _this.attr.age2,
