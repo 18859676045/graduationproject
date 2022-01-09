@@ -16,6 +16,18 @@
 				<el-form-item>
 					<el-button type="danger" class="el-icon-delete" @click="delAttr">删除</el-button>
 				</el-form-item>
+                <el-upload class="upload-demo"
+                           :action="uploadUrl2"
+                           :before-upload="handleBeforeUpload2"
+                           :on-error="handleUploadError"
+                           :before-remove="beforeRemove"
+                           multiple
+                           :limit="1"
+                           :on-exceed="handleExceed"
+                           accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                           :file-list="fileList">
+                    <el-button size="small" type="primary">批量导入用户</el-button>
+                </el-upload>
 			</el-form>
 		</el-col>
 
@@ -28,6 +40,10 @@
         prop="id"
         label="id">
       </el-table-column> -->
+                <el-table-column
+                        prop="studentNumber"
+                        label="学生学号" sortable>
+                </el-table-column>
 	  <el-table-column
 	    prop="name"
 	    label="学生姓名" sortable>
@@ -46,7 +62,7 @@
 	  </el-table-column>
 	  <el-table-column
 	    prop="phone"
-	    label="联系方式" sortable>
+	    label="学生联系方式" sortable>
 	  </el-table-column>
 <!--                <template slot-scope="scope">-->
 <!--                    <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>-->
@@ -164,6 +180,7 @@
                             </el-option>
                         </el-select>
                     </el-form-item>
+
                     <el-form-item label="学生姓名" prop="sname" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
                         <el-input  type="text" v-model="DetailEditvisbleMessage.sname" placeholder="请输入学生姓名" auto-complete="off"></el-input>
                     </el-form-item>
@@ -267,12 +284,19 @@
 
 <script>
 import http from '../../utils/http'
+import axios from "_axios@0.16.2@axios";
 
 export default {
 	data() {
 		return {
-            value1: '',
+		    //上传组件
+            isAutoUpload: true,
+            uploadUrl: 'http://localhost:8089/file/upload',
+            uploadUrl2: 'http://localhost:8089/user/import',
+            fileList: [],
 
+
+            value1: '',
 			filters: {
 				keyword1: ''
 			},
@@ -389,6 +413,68 @@ export default {
 	},
 	methods: {
 
+	    //导入
+        handleBeforeUpload2(file){
+            debugger
+            this.fileTemp = file
+            let fileName = file.name
+            let fileType = fileName.substring(fileName.lastIndexOf('.') + 1);
+
+            // 判断上传文件格式
+            if (this.fileTemp) {
+                if ((fileType != 'xlsx') && (fileType != 'xls')) {
+                    this.$message({
+                        type: 'warning',
+                        message: '附件格式错误，请删除后重新上传！'
+                    })
+                    return;
+                }
+            } else {
+                this.$message({
+                    type: 'warning',
+                    message: '请上传附件！'
+                })
+                return;
+            }
+
+            this.uploadUrl = 'http://localhost:8089/user/import'
+            console.log("开始上传，上传的文件为："+file)
+            let formData = new FormData();
+            formData.append("multipartFiles", file);
+            axios({
+                method: 'post',
+                url: 'http://localhost:8089/user/import',
+                data: formData,
+                headers: {'Content-Type': 'multipart/form-data' }
+            }).then((res) => {
+                console.log("文件上传返回："+res)
+            }).catch(error => {
+                console.log("文件上传异常:"+error)
+            })
+
+            // this.uploadUrl ='http://localhost:8089/file/upload'
+        },
+        //上传异常提醒
+        handleUploadError(error, file) {
+            console.log("文件上传出错："+error)
+            this.$notify.error({
+                     title: 'error',
+                     message: '上传出错:' +  error,
+                     type: 'error',
+                     position: 'bottom-right'
+                   })
+        },
+        //移除
+        beforeRemove(file, fileList) {
+            return this.$confirm(`确定移除 ${ file.name }？`);
+        },
+        //限制上传数量
+        handleExceed(files, fileList) {//当前限制选择 5 个文件，本次选择了 1 个文件，共选择了 2 个文件
+            this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        },
+
+
+
 		// 查询属性
 		async getFormData1 () {
 			let _this = this
@@ -455,7 +541,6 @@ export default {
 
 		// 添加属性表单提交
 		submitForm(formName) {
-            debugger
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
 					this.addCourse()
@@ -476,7 +561,7 @@ export default {
 			    studentNumber: _this.attr.studentNumber,
 				name: _this.attr.name2,
 				courseType: _this.attr.courseType2,
-                // score: _this.attr.credit2,
+                score: _this.attr.credit2,
 				teacherIds: _this.attr.teacherIds,
 			}
 			let data = await http.post("course/add", params)
@@ -549,38 +634,6 @@ export default {
 			this.getFormData1()
 		},
 
-		// 属性明细表单提交
-		// submitForm1(formName) {
-		// 	this.$refs[formName].validate((valid) => {
-		// 		if (valid) {
-		// 			this.addDetail()
-		// 		} else {
-		// 			console.log('error submit!!');
-		// 			return false
-		// 		}
-		// 	})
-		// },
-		// 添加属性明细
-		// async addDetail() {
-		// 	 let _this = this
-		// 	 let params = {
-		// 		 id: _this.attrId,
-		// 		 name: _this.detail.name
-		// 	 }
-		// 	 let data = await http.post('SysApi/v1/addAttributeDetail', params)
-        //
-		// 	 if(!data.data) {
-		// 	 	return
-		// 	 }
-        //
-		// 	 if (data.data.status === 200) {
- 		// 		  _this.resetForm('detail')
-        //    _this.message(true,data.data.msg,'success')
- 		// 			_this.selDetails(this.attrId)
- 		// 	} else {
-        //   _this.message(true,data.data.msg,'error')
- 		// 	}
-		// },
         //提醒导师打分
         async setGrade(email){
             let _this=this;
@@ -628,9 +681,6 @@ export default {
                 }
             }
         },
-
-
-
 
         // 实习详情明细
 		async selDetails(id) {
@@ -738,32 +788,6 @@ export default {
             }
         },
 
-
-
-		// 删除属性明细
-		async delDetails() {
-      let _this = this
-			if (_this.detailIds.length === 0) {
-				 this.message(true,'请选择需要删除的属性明细','warning')
-				 return
-			}
-
-			let params = {
-				ids: _this.detailIds
-			}
-			let data =await http.post('SysApi/v1/delAttributeDetails', params)
-
-			if(!data.data) {
-				return
-			}
-
-			if (data.data.status === 200) {
-				 _this.message(true,data.data.msg,'success')
-			} else {
-				 _this.message(true,data.data.msg,'error')
-			}
-			_this.selDetails(this.attrId)
-		},
 		// 获取选中集
 		handleSelectionChange2(val) {
 			this.detailIds = []
@@ -793,6 +817,10 @@ export default {
 				type: type
 			})
 		}
+
+
+
+
 	},
 	mounted() {
 		this.getFormData1()

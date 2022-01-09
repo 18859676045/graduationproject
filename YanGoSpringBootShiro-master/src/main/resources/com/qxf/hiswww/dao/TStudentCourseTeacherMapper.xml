@@ -274,6 +274,7 @@
       </if>
     </trim>
   </insert>
+
   <select id="countByExample" parameterType="com.qxf.hiswww.domain.TStudentCourseTeacherExample" resultType="java.lang.Long">
     <!--
       WARNING - @mbg.generated

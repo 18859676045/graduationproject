@@ -355,4 +355,50 @@
     </if>
     limit 1
   </select>
+
+
+
+  <insert id="myWriteinsertSelective" parameterType="com.qxf.hiswww.domain.TCourse">
+
+    insert into t_course
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        id,
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="startStime != null">
+        start_stime,
+      </if>
+      <if test="endEtime != null">
+        end_etime,
+      </if>
+      <if test="courseType != null">
+        course_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{id,jdbcType=VARCHAR},
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startStime != null">
+        #{startStime,jdbcType=DATE},
+      </if>
+      <if test="endEtime != null">
+        #{endEtime,jdbcType=DATE},
+      </if>
+      <if test="courseType != null">
+        #{courseType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="myWriteSelectByStratEndType" parameterType="map" resultMap="BaseResultMap">
+    select
+    *
+    from t_course  where START_stime =  #{startStime},
+    and  #{endEtime} and  #{courseType};
+  </select>
+
+
 </mapper>

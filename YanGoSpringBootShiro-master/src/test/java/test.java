@@ -1,6 +1,8 @@
 import com.baomidou.mybatisplus.plugins.Page;
 import com.qxf.BootShiroVueStu;
+import com.qxf.hiswww.dao.TCourseMapper;
 import com.qxf.hiswww.dao.TRolePermsMapper;
+import com.qxf.hiswww.domain.TCourse;
 import com.qxf.hiswww.domain.TRolePerms;
 import com.qxf.mapper.CourseMapper;
 import com.qxf.mapper.RoleMapper;
@@ -25,44 +27,13 @@ import java.util.List;
 @SpringBootTest(classes = {BootShiroVueStu.class})
 @RunWith(SpringRunner.class)
 public class test {
-    @Autowired
-    RolePermsService rolePermsService;
 
-    @Test
-    public void  rolePerms(){
-        List<RolePerms> list = rolePermsService.findRolesPermisByRole("1");
-        String[] arr = new String[list.size()];
-        for (int i = 0,j=list.size(); i < j; i++) {
-            arr[i] = list.get(i).getPermsId();
-            System.out.println(arr[i]);
-        }
-        System.out.println(1);
-
-    }
     @Autowired
-    RoleMapper roleMapper;
-    @Test
-    public void findRoleById(){
-        Role byId = roleMapper.findById(1);
-        System.out.println(byId);
-
-    }
-    @Autowired
-    TRolePermsMapper rolePermsMapper;
-    @Test
-    public void findPermisByRoleId(){
-        List<TRolePerms> tRolePerms = rolePermsMapper.selectByRoleId("2");
-        System.out.println(tRolePerms);
-
-    }
-    @Autowired
-    CourseMapper courseMapper;
-    @Autowired
-    CourseServiceImpl courseService;
+    TCourseMapper tcourseMapper;
     @Test
     public void Coursefind(){
-
-
+        List<TCourse> tCourses = tcourseMapper.myWriteSelectByStratEndType("2019-11-12", "2019-11-30", "02");
+        System.out.println(tCourses);
     }
 
 

@@ -91,6 +91,7 @@ public class ExcelUtil {
         List<String[]> list = new ArrayList<String[]>();
         if(workbook != null){
             for(int sheetNum = 0;sheetNum < workbook.getNumberOfSheets();sheetNum++){
+                String sheetName = workbook.getSheetName(sheetNum);
                 //获得当前sheet工作表
                 org.apache.poi.ss.usermodel.Sheet sheet = workbook.getSheetAt(sheetNum);
                 if(sheet == null){

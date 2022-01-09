@@ -55,6 +55,8 @@
         <sqlMapGenerator targetPackage="com.qxf.hiswww.dao" targetProject="src/main/resources"/>
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.qxf.hiswww.dao"
                              targetProject="src/main/java"/>
+
+<!--        //t_courses表-->
         <!--表名-->
         <table tableName="t_company">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>

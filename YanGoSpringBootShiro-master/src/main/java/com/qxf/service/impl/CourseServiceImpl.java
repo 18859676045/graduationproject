@@ -258,7 +258,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         TCourseExample tCourseExample = new TCourseExample();
         LocalDate date1 = this.strConvertL(shiXiBigPojo.getValidateTime()[0].substring(0, 10));
         LocalDate date2 = this.strConvertL(shiXiBigPojo.getValidateTime()[1].substring(0, 10));
-        tCourseExample.or().andCourseTypeEqualTo(shiXiBigPojo.getCcourseType())
+        String ccourseType = shiXiBigPojo.getCcourseType();
+        tCourseExample.or().andCourseTypeEqualTo(ccourseType)
                 .andStartStimeEqualTo(date1).
                 andEndEtimeEqualTo(date2);
         TCourse tCourse = tCourseMapper.selectOneByExample(tCourseExample);
@@ -271,7 +272,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
                 course.setEndEtime(date2);
                 course.setName(shiXiBigPojo.getCname());
                 course.setCourseType(shiXiBigPojo.getCcourseType());
-                tCourseMapper.insertSelective(course);
+                tCourseMapper.myWriteinsertSelective(course);
+            courseId = course.getId();
         }else {
             courseId = tCourse.getId();
         }
@@ -310,7 +312,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
             tCompany.setStudentsPost(shiXiBigPojo.getGstudentsPost());
             tCompany.setcDescribe(shiXiBigPojo.getGcDescribe());
             tCompany.setOutSupervisor(shiXiBigPojo.getGoutSupervisor());
-            tCompany.setSupervisorPost(shiXiBigPojo.getGoutSupervisor());
+            tCompany.setSupervisorPost(shiXiBigPojo.getGstudentsPost());
             tCompany.setOutorPhone(shiXiBigPojo.getGoutorPhone());
             tCompany.setStudnetId(tStudent.getId());
             tCompany.setCourseId(courseId);
@@ -327,10 +329,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     }
 
     //字符串转换localdate
+//    public static LocalDate strConvertL(String dateStr) {
+//        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//        LocalDate parse = LocalDate.parse(dateStr, fmt);
+//        return parse;
+//    }
     public static LocalDate strConvertL(String dateStr) {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate parse = LocalDate.parse(dateStr, fmt);
-        return parse;
+        return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
     //localdate转换字符串
     public static String lformattedStr(LocalDate date) {

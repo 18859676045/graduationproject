@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 @RequestMapping("/file")
 public class FileController {
 
-    private  final static String rootPath = "D:/attachment/";
+    private  final static String rootPath = "D:/YanGoMaterialsSystem/";
     @RequestMapping("/upload")
     public Object uploadFile(MultipartFile[] multipartFiles){
         File fileDir = new File(rootPath);

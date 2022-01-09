@@ -282,7 +282,7 @@
 			    },
 				//导入
 				handleBeforeUpload2(file){
-					debugger
+
 					this.fileTemp = file
 					let fileName = file.name
 					let fileType = fileName.substring(fileName.lastIndexOf('.') + 1);
