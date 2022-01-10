@@ -79,9 +79,9 @@ public class ShiXiBigPojo {
 
     private String cname;
 
-//    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate cstartStime;
-//    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate cendEtime;
 
     private String ccourseType;

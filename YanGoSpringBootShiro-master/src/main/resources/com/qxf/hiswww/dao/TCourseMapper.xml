@@ -356,7 +356,12 @@
     limit 1
   </select>
 
-
+  <select id="myWriteSelectByStratEndType" parameterType="String" resultType="com.qxf.pojo.Course">
+    select
+      *
+    from t_course  where start_stime =  #{startStime}
+  and  end_etime = #{endEtime}  and course_type = #{courseType};
+  </select>
 
   <insert id="myWriteinsertSelective" parameterType="com.qxf.hiswww.domain.TCourse">
 
@@ -393,12 +398,7 @@
     </trim>
   </insert>
 
-  <select id="myWriteSelectByStratEndType" parameterType="map" resultMap="BaseResultMap">
-    select
-    *
-    from t_course  where START_stime =  #{startStime},
-    and  #{endEtime} and  #{courseType};
-  </select>
+
 
 
 </mapper>

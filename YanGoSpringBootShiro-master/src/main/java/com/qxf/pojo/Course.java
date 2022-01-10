@@ -18,7 +18,7 @@ public class Course implements Serializable{
     private String id;
     private String name;         //课程名
     @TableField("course_type")
-    private Integer courseType;  //课程类型
+    private String courseType;  //课程类型
     @TableField("start_time")
     private String startTime;
     @TableField("end_time")

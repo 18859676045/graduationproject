@@ -3,6 +3,8 @@ package com.qxf.service.impl;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.qxf.exception.MyException;
+import com.qxf.hiswww.dao.TTeacherMapper;
+import com.qxf.hiswww.domain.TTeacher;
 import com.qxf.mapper.TeacherMapper;
 import com.qxf.pojo.Teacher;
 import com.qxf.pojo.User;
@@ -81,5 +83,12 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper,Teacher> imple
     @Override
     public List<Teacher> findAllTeacher() {
         return super.baseMapper.findAllTeacher();
+    }
+
+    @Autowired
+    TTeacherMapper tTeacherMapper;
+    @Override
+    public TTeacher findOneMessage(String id) {
+        return tTeacherMapper.selectByPrimaryKey(id);
     }
 }

@@ -12,6 +12,7 @@ import java.io.IOException;
 public class FastDFSUploadUtils {
 
     public static void main(String[] args) {
+//        fileUpload("C:\\Users\\Administrator\\Desktop\\新建文件夹\\17级及19专升本毕业实习材料","excel")
     }
 
     private static TrackerServer trackerServer = null;

@@ -17,12 +17,10 @@ import ClazzList from './views/clazz/ClazzList.vue'
 import StudentList from './views/student/StudentList.vue'
 import TeacherList from './views/teacher/TeacherList.vue'
 import CourseList from './views/course/CourseList.vue'
-import MyCourseList from './views/mycourse/MyCourseList.vue'
+import AccountCenter from './views/account/AccountCenter.vue'
 import CourseCenter from './views/coursecenter/CourseCenter.vue'
 import GradeCenter from './views/grade/GradeCenter.vue'
-import myExam from './views/exam/myExam.vue'
-import examDetail from './views/exam/examDetail.vue'
-import answer from './views/exam/answer.vue'
+
 import paperManager from './views/exam/paperManager.vue'
 import questionManager from './views/exam/questionManager.vue'
 
@@ -140,19 +138,11 @@ let router = [
 	    name: '个人中心',
 	    iconCls: 'icon iconfont icon-dic-manager',
 	    children: [
-	        { path: '/course/mycourse', component: MyCourseList, name: '我的课程' },
-			{ path: '/exam', component: myExam, name: '我的考试' },
-			{ path: '/examDetail', component: examDetail, name: '考试详情' },
-			{ path: '/answer', component: answer, name: '考试答题' }
-	    ]
-	},
-	{
-	    path: '/',
-	    component: Home,
-	    name: '个人中心',
-	    iconCls: 'icon iconfont icon-dic-manager',
-	    children: [
-	        { path: '/course/center', component: CourseCenter, name: '课程中心' },
+	        { path: '/account/center', component: AccountCenter, name: '个人信息' },
+			{ path: '/account/security', component: CourseCenter, name: '密码管理' },
+			{ path: '/grade/center', component: CourseCenter, name: '成绩统计' },
+			{ path: '/course/mycourse', component: CourseCenter, name: '我的实习' },
+			{ path: '/grade/mygrade', component: CourseCenter, name: '我的成绩' }
 	    ]
 	},
 	{

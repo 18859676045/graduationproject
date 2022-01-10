@@ -21,7 +21,8 @@ public class User implements Serializable{
     private String password;    //密码
     private String email;       //邮箱
     @TableField("photo_url")
-    private String photoUrl;    //头像地址
+    private String photoUrl;//头像地址
+    private String name;
     private Integer enable;     //是否可用
     @TableField("create_time")
     private Date createTime;    //创建时间

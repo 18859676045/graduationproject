@@ -125,6 +125,24 @@
 				<el-form-item label="邮箱" prop="email">
 					<el-input type="text" placeholder="用户邮箱" auto-complete="off" v-model="userform.email"></el-input>
 				</el-form-item>
+                <el-form-item label="手机号" prop="phone">
+                    <el-input type="text" placeholder="用户手机号" auto-complete="off" v-model="userform.phone"></el-input>
+                </el-form-item>
+
+                <el-form-item label="性别" prop="sex" :rules="[{ required: true, message: '请输入性别', trigger: 'blur' }]">
+                    <el-select v-model="userform.sex" filterable placeholder="请选择">
+                        <el-option
+                                v-for="item in sexs"
+                                :key="item.dictCode"
+                                :label="item.dictValue"
+                                :value="item.dictCode">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="年龄" prop="age" :rules="[{ required: true, message: '请输入学生年龄', trigger: 'blur' },{validator: 'regexp', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|120)$/, message: '年龄只能是0-120之间的整数', trigger: 'change,blur'}]">
+                    <el-input  type="number" v-model="attr.age" placeholder="请输入学生年龄" auto-complete="off"></el-input>
+                </el-form-item>
+
 			</el-form>
 		</div>
 		<div slot="footer" class="dialog-footer">
@@ -142,6 +160,18 @@
 	export default {
 		data() {
 			return {
+                attr: {
+                    name2: '',
+                    studentNumber:'',
+                    email:'',
+                    sex2: '',
+                    age2: '',
+                    phone2: '',
+                    clazzId2: '',
+                    majorId2: '',
+                    instituteId: ''
+                },
+                sexs:[],
 				user: JSON.parse(sessionStorage.getItem('user')),
 				userPerms: JSON.parse(sessionStorage.getItem('user')).userPerms,
 				sysName: '阳光学院实习材料管理系统',
@@ -154,6 +184,9 @@
 					photoUrl: '',
 					name: '',
 					email: '',
+                    phone:'',
+                    sex:'',
+                    age:''
 				},
 				// 表单验证
 				rules: {
@@ -217,6 +250,7 @@
 			},
 			// 个人中心信息
 			personalCenter() {
+			    this.getSexData()
 				let _this = this
 				_this.dialogVisible = true
 				var user =  _this.user
@@ -224,8 +258,28 @@
 					_this.userform.photoUrl = _this.imgService + user.photoUrl,
 					_this.userform.name = user.username,
 					_this.userform.email = user.email
+                    // _this.userform.phone = user.phone
+                    // _this.userform.age = user.age
+                    // _this.userform.sex = user.sex
 				}
 			},
+            // 查询性别列表
+            async getSexData () {
+                let _this = this
+                let param = {
+                    dictTypeCode: 'SEX'
+                }
+                let data = await http.get('dict/findListByDictTypeCode',param)
+                if(!data.data) {
+                    return
+                }
+                if (data.data.status === 200) {
+                    _this.sexs = data.data.data
+                } else {
+                    _this.message(true,data.data.msg,'error')
+                    _this.sexs = []
+                }
+            },
 			// 编辑个人信息
 			async editUserInfo() {
 				let _this = this
@@ -233,7 +287,10 @@
 					 id: _this.user.id,
 				   username: _this.userform.name,
 					 email: _this.userform.email,
-					 photoUrl: _this.uploadImg == ''?_this.user.userImg:_this.uploadImg
+					 photoUrl: _this.uploadImg == ''?_this.user.userImg:_this.uploadImg,
+                    // phone:_this.userform.phone,
+                    //     age:_this.userform.age ,
+                    //         sex:  _this.userform.sex
 				}
 				let data = await http.post('user/update', params)
 				if(data.data.status === 200) {
@@ -284,6 +341,7 @@
 		},
 		mounted() {
       this.initUserInfo()
+
 		}
 	}
 

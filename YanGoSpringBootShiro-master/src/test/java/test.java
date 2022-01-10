@@ -32,8 +32,12 @@ public class test {
     TCourseMapper tcourseMapper;
     @Test
     public void Coursefind(){
-        List<TCourse> tCourses = tcourseMapper.myWriteSelectByStratEndType("2019-11-12", "2019-11-30", "02");
-        System.out.println(tCourses);
+//        TCourse tCourses = tcourseMapper.myWriteSelectByStratEndType("2019-11-12", "2019-11-30", "02");
+//        System.out.println(tCourses);
+//        TCourse course = tcourseMapper.selectByPrimaryKey("1ddaaaf574fd44f99f12a56491da3605");
+//        TCourse tCourse = new TCourse();
+
+
     }
 
 

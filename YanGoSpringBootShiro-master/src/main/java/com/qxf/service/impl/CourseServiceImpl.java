@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Driver;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -241,7 +242,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     }
     @Autowired
     TSysDictMapper tSysDictMapper;
-
+    @Autowired
+    WCompanyMapper wCompanyMapper;
+    @Autowired
+    WCourseMapper wCourseMapper;
 
     //修改实习信息
     @Transactional
@@ -254,26 +258,33 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
             return ResultUtil.result(EnumCode.NO_STUDENT.getValue(), "添加失败", null);
         }
         //根据实习类型,实习的开始和结束的时间判断是否有这个实习，
-        //如果没有这个实习课程则新增，有的话就直接获取主键
-        TCourseExample tCourseExample = new TCourseExample();
-        LocalDate date1 = this.strConvertL(shiXiBigPojo.getValidateTime()[0].substring(0, 10));
-        LocalDate date2 = this.strConvertL(shiXiBigPojo.getValidateTime()[1].substring(0, 10));
-        String ccourseType = shiXiBigPojo.getCcourseType();
-        tCourseExample.or().andCourseTypeEqualTo(ccourseType)
-                .andStartStimeEqualTo(date1).
-                andEndEtimeEqualTo(date2);
-        TCourse tCourse = tCourseMapper.selectOneByExample(tCourseExample);
+        //如果没有这个实习课程则新增，有的话就直接获取主键(有bug)
+//        TCourseExample tCourseExample = new TCourseExample();
+//        LocalDate date1 = this.strConvertL(shiXiBigPojo.getValidateTime()[0]);
+//        LocalDate date2 = this.strConvertL(shiXiBigPojo.getValidateTime()[1]);
+//        String ccourseType = shiXiBigPojo.getCcourseType();
+//        tCourseExample.or().andCourseTypeEqualTo(ccourseType)
+//                .andStartStimeEqualTo(date1).
+//                andEndEtimeEqualTo(date2);
+        String date1 = shiXiBigPojo.getValidateTime()[0];
+        String date2 = shiXiBigPojo.getValidateTime()[1];
+        Course tCourse = tCourseMapper.myWriteSelectByStratEndType(date1,date2,shiXiBigPojo.getCcourseType());
+
+
         String courseId = null;
         //当为空时，新增一个实习课程course类
         if(StringUtils.isEmpty(tCourse)){
-                TCourse course = new TCourse();
+                WCourse course = new WCourse();
                 course.setId(UUID.randomUUID().toString().replace("-",""));
+                //截取年月日，其他时分秒不截取
+//                Date d1 = this.strConvertD(date1);
+//                Date d2 = this.strConvertD(date2);
                 course.setStartStime(date1);
                 course.setEndEtime(date2);
                 course.setName(shiXiBigPojo.getCname());
                 course.setCourseType(shiXiBigPojo.getCcourseType());
-                tCourseMapper.myWriteinsertSelective(course);
-            courseId = course.getId();
+                wCourseMapper.insert(course);
+                courseId = course.getId();
         }else {
             courseId = tCourse.getId();
         }
@@ -295,7 +306,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         TCompany tCompany = tCompanyMapper.selectByPrimaryKey(companyId);
         //公司没信息则新插入
         if (StringUtils.isEmpty(tCompany)) {
-            TCompany company = new TCompany();
+            WCompany company = new WCompany();
             company.setId(UUID.randomUUID().toString().replace("-",""));
             company.setCompanyName(shiXiBigPojo.getGcompanyName());
             company.setStudentsPost(shiXiBigPojo.getGstudentsPost());
@@ -305,7 +316,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
             company.setOutorPhone(shiXiBigPojo.getGoutorPhone());
             company.setStudnetId(tStudent.getId());
             company.setCourseId(courseId);
-            tCompanyMapper.insertSelective(company);
+            wCompanyMapper.insertSelective(company);
         } else {
             //有信息则根据主键修改
             tCompany.setCompanyName(shiXiBigPojo.getGcompanyName());
@@ -318,9 +329,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
             tCompany.setCourseId(courseId);
             tCompanyMapper.updateByPrimaryKeySelective(tCompany);
         }
-        //老师表
-        TTeacher tTeacher= new TTeacher();
-        tTeacher.setName(shiXiBigPojo.getTname());
+        //修改老师表
+        TTeacher tTeacher = tTeacherMapper.selectByPrimaryKey(shiXiBigPojo.getTid());
         tTeacher.setEmail(shiXiBigPojo.getTemail());
         tTeacher.setPhone(shiXiBigPojo.getTphone());
         tTeacherMapper.updateByPrimaryKeySelective(tTeacher);
@@ -328,14 +338,15 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         return ResultUtil.result(EnumCode.OK.getValue(), "添加成功");
     }
 
-    //字符串转换localdate
-//    public static LocalDate strConvertL(String dateStr) {
-//        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        LocalDate parse = LocalDate.parse(dateStr, fmt);
-//        return parse;
-//    }
-    public static LocalDate strConvertL(String dateStr) {
-        return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    public static Date strConvertD(String dateStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date parse = sdf.parse(dateStr);
+            return parse;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     //localdate转换字符串
     public static String lformattedStr(LocalDate date) {

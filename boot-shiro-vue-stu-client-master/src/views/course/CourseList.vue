@@ -216,14 +216,23 @@
 
                     <el-form-item label="实习时间" prop="validateTime" >
                         <!--                        <p>组件值：{{ DetailEditvisbleMessage.validateTime }}</p>-->
+<!--                        <el-date-picker-->
+<!--                                v-model=""-->
+<!--                                type="daterange"-->
+<!--                                range-separator="至"-->
+<!--                                start-placeholder="开始日期"-->
+<!--                                end-placeholder="结束日期"-->
+<!--                                @blur="changePackageTime"-->
+<!--                        >-->
+<!--                        </el-date-picker>-->
+
                         <el-date-picker
                                 v-model="DetailEditvisbleMessage.validateTime"
+                                value-format = "yyyy-MM-dd"
                                 type="daterange"
                                 range-separator="至"
                                 start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                @blur="changePackageTime"
-                        >
+                                end-placeholder="结束日期">
                         </el-date-picker>
                     </el-form-item>
 
@@ -236,7 +245,7 @@
                         <el-input type="textarea" v-model="DetailEditvisbleMessage.teacherEstimate" placeholder="导师评语，框可下拉放大"></el-input>
                     </el-form-item>
                     <el-form-item label="实习导师" prop="tid" :rules="[{ required: true, message: '至少选择一名实习导师', trigger: 'change,blur' }]">
-                        <el-select v-model="DetailEditvisbleMessage.tid" filterable placeholder="请选择实习导师">
+                        <el-select clearable @change="findTeacherMessage" v-model="DetailEditvisbleMessage.tid" filterable placeholder="请选择实习导师">
                             <el-option
                                     v-for="item in teachers"
                                     :key="item.id"
@@ -412,6 +421,33 @@ export default {
 		}
 	},
 	methods: {
+
+	    //下拉框点击后查询老师信息
+       async findTeacherMessage(vId){
+            console.log(vId)
+            let _this = this
+            _this.listLoading = true
+            let params = {
+                id:vId
+            }
+            let data = await http.get('teacher/findOneMessage', params)
+            if(!data.data) {
+                _this.listLoading = false
+                return
+            }
+
+            if (data.data.status === 200) {
+                console.log(data.data)
+                _this.DetailEditvisbleMessage.temail = data.data.data.email
+                _this.DetailEditvisbleMessage.tphone = data.data.data.phone
+            } else {
+                _this.message(true,data.data.msg,'error')
+                _this.formData1 = []
+            }
+            _this.listLoading = false
+        },
+
+
 
 	    //导入
         handleBeforeUpload2(file){
