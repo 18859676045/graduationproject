@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qxf.hiswww.dao.WCompanyMapper">
+  <resultMap id="BaseResultMap" type="com.qxf.hiswww.domain.WCompany">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="students_post" jdbcType="VARCHAR" property="studentsPost" />
+    <result column="out_supervisor" jdbcType="VARCHAR" property="outSupervisor" />
+    <result column="supervisor_post" jdbcType="VARCHAR" property="supervisorPost" />
+    <result column="outor_phone" jdbcType="VARCHAR" property="outorPhone" />
+    <result column="studnet_id" jdbcType="VARCHAR" property="studnetId" />
+    <result column="course_id" jdbcType="VARCHAR" property="courseId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qxf.hiswww.domain.WCompany">
+    <result column="c_describe" jdbcType="LONGVARCHAR" property="cDescribe" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, company_name, students_post, out_supervisor, supervisor_post, outor_phone, studnet_id, 
+    course_id
+  </sql>
+  <sql id="Blob_Column_List">
+    c_describe
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_company
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_company
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.qxf.hiswww.domain.WCompany">
+    insert into t_company (id, company_name, students_post, 
+      out_supervisor, supervisor_post, outor_phone, 
+      studnet_id, course_id, c_describe
+      )
+    values (#{id,jdbcType=VARCHAR}, #{companyName,jdbcType=VARCHAR}, #{studentsPost,jdbcType=VARCHAR}, 
+      #{outSupervisor,jdbcType=VARCHAR}, #{supervisorPost,jdbcType=VARCHAR}, #{outorPhone,jdbcType=VARCHAR}, 
+      #{studnetId,jdbcType=VARCHAR}, #{courseId,jdbcType=VARCHAR}, #{cDescribe,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qxf.hiswww.domain.WCompany">
+    insert into t_company
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="companyName != null">
+        company_name,
+      </if>
+      <if test="studentsPost != null">
+        students_post,
+      </if>
+      <if test="outSupervisor != null">
+        out_supervisor,
+      </if>
+      <if test="supervisorPost != null">
+        supervisor_post,
+      </if>
+      <if test="outorPhone != null">
+        outor_phone,
+      </if>
+      <if test="studnetId != null">
+        studnet_id,
+      </if>
+      <if test="courseId != null">
+        course_id,
+      </if>
+      <if test="cDescribe != null">
+        c_describe,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null">
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="studentsPost != null">
+        #{studentsPost,jdbcType=VARCHAR},
+      </if>
+      <if test="outSupervisor != null">
+        #{outSupervisor,jdbcType=VARCHAR},
+      </if>
+      <if test="supervisorPost != null">
+        #{supervisorPost,jdbcType=VARCHAR},
+      </if>
+      <if test="outorPhone != null">
+        #{outorPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="studnetId != null">
+        #{studnetId,jdbcType=VARCHAR},
+      </if>
+      <if test="courseId != null">
+        #{courseId,jdbcType=VARCHAR},
+      </if>
+      <if test="cDescribe != null">
+        #{cDescribe,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qxf.hiswww.domain.WCompany">
+    update t_company
+    <set>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="studentsPost != null">
+        students_post = #{studentsPost,jdbcType=VARCHAR},
+      </if>
+      <if test="outSupervisor != null">
+        out_supervisor = #{outSupervisor,jdbcType=VARCHAR},
+      </if>
+      <if test="supervisorPost != null">
+        supervisor_post = #{supervisorPost,jdbcType=VARCHAR},
+      </if>
+      <if test="outorPhone != null">
+        outor_phone = #{outorPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="studnetId != null">
+        studnet_id = #{studnetId,jdbcType=VARCHAR},
+      </if>
+      <if test="courseId != null">
+        course_id = #{courseId,jdbcType=VARCHAR},
+      </if>
+      <if test="cDescribe != null">
+        c_describe = #{cDescribe,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qxf.hiswww.domain.WCompany">
+    update t_company
+    set company_name = #{companyName,jdbcType=VARCHAR},
+      students_post = #{studentsPost,jdbcType=VARCHAR},
+      out_supervisor = #{outSupervisor,jdbcType=VARCHAR},
+      supervisor_post = #{supervisorPost,jdbcType=VARCHAR},
+      outor_phone = #{outorPhone,jdbcType=VARCHAR},
+      studnet_id = #{studnetId,jdbcType=VARCHAR},
+      course_id = #{courseId,jdbcType=VARCHAR},
+      c_describe = #{cDescribe,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qxf.hiswww.domain.WCompany">
+    update t_company
+    set company_name = #{companyName,jdbcType=VARCHAR},
+      students_post = #{studentsPost,jdbcType=VARCHAR},
+      out_supervisor = #{outSupervisor,jdbcType=VARCHAR},
+      supervisor_post = #{supervisorPost,jdbcType=VARCHAR},
+      outor_phone = #{outorPhone,jdbcType=VARCHAR},
+      studnet_id = #{studnetId,jdbcType=VARCHAR},
+      course_id = #{courseId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

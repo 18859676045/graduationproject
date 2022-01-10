@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qxf.hiswww.dao.WCourseMapper">
+  <resultMap id="BaseResultMap" type="com.qxf.hiswww.domain.WCourse">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="start_stime" jdbcType="DATE" property="startStime" />
+    <result column="end_etime" jdbcType="DATE" property="endEtime" />
+    <result column="course_type" jdbcType="VARCHAR" property="courseType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, start_stime, end_etime, course_type
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_course
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_course
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.qxf.hiswww.domain.WCourse">
+    insert into t_course (id, name, start_stime, 
+      end_etime, course_type)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{startStime,jdbcType=DATE}, 
+      #{endEtime,jdbcType=DATE}, #{courseType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qxf.hiswww.domain.WCourse">
+    insert into t_course
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="startStime != null">
+        start_stime,
+      </if>
+      <if test="endEtime != null">
+        end_etime,
+      </if>
+      <if test="courseType != null">
+        course_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startStime != null">
+        #{startStime,jdbcType=DATE},
+      </if>
+      <if test="endEtime != null">
+        #{endEtime,jdbcType=DATE},
+      </if>
+      <if test="courseType != null">
+        #{courseType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qxf.hiswww.domain.WCourse">
+    update t_course
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startStime != null">
+        start_stime = #{startStime,jdbcType=DATE},
+      </if>
+      <if test="endEtime != null">
+        end_etime = #{endEtime,jdbcType=DATE},
+      </if>
+      <if test="courseType != null">
+        course_type = #{courseType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qxf.hiswww.domain.WCourse">
+    update t_course
+    set name = #{name,jdbcType=VARCHAR},
+      start_stime = #{startStime,jdbcType=DATE},
+      end_etime = #{endEtime,jdbcType=DATE},
+      course_type = #{courseType,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
