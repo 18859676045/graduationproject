@@ -9,10 +9,7 @@ import com.qxf.hiswww.domain.TUser;
 import com.qxf.mapper.RoleMapper;
 import com.qxf.mapper.UserMapper;
 import com.qxf.pojo.*;
-import com.qxf.service.LoginLogService;
-import com.qxf.service.RolePermsService;
-import com.qxf.service.UserRoleService;
-import com.qxf.service.UserService;
+import com.qxf.service.*;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ResultUtil;
 import com.xiaoleilu.hutool.crypto.SecureUtil;
@@ -85,6 +82,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     @Autowired
     RoleMapper roleMapper;
+    @Autowired
+    SecretaryService secretaryService;
+    @Autowired
+    TeacherService teacherService;
+    @Autowired
+    StudentService studentService;
     @Transactional
     @Override
     public Object addUser(User user) {
@@ -103,7 +106,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         u.setEnable(user.getEnable());
         u.setCreateTime(new Date());
         super.baseMapper.insert(u);
-        //插入角色
+        //插入角色表
         UserRole userRole = new UserRole();
         userRole.setRoleId(user.getRoleId());
         userRole.setUserId(u.getId());
@@ -111,20 +114,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
         /**
          * 插入用户自动判定角色，并给他赋值角色，后期功能开发2022.1.6
+         * 1.管理员与其他，不插入任何表
+         * 2.导师
+         * 3.学生
+         * 4.教学秘书
          */
-//        String roleId = user.getRoleId();
-//        Role  allRoleOne = new Role();
-//        List<Role> allRoles = roleMapper.findAllRoles();
-//        for (int i = 0; i < allRoles.size(); i++) {
-//             allRoleOne = allRoles.get(i);
-//            if (allRoleOne.getId()==roleId){
-//                String name = allRoleOne.getName();
-//                if (name.equals("导师")||name.equals("教学秘书")){
-//
-//                }
-//            }
-//        }
-
+        String roleId = user.getRoleId();
+        if (roleId.equals("2")){
+            Teacher teacher = new Teacher();
+            teacher.setName(user.getName());
+            teacher.setEmail(user.getEmail());
+            teacherService.insert(teacher);
+        }if (roleId.equals("3")){
+            Student student = new Student();
+            student.setEmail(user.getEmail());
+            student.setName(user.getName());
+            studentService.insert(student);
+        }if (roleId.equals("4")){
+            Secretary secretary = new Secretary();
+            secretary.setName(user.getName());
+            secretary.setEmail(user.getEmail());
+            secretaryService.insert(secretary);
+        }
         return ResultUtil.result(EnumCode.OK.getValue(), "新增成功");
     }
 

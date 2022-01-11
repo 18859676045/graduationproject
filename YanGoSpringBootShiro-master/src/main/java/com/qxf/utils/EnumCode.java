@@ -31,6 +31,10 @@ public enum  EnumCode {
      */
     NO_STUDENT(663,"没有这个学生"),
     /**
+     *上传出错
+     */
+    BAD_UPLOAD(661, "上传出了错误"),
+    /**
      *
      */
     BAD_INPUT(400, "输入的参数有误,请重新输入"),

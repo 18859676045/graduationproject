@@ -98,13 +98,14 @@
         </javaClientGenerator>
 
         <!-- 数据库表名及对应的Java模型类名 -->
-        <table tableName="t_secretary"
-               domainObjectName="Secretary"
+        <table tableName="t_fastdfs"
+               domainObjectName="FastDfs"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"
                enableSelectByExample="false"
                selectByExampleQueryId="false"/>
+
 
 
 </context>

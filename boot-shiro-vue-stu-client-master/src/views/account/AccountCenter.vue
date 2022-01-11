@@ -539,18 +539,21 @@ export default {
             // }
             let params={
                 //老师
+                tid:_this.teacher.id,
                 tname:_this.teacher1.name,
                 tsex:_this.teacher1.sex,
                 tage:_this.teacher1.age,
                 tphone:_this.teacher1.phone,
                 temail:_this.teacher1.email,
-
+                //教学秘书
+                jid:_this.secretary.id,
                 jname:_this.secretary1.name,
                 jsex:_this.secretary1.sex,
                 jage:_this.secretary1.age,
                 jphone:_this.secretary1.phone,
                 jemail:_this.secretary1.email,
-
+                //学生
+                sid:_this.student.id,
                 clazzId:_this.clazz.id,
                 majorId:_this.clazz.id,
                 instituteId:_this.institute.id,
@@ -614,20 +617,18 @@ export default {
 
                     _this.teacher1 = Object.assign({},res.teacher)
                     _this.teacher1.sex = Object.assign({},JSON.stringify(res.teacher.sex))
-                    console.log( Object.assign({},JSON.stringify(res.teacher.sex)))
-
+                    // console.log( Object.assign({},JSON.stringify(res.teacher.sex)))
                 }
                 if (res.teacherPost!=null){
                     _this.teacher.teacherPost = res.teacherPost
                 }
                 if (res.student!=null){
-                    debugger
                     _this.student = res.student
                     _this.student.sex = JSON.stringify(res.student.sex)
 
 
                     _this.student1 = Object.assign({},res.student)
-                    _this.student1.sex = Object.assign({},JSON.stringify(res.student.sex))
+                    // _this.student1.sex = Object.assign({},JSON.stringify(res.student.sex))
                     console.log(_this.student1)
                 }
                 if (res.secretary!=null){
