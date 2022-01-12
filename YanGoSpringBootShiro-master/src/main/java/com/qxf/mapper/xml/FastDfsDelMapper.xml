@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qxf.mapper.FastDfsDelMapper">
+  <resultMap id="BaseResultMap" type="com.qxf.pojo.FastDfsDel">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="del_user_id" jdbcType="VARCHAR" property="delUserId" />
+    <result column="del_user_name" jdbcType="VARCHAR" property="delUserName" />
+    <result column="del_time" jdbcType="TIMESTAMP" property="delTime" />
+    <result column="del_file_name" jdbcType="VARCHAR" property="delFileName" />
+    <result column="del_file_uploader" jdbcType="VARCHAR" property="delFileUploader" />
+    <result column="del_file_size" jdbcType="VARCHAR" property="delFileSize" />
+    <result column="del_file_downcount" jdbcType="VARCHAR" property="delFileDowncount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, del_user_id, del_user_name, del_time, del_file_name, del_file_uploader, del_file_size, 
+    del_file_downcount
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_fastdfs_del
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+
+    <select id="getFastDfsDelByPage" parameterType="java.lang.String" resultType="com.qxf.pojo.FastDfsDel">
+      select  * from t_fastdfs_del f
+      WHERE 1=1
+      <if test=" name != null and name != '' ">
+        AND f.del_file_name LIKE CONCAT('%',#{name},'%')
+      </if>
+    </select>
+
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_fastdfs_del
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.qxf.pojo.FastDfsDel">
+    insert into t_fastdfs_del (id, del_user_id, del_user_name, 
+      del_time, del_file_name, del_file_uploader, 
+      del_file_size, del_file_downcount)
+    values (#{id,jdbcType=VARCHAR}, #{delUserId,jdbcType=VARCHAR}, #{delUserName,jdbcType=VARCHAR}, 
+      #{delTime,jdbcType=TIMESTAMP}, #{delFileName,jdbcType=VARCHAR}, #{delFileUploader,jdbcType=VARCHAR}, 
+      #{delFileSize,jdbcType=VARCHAR}, #{delFileDowncount,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qxf.pojo.FastDfsDel">
+    insert into t_fastdfs_del
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="delUserId != null">
+        del_user_id,
+      </if>
+      <if test="delUserName != null">
+        del_user_name,
+      </if>
+      <if test="delTime != null">
+        del_time,
+      </if>
+      <if test="delFileName != null">
+        del_file_name,
+      </if>
+      <if test="delFileUploader != null">
+        del_file_uploader,
+      </if>
+      <if test="delFileSize != null">
+        del_file_size,
+      </if>
+      <if test="delFileDowncount != null">
+        del_file_downcount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="delUserId != null">
+        #{delUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="delUserName != null">
+        #{delUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="delTime != null">
+        #{delTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFileName != null">
+        #{delFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="delFileUploader != null">
+        #{delFileUploader,jdbcType=VARCHAR},
+      </if>
+      <if test="delFileSize != null">
+        #{delFileSize,jdbcType=VARCHAR},
+      </if>
+      <if test="delFileDowncount != null">
+        #{delFileDowncount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qxf.pojo.FastDfsDel">
+    update t_fastdfs_del
+    <set>
+      <if test="delUserId != null">
+        del_user_id = #{delUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="delUserName != null">
+        del_user_name = #{delUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="delTime != null">
+        del_time = #{delTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFileName != null">
+        del_file_name = #{delFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="delFileUploader != null">
+        del_file_uploader = #{delFileUploader,jdbcType=VARCHAR},
+      </if>
+      <if test="delFileSize != null">
+        del_file_size = #{delFileSize,jdbcType=VARCHAR},
+      </if>
+      <if test="delFileDowncount != null">
+        del_file_downcount = #{delFileDowncount,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qxf.pojo.FastDfsDel">
+    update t_fastdfs_del
+    set del_user_id = #{delUserId,jdbcType=VARCHAR},
+      del_user_name = #{delUserName,jdbcType=VARCHAR},
+      del_time = #{delTime,jdbcType=TIMESTAMP},
+      del_file_name = #{delFileName,jdbcType=VARCHAR},
+      del_file_uploader = #{delFileUploader,jdbcType=VARCHAR},
+      del_file_size = #{delFileSize,jdbcType=VARCHAR},
+      del_file_downcount = #{delFileDowncount,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
