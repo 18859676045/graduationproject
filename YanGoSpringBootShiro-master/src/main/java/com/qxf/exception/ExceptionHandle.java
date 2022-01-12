@@ -66,7 +66,7 @@ public class ExceptionHandle extends BaseController {
             log.info("系统异常 {}",e);
 //            loginController.logout();
 //            return ResultUtil.result(-1, "未知错误");
-            return ResultUtil.result(-1,"登陆过期，请重新登陆");
+            return ResultUtil.result(-1,"请求异常，请稍后再试或重新登陆！！");
         }
     }
 }

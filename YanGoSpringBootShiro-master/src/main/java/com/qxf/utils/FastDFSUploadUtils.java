@@ -12,7 +12,15 @@ import java.io.IOException;
 public class FastDFSUploadUtils {
 
     public static void main(String[] args) {
-//        fileUpload("C:\\Users\\Administrator\\Desktop\\新建文件夹\\17级及19专升本毕业实习材料","excel")
+//        fileUpload("C:/Users/Administrator/Desktop/新建文件夹/17级及19专升本毕业实习材料","excel");
+//        http://47.97.105.41/ 20 , group1 6 ,
+        String fileName ="http://47.97.105.41/group1/M00/00/00/rB9y_2HdonyABq4bAACtOYu9dic803.jpg";
+//        fileDelete("group1","M00/00/00/rB9y_2HdonyABq4bAACtOYu9dic803.jpg");
+        String substring = fileName.substring(20, 26);
+        System.out.println(substring);
+        String substring2 = fileName.substring(27);
+        System.out.println(substring2);
+
     }
 
     private static TrackerServer trackerServer = null;

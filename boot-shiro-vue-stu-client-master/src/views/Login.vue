@@ -54,6 +54,7 @@
           return
         }
         if(data.data.status === 200) {
+            console.log(data)
           _this.message(true,data.data.msg,'success')
             console.log(data.data.data);
           sessionStorage.setItem('user', JSON.stringify(data.data.data))

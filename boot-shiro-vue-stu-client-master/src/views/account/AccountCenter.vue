@@ -225,7 +225,7 @@
 <!-- 修改老师 -->
 	<el-dialog title="修改老师信息" :visible.sync="dialogFormVisible1" v-if="teacher.id!=''">
 	<div style="width:60%;margin: 0 auto">
-	<el-form ref="attr" :model="teacher1" :inline="false" label-width="90px" class="demo-ruleForm">
+	<el-form ref="teacher1" :model="teacher1" :inline="false" label-width="90px" class="demo-ruleForm">
 
 	<el-form-item label="老师名称" prop="name" :rules="[{ required: true, message: '请输入老师名称', trigger: 'blur' }]">
 		<el-input  type="text" v-model="teacher1.name" placeholder="请输入老师名称" auto-complete="off"></el-input>
@@ -263,7 +263,7 @@
 <!--修改教学秘书-->
         <el-dialog title="修改秘书信息" :visible.sync="dialogFormVisible3" v-if="secretary.id!=''">
             <div style="width:60%;margin: 0 auto">
-                <el-form ref="attr" :model="secretary1" :inline="false" label-width="90px" class="demo-ruleForm">
+                <el-form ref="secretary1" :model="secretary1" :inline="false" label-width="90px" class="demo-ruleForm">
 
                     <el-form-item label="秘书名称" prop="name" :rules="[{ required: true, message: '请输入秘书名称', trigger: 'blur' }]">
                         <el-input  type="text" v-model="secretary1.name" placeholder="请输入秘书名称" auto-complete="off"></el-input>
@@ -301,7 +301,7 @@
 <!-- 修改学生-->
         <el-dialog title="修改信息" :visible.sync="dialogFormVisible2">
             <div style="width:60%;margin: 0 auto">
-                <el-form ref="attr" :model="student1" :inline="false" label-width="90px" class="demo-ruleForm">
+                <el-form ref="student1" :model="student1" :inline="false" label-width="90px" class="demo-ruleForm">
 
                     <el-form-item label="所属学院" prop="iid" >
                         <el-select v-model="institute.id" filterable placeholder="请选择" @change="getMajorData">
@@ -323,7 +323,7 @@
                             </el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="所属班级" prop="cid" :rules="[{ required: true, message: '请输入班级', trigger: 'blur' }]">
+                    <el-form-item label="所属班级" prop="cid" >
                         <el-select v-model="clazz.id" filterable placeholder="请选择">
                             <el-option
                                     v-for="item in clazzs"
@@ -524,6 +524,7 @@ export default {
             })
         },
         async  editTeacherOrStudent(){
+
             let _this = this
             // let params = {
             //     id: _this.student1.id,
@@ -555,7 +556,7 @@ export default {
                 //学生
                 sid:_this.student.id,
                 clazzId:_this.clazz.id,
-                majorId:_this.clazz.id,
+                majorId:_this.major.id,
                 instituteId:_this.institute.id,
                 snumber: _this.student1.studentNumber,
                 semail: _this.student1.email,

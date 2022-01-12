@@ -11,7 +11,7 @@
 			</el-col>
 			<el-col :span="4" class="userinfo">
 				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img :src="userImg" /> 欢迎您,{{nickName}}</span>
+					<span class="el-dropdown-link userinfo-inner"><img :src=this.user.photoUrl /> 欢迎您,{{nickName}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>我的消息</el-dropdown-item>
 						<el-dropdown-item @click.native="personalCenter">修改资料</el-dropdown-item>
@@ -107,41 +107,50 @@
 		width="25%">
     <div>
 			<el-form :inline="true" :model="userform"  ref="userform" :rules="rules" label-width="100px" style="margin: 0 auto;">
+
+
 				<el-form-item label="头像" prop="photoUrl">
 			    <el-upload
 			    name="pic"
+                :limit="1"
+                :http-request="upload"
+                :data = this.user
 			    class="avatar-uploader"
-			    :action="uploadService + 'user/uploadHander'"
+			    :action="'http://localhost:8089/materials/userUpload'"
 			    :show-file-list="false"
 			    :on-success="handleAvatarSuccess"
+                :on-error="handleAvatarError"
 			    :before-upload="beforeAvatarUpload">
-			  <img v-if="userform.photoUrl" :src="userform.photoUrl" class="avatar">
+			  <img v-if="this.user.photoUrl" :src="this.user.photoUrl" class="avatar" >
 			  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
 			  </el-upload>
-			  </el-form-item>
+                </el-form-item>
+
+
+
 				<el-form-item label="昵称"   prop="name">
 					<el-input type="text" placeholder="用户昵称" auto-complete="off" v-model="userform.name"></el-input>
 				</el-form-item>
 				<el-form-item label="邮箱" prop="email">
 					<el-input type="text" placeholder="用户邮箱" auto-complete="off" v-model="userform.email"></el-input>
 				</el-form-item>
-                <el-form-item label="手机号" prop="phone">
-                    <el-input type="text" placeholder="用户手机号" auto-complete="off" v-model="userform.phone"></el-input>
-                </el-form-item>
+<!--                <el-form-item label="手机号" prop="phone">-->
+<!--                    <el-input type="text" placeholder="用户手机号" auto-complete="off" v-model="userform.phone"></el-input>-->
+<!--                </el-form-item>-->
 
-                <el-form-item label="性别" prop="sex" :rules="[{ required: true, message: '请输入性别', trigger: 'blur' }]">
-                    <el-select v-model="userform.sex" filterable placeholder="请选择">
-                        <el-option
-                                v-for="item in sexs"
-                                :key="item.dictCode"
-                                :label="item.dictValue"
-                                :value="item.dictCode">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="年龄" prop="age" :rules="[{ required: true, message: '请输入学生年龄', trigger: 'blur' },{validator: 'regexp', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|120)$/, message: '年龄只能是0-120之间的整数', trigger: 'change,blur'}]">
-                    <el-input  type="number" v-model="attr.age" placeholder="请输入学生年龄" auto-complete="off"></el-input>
-                </el-form-item>
+<!--                <el-form-item label="性别" prop="sex" :rules="[{ required: true, message: '请输入性别', trigger: 'blur' }]">-->
+<!--                    <el-select v-model="userform.sex" filterable placeholder="请选择">-->
+<!--                        <el-option-->
+<!--                                v-for="item in sexs"-->
+<!--                                :key="item.dictCode"-->
+<!--                                :label="item.dictValue"-->
+<!--                                :value="item.dictCode">-->
+<!--                        </el-option>-->
+<!--                    </el-select>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="年龄" prop="age" :rules="[{ required: true, message: '请输入学生年龄', trigger: 'blur' },{validator: 'regexp', pattern: /^(?:[1-9][0-9]?|1[01][0-9]|120)$/, message: '年龄只能是0-120之间的整数', trigger: 'change,blur'}]">-->
+<!--                    <el-input  type="number" v-model="attr.age" placeholder="请输入学生年龄" auto-complete="off"></el-input>-->
+<!--                </el-form-item>-->
 
 			</el-form>
 		</div>
@@ -157,9 +166,13 @@
 
 <script>
   import http from '../utils/http'
+  import qs from 'qs'
 	export default {
 		data() {
 			return {
+			    // myhead:{
+                //     Cookie:' JSESSIONID=D8506C5950AF293D3419317DE83EB157'
+                // },
                 attr: {
                     name2: '',
                     studentNumber:'',
@@ -205,8 +218,28 @@
 			}
 		},
 		methods: {
+		    //上传头像
+            // async  upLoad(file) {
+            //     let _this = this
+            //     console.log(_this.user.id)
+            //     console.log(_this.user.roleId)
+            //     let param = {
+            //         pic: file,
+            //         uId: _this.ujson.id,
+            //         roleId:_this.ujson.roleId
+            //     }
+            //     let data = await http.post('materials/userUpload',param)
+            //     if(!data.data) {
+            //         return
+            //     }
+            //     if (data.data.status === 200) {
+            //         _this.message(true,data.data.msg,'success')
+            //     } else {
+            //         _this.message(true,data.data.msg,'error')
+            //     }
+            // },
 			handleopen() {
-				//console.log('handleopen');
+
 			},
 			handleclose() {
 				//console.log('handleclose');
@@ -301,23 +334,33 @@
 				}
 			},
 			handleAvatarSuccess(res, file) {
-				this.uploadImg = res
-				this.userform.photoUrl = URL.createObjectURL(file.raw);
+			    if (res.status == 200){
+                    this.$message.success('上传成功!');
+                }else {
+                    this.$message.error('上传失败，请稍后再试!');
+                }
+			    // console.log(res)
+                // console.log(file)
+                // this.$message.success('上传成功!');
+				// this.uploadImg = res
+				// this.userform.photoUrl = URL.createObjectURL(file.raw);
 			},
+            handleAvatarError(){
+                this.$message.error('上传失败!');
+            },
 			beforeAvatarUpload(file) {
-
 				const isJPG = file.type === 'image/jpeg';
-        const isPNG = file.type === 'image/png';
+				const isPNG = file.type === 'image/png';
 				const isLt2M = file.size / 1024 / 1024 < 2;
 
-				if (!isJPG && !isPNG) {
-					this.$message.error('上传头像图片只能是 JPG、PNG 格式!');
-				}
-				if (!isLt2M) {
-					this.$message.error('上传头像图片大小不能超过 2MB!');
+				if (!isJPG && !isPNG && !isLt2M) {
+					this.$message.error('上传头像图片只能是 JPG、PNG 格式，且不能超过 2MB');
 				}
 				return (isJPG || isPNG) && isLt2M;
 			},
+
+
+
 			initUserInfo() {
 				let _this = this
 				var usr= _this.user
@@ -477,6 +520,8 @@
 			}
 		}
 	}
+
+
 
 .avatar-uploader .el-upload {
 	 border: 1px dashed #d9d9d9;

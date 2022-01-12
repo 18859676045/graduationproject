@@ -1,5 +1,6 @@
 package com.qxf.service;
 
+import com.qxf.hiswww.domain.AccounCenterRecelveVo;
 import com.qxf.pojo.EditUserVo;
 import com.qxf.pojo.User;
 import org.springframework.stereotype.Service;
@@ -10,4 +11,5 @@ import org.springframework.stereotype.Service;
  */
 public interface PersonService{
     EditUserVo findPersonCenter(User user);
-}
+    public Integer updateMessage(String userId, String roleId, AccounCenterRecelveVo vo);
+    }

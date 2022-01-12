@@ -20,7 +20,31 @@
     from t_fastdfs
     where id = #{id,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+
+    <select id="getFastDfsByPage" parameterType="java.lang.String" resultType="com.qxf.pojo.FastDfs">
+      SELECT
+      f.id,
+      f.file_name AS fileName,
+      f.file_path AS filePath,
+      f.down_count AS downCount,
+      f.upload_time AS uploadTime,
+      f.uploader,
+      f.lastdown_time AS lastdownTime,
+      f.size
+      FROM
+      t_fastdfs f
+      WHERE 1=1
+      <if test=" name != null and name != '' ">
+        AND f.file_name LIKE CONCAT('%',#{name},'%')
+      </if>
+      order by f.upload_time
+
+    </select>
+
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from t_fastdfs
     where id = #{id,jdbcType=VARCHAR}
   </delete>

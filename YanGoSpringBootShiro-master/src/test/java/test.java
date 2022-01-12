@@ -5,11 +5,12 @@ import com.qxf.hiswww.dao.TRolePermsMapper;
 import com.qxf.hiswww.domain.TCourse;
 import com.qxf.hiswww.domain.TRolePerms;
 import com.qxf.mapper.CourseMapper;
+import com.qxf.mapper.FastDfsMapper;
 import com.qxf.mapper.RoleMapper;
 import com.qxf.mapper.RolePermsMapper;
-import com.qxf.pojo.Course;
-import com.qxf.pojo.Role;
-import com.qxf.pojo.RolePerms;
+import com.qxf.pojo.*;
+import com.qxf.service.FastDfsDelService;
+import com.qxf.service.InstituteService;
 import com.qxf.service.RolePermsService;
 import com.qxf.service.impl.CourseServiceImpl;
 import org.junit.Test;
@@ -30,13 +31,20 @@ public class test {
 
     @Autowired
     TCourseMapper tcourseMapper;
+    @Autowired
+    FastDfsMapper fastDfsMapper;
+    @Autowired
+    InstituteService instituteService;
+    @Autowired
+    FastDfsDelService fastDfsDelService;
     @Test
     public void Coursefind(){
-//        TCourse tCourses = tcourseMapper.myWriteSelectByStratEndType("2019-11-12", "2019-11-30", "02");
-//        System.out.println(tCourses);
-//        TCourse course = tcourseMapper.selectByPrimaryKey("1ddaaaf574fd44f99f12a56491da3605");
-//        TCourse tCourse = new TCourse();
+        Page<FastDfsDel> fastDfsDelPage = new Page<>(1,2);
+//        Page<Institute> institutePage = new Page<>(1,2);
 
+        List<FastDfsDel> pic = fastDfsDelService.getFastDfsDelByPage(fastDfsDelPage, "个人");
+//        List<Institute> pic = instituteService.getInstituteByPage(institutePage, "人工");
+        System.out.println(pic);
 
     }
 

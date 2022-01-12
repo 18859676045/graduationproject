@@ -6,6 +6,7 @@ import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -113,5 +114,9 @@ public class FileController {
         //其实，这个返回什么都不重要
         return ResultUtil.result(EnumCode.OK.getValue(),"下载成功");
     }
+
+
+
+
 }
 

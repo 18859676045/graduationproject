@@ -7,6 +7,7 @@ package com.qxf.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.qxf.hiswww.domain.AccounCenterRecelveVo;
 import com.qxf.pojo.EditUserVo;
 import com.qxf.pojo.User;
 import com.qxf.service.PersonService;
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/account")
-public class PersonCenterController {
+public class PersonCenterController extends BaseController{
 
     @Autowired
     PersonService personService;
@@ -53,10 +54,14 @@ public class PersonCenterController {
      * 修改个人信息，判断四个角色信息选择插入
      */
     @RequestMapping("/editMessage")
-    public Object editMessage(EditUserVo editUserVo){
-        User user = editUserVo.getUser();
-        System.out.println(user);
-        return null;
+    public Object editMessage(AccounCenterRecelveVo recelveVo){
+        String userId = super.getUserId();
+        String roleId = super.getRoleId();
+        Integer integer = personService.updateMessage(userId, roleId, recelveVo);
+        if (integer==1){
+            return ResultUtil.result(EnumCode.OK.getValue(), "请求成功", "请求成功");
+        }
+         return ResultUtil.result(EnumCode.EXCPTION_ERROR.getValue(), "请求失败", null);
     }
 
 

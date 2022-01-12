@@ -8,6 +8,7 @@ import 'nprogress/nprogress.css' // 轻量级进度条样式
 NProgress.configure({ease:'ease',speed:1500});
 
 
+
 // // http request 拦截器
 // axios.interceptors.request.use(
 //   console.log(store.state.userInfo),

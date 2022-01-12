@@ -47,6 +47,7 @@ Vue.filter('dataFormat', function (inputstr, showsplit, showweek) {
 
     return date;
 })
+
 //自定义moment全局过滤器
 Vue.filter('converTime',function(data,formatStr){
     return Moment(data).format(formatStr);
@@ -64,7 +65,11 @@ Vue.filter('converTime',function(data,formatStr){
 const router = new VueRouter({
   routes
 })
-
+// Vue.filter('dateYMDHMSFormat',function(dateStr,pattern='YYYY-MM-DD HH:mm:ss'){
+//     return moment(dateStr).format(pattern);
+// })
+// Vue.use(require('vue-moment'));
+Vue.prototype.moment = Moment
 // url 拦截
 router.beforeEach((to, from, next) => {
   if (to.path == '/login') {

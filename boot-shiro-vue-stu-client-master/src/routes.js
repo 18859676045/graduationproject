@@ -20,7 +20,8 @@ import CourseList from './views/course/CourseList.vue'
 import AccountCenter from './views/account/AccountCenter.vue'
 import CourseCenter from './views/coursecenter/CourseCenter.vue'
 import GradeCenter from './views/grade/GradeCenter.vue'
-
+import materialsList from './views/materials/list.vue'
+import materialsDelList from './views/materials/delList.vue'
 import paperManager from './views/exam/paperManager.vue'
 import questionManager from './views/exam/questionManager.vue'
 
@@ -49,6 +50,16 @@ let router = [
             { path: '/ueditor', component: Ueditor, name: '富文本测试' },
         ]
     },
+	{
+		path: '/',
+		component: Home,
+		name: '用户管理',
+		iconCls: 'icon iconfont icon-yonghurenxiang',//图标样式class
+		children: [
+			{ path: '/materials/list', component: materialsList, name: '材料中心' },
+			{ path: '/materials/delList', component: materialsDelList, name: '失效文件' }
+		]
+	},
 	{
 	    path: '/',
 	    component: Home,

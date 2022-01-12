@@ -188,9 +188,6 @@
 			   uploadUrl: 'http://localhost:8089/file/upload',
 			   uploadUrl2: 'http://localhost:8089/user/import',
 			   fileList: [],
-			 //   fileHeaders:{
-				//    'Content-Type': 'multipart/form-data'
-			 //   },
 				filters: {
 					keyword: ''
 				},

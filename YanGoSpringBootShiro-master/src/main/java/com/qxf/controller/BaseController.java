@@ -66,6 +66,7 @@ public class BaseController {
     protected String getRoleId() {
 
         Subject subject = SecurityUtils.getSubject();
+
         User user = (User) subject.getPrincipal();
         if (null == user) {
             return null;

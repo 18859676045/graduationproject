@@ -95,6 +95,7 @@ public class AuthRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         log.info("======================= 认证登陆 ======================");
+        Object credentials = token.getCredentials();
         // 获取用户输入的token
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
         String name = upToken.getUsername();
@@ -121,6 +122,8 @@ public class AuthRealm extends AuthorizingRealm {
 
         }
         log.info("======================= 登陆成功 ======================");
-        return new SimpleAuthenticationInfo(userInfoDto, userInfoDto.getPassword(), getName());
+
+        SimpleAuthenticationInfo s = new SimpleAuthenticationInfo(userInfoDto, userInfoDto.getPassword(), getName());
+        return s;
     }
 }
