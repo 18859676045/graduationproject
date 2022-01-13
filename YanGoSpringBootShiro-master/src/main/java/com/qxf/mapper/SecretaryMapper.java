@@ -1,9 +1,13 @@
 package com.qxf.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.qxf.pojo.Secretary;
+import org.apache.ibatis.annotations.Param;
 
-public interface SecretaryMapper  extends BaseMapper<Secretary> {
+import java.util.List;
+
+public interface SecretaryMapper extends BaseMapper<Secretary> {
     int deleteByPrimaryKey(String id);
 
 //    int insert(Secretary record);
@@ -15,4 +19,6 @@ public interface SecretaryMapper  extends BaseMapper<Secretary> {
     int updateByPrimaryKeySelective(Secretary record);
 
     int updateByPrimaryKey(Secretary record);
+
+    List<Secretary> getSecretaryByPage(Page<Secretary> page,@Param("name") String name);
 }

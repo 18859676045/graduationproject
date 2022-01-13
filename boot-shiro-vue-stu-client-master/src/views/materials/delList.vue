@@ -18,43 +18,36 @@
 			v-loading="listLoading" element-loading-text="拼命加载中"
       :data="tableData1"
 			@selection-change="handleSelectionChange1">
-			<el-table-column type="selection" width="55">
-			</el-table-column>
+
 <!--      <el-table-column
         prop="id"
         label="id">
       </el-table-column> -->
 	  <el-table-column
-	    prop="fileName"
-	    label="文件名称" sortable>
+	    prop="delFileName"
+	    label="失效文件名称" sortable>
 	  </el-table-column>
 	  <el-table-column
-	    prop="uploadTime"
-	    label="上传时间" sortable >
+	    prop="delTime"
+	    label="删除时间" sortable >
 	  </el-table-column>
                 <el-table-column
-                        prop="size"
+                        prop="delUserName"
+                        label="删除用户" sortable>
+                </el-table-column>
+                <el-table-column
+                        prop="delFileSize"
                         label="文件大小（B）" sortable>
                 </el-table-column>
                 <el-table-column
-                        prop="uploader"
-                        label="上传者" sortable>
+                        prop="delFileUploader"
+                        label="最初上传者" sortable>
                 </el-table-column>
                 <el-table-column
-                        prop="downCount"
+                        prop="delFileDowncount"
                         label="下载次数" sortable>
                 </el-table-column>
-                <el-table-column
-                        prop="lastdownTime"
-                        label="最后下载时间" sortable dataformatas="YYYY-MM-DD HH:mm:ss">
-                </el-table-column>
-                <el-table-column label="下载">
-                    <template slot-scope="scope">
-                        <el-button
-                                size="danger"
-                                @click="down (scope.row.id)">下载</el-button>
-                    </template>
-                </el-table-column>
+
 
     </el-table>
 		</el-col>
@@ -153,50 +146,7 @@ export default {
 			this.dialogFormVisible1 = true
 			this.getInstituteData()
 		},
-		// 查询学院列表
-		async getInstituteData () {
-				let _this = this
-				let data = await http.get('institute/findAllInstitute')
-				if(!data.data) {
-					return
-				}
-				if (data.data.status === 200) {
-				   _this.institutes = data.data.data
-				 } else {
-				  _this.message(true,data.data.msg,'error')
-				  _this.institutes = []
-				}
-			},
 
-		//获取专业列表
-		async getMajorData (){
-			let _this = this
-			let param = {
-				instituteId: _this.attr.instituteId2
-			}
-			let data = await http.get('major/findAllMajor',param);
-			if(!data.data) {
-				return
-			}
-			if (data.data.status === 200) {
-			   _this.majors = data.data.data
-			 } else {
-			  _this.message(true,data.data.msg,'error')
-			  _this.majors = []
-			}
-		},
-
-		// 添加属性表单提交
-		submitForm(formName) {
-			this.$refs[formName].validate((valid) => {
-				if (valid) {
-					this.addInstitute()
-				} else {
-					console.log('error submit!!');
-					return false
-				}
-			})
-		},
 		// 重置
 		resetForm(formName) {
 			this.$refs[formName].resetFields();

@@ -68,7 +68,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         }
 
         //插入学生
-        student.setStudentNumber(studentNumber);
+//        student.setStudentNumber(studentNumber);
         super.baseMapper.insert(student);
 
         //把学生信息插入到t_user表和t_user_roel表，使得学生可以用姓名和默认密码a123456登录

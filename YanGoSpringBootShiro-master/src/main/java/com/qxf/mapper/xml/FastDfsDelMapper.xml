@@ -24,7 +24,16 @@
 
 
     <select id="getFastDfsDelByPage" parameterType="java.lang.String" resultType="com.qxf.pojo.FastDfsDel">
-      select  * from t_fastdfs_del f
+      select
+      f.id,
+      f.del_user_id AS delUserId,
+      f.del_user_name AS delUserName,
+      f.del_time AS delTime,
+      f.del_file_name AS delFileName,
+      f.del_file_uploader AS delFileUploader,
+      f.del_file_size AS delFileSize,
+      f.del_file_downcount AS delFileDowncount
+      from t_fastdfs_del f
       WHERE 1=1
       <if test=" name != null and name != '' ">
         AND f.del_file_name LIKE CONCAT('%',#{name},'%')

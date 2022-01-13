@@ -11,14 +11,12 @@ import com.qxf.hiswww.domain.AccounCenterRecelveVo;
 import com.qxf.pojo.EditUserVo;
 import com.qxf.pojo.User;
 import com.qxf.service.PersonService;
+import com.qxf.service.UserService;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +26,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/account")
-public class PersonCenterController extends BaseController{
+public class AccountCenterController extends BaseController{
 
     @Autowired
     PersonService personService;
@@ -63,6 +61,20 @@ public class PersonCenterController extends BaseController{
         }
          return ResultUtil.result(EnumCode.EXCPTION_ERROR.getValue(), "请求失败", null);
     }
+    /**
+     * 修改密码
+     */
+    @Autowired
+    UserService userService;
+    @RequestMapping("/security")
+    public Object editPassword(@RequestParam("password") String password){
+        String userId = super.getUserId();
+        User user = userService.selectById(userId);
+        user.setPassword(password);
+        userService.updateById(user);
+        return ResultUtil.result(EnumCode.OK.getValue(), "修改成功，重新登陆生效！", "请求成功");
+    }
+
 
 
 }

@@ -16,8 +16,10 @@ import MajorList from './views/major/MajorList.vue'
 import ClazzList from './views/clazz/ClazzList.vue'
 import StudentList from './views/student/StudentList.vue'
 import TeacherList from './views/teacher/TeacherList.vue'
+import SecretaryList from './views/secretary/SecretaryList.vue'
 import CourseList from './views/course/CourseList.vue'
 import AccountCenter from './views/account/AccountCenter.vue'
+import AccountSecurity from './views/account/AccountSecurity.vue'
 import CourseCenter from './views/coursecenter/CourseCenter.vue'
 import GradeCenter from './views/grade/GradeCenter.vue'
 import materialsList from './views/materials/list.vue'
@@ -53,7 +55,7 @@ let router = [
 	{
 		path: '/',
 		component: Home,
-		name: '用户管理',
+		name: '材料中心',
 		iconCls: 'icon iconfont icon-yonghurenxiang',//图标样式class
 		children: [
 			{ path: '/materials/list', component: materialsList, name: '材料中心' },
@@ -134,6 +136,15 @@ let router = [
 	    ]
 	},
 	{
+		path: '/',
+		component: Home,
+		name: '教秘管理',
+		iconCls: 'icon iconfont icon-dic-manager',
+		children: [
+			{ path: '/secretary/list', component:SecretaryList, name: '教秘列表' },
+		]
+	},
+	{
 	    path: '/',
 	    component: Home,
 	    name: '实习管理',
@@ -150,7 +161,7 @@ let router = [
 	    iconCls: 'icon iconfont icon-dic-manager',
 	    children: [
 	        { path: '/account/center', component: AccountCenter, name: '个人信息' },
-			{ path: '/account/security', component: CourseCenter, name: '密码管理' },
+			{ path: '/account/security', component: AccountSecurity, name: '密码管理' },
 			{ path: '/grade/center', component: CourseCenter, name: '成绩统计' },
 			{ path: '/course/mycourse', component: CourseCenter, name: '我的实习' },
 			{ path: '/grade/mygrade', component: CourseCenter, name: '我的成绩' }

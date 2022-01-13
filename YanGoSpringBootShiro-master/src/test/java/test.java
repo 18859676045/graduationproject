@@ -12,6 +12,7 @@ import com.qxf.pojo.*;
 import com.qxf.service.FastDfsDelService;
 import com.qxf.service.InstituteService;
 import com.qxf.service.RolePermsService;
+import com.qxf.service.SecretaryService;
 import com.qxf.service.impl.CourseServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,8 @@ public class test {
     InstituteService instituteService;
     @Autowired
     FastDfsDelService fastDfsDelService;
+    @Autowired
+    SecretaryService secretaryService;
     @Test
     public void Coursefind(){
         Page<FastDfsDel> fastDfsDelPage = new Page<>(1,2);
@@ -45,6 +48,15 @@ public class test {
         List<FastDfsDel> pic = fastDfsDelService.getFastDfsDelByPage(fastDfsDelPage, "个人");
 //        List<Institute> pic = instituteService.getInstituteByPage(institutePage, "人工");
         System.out.println(pic);
+
+    }
+    @Test
+    public void secretaryService(){
+        Page<Secretary> secretaryPage = new Page<>(1,2);
+//        Page<Institute> institutePage = new Page<>(1,2);
+//        List<Institute> pic = instituteService.getInstituteByPage(institutePage, "人工");
+        List<Secretary> jiaoxue = secretaryService.getSecretaryByPage(secretaryPage, "jiaoxue");
+        System.out.println(jiaoxue);
 
     }
 
