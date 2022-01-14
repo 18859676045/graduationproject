@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qxf.mapper.StudentCourseTeacherMapper">
+  <resultMap id="BaseResultMap" type="com.qxf.pojo.StudentCourseTeacher">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="student_id" jdbcType="VARCHAR" property="studentId" />
+    <result column="teacher_id" jdbcType="VARCHAR" property="teacherId" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="course_id" jdbcType="VARCHAR" property="courseId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.qxf.pojo.StudentCourseTeacher">
+    <result column="teacher_estimate" jdbcType="LONGVARCHAR" property="teacherEstimate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, student_id, teacher_id, score, course_id
+  </sql>
+  <sql id="Blob_Column_List">
+    teacher_estimate
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_student_course_teacher
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_student_course_teacher
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.qxf.pojo.StudentCourseTeacher">
+    insert into t_student_course_teacher (id, student_id, teacher_id, 
+      score, course_id, teacher_estimate
+      )
+    values (#{id,jdbcType=VARCHAR}, #{studentId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR}, 
+      #{score,jdbcType=INTEGER}, #{courseId,jdbcType=VARCHAR}, #{teacherEstimate,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.qxf.pojo.StudentCourseTeacher">
+    insert into t_student_course_teacher
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="studentId != null">
+        student_id,
+      </if>
+      <if test="teacherId != null">
+        teacher_id,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="courseId != null">
+        course_id,
+      </if>
+      <if test="teacherEstimate != null">
+        teacher_estimate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="studentId != null">
+        #{studentId,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherId != null">
+        #{teacherId,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="courseId != null">
+        #{courseId,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherEstimate != null">
+        #{teacherEstimate,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qxf.pojo.StudentCourseTeacher">
+    update t_student_course_teacher
+    <set>
+      <if test="studentId != null">
+        student_id = #{studentId,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherId != null">
+        teacher_id = #{teacherId,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="courseId != null">
+        course_id = #{courseId,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherEstimate != null">
+        teacher_estimate = #{teacherEstimate,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.qxf.pojo.StudentCourseTeacher">
+    update t_student_course_teacher
+    set student_id = #{studentId,jdbcType=VARCHAR},
+      teacher_id = #{teacherId,jdbcType=VARCHAR},
+      score = #{score,jdbcType=INTEGER},
+      course_id = #{courseId,jdbcType=VARCHAR},
+      teacher_estimate = #{teacherEstimate,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qxf.pojo.StudentCourseTeacher">
+    update t_student_course_teacher
+    set student_id = #{studentId,jdbcType=VARCHAR},
+      teacher_id = #{teacherId,jdbcType=VARCHAR},
+      score = #{score,jdbcType=INTEGER},
+      course_id = #{courseId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
