@@ -60,7 +60,7 @@
                         label="责任" sortable>
                 </el-table-column>
                 <el-table-column
-                        prop="username"
+                        prop="nickname"
                         label="教秘名称" sortable>
                 </el-table-column>
 <!-- 			<el-table-column
@@ -383,7 +383,7 @@ export default {
 		async addSecretary() {
 			let _this = this
 			let params = {
-                username:_this.attr.username2,
+                nickname:_this.attr.username2,
                 instituteId:_this.attr.instituteId2,
                 majorId:_this.attr.majorId2,
                 email: _this.attr.email,

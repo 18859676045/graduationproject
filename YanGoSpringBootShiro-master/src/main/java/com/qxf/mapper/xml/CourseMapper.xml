@@ -4,7 +4,7 @@
 
 	<!--查询列表-->
 	<select id="getListByPage" parameterType="string" resultType="com.qxf.pojo.ShixiCourse">
-		SELECT DISTINCT sct.id,s.student_number AS studentNumber,
+		SELECT DISTINCT sct.id,s.nickname,
 	 	s.name,s.phone,sct.score,c.start_stime AS startStime,s.email AS sEmail,t.email AS tEmail,c.`name` As cname,c.end_etime AS endEtime,t.`name` AS tname,t.phone AS tphone
 		from
 		t_student s ,

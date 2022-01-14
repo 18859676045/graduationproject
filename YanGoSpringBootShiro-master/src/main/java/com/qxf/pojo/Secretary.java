@@ -19,7 +19,7 @@ public class Secretary {
     private String phone;
     @TableField("major_id")
     private String majorId;
-    private String username;
+    private String nickname;
     @TableField(exist = false)
     private String[] ids;//id集合
     @TableField(exist = false)

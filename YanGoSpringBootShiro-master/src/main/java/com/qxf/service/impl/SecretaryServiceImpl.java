@@ -46,7 +46,7 @@ public class SecretaryServiceImpl extends ServiceImpl<SecretaryMapper, Secretary
         //判断教秘是否存在
         Map<String,Object> map = new HashMap<>();
         map.put("name",secretary.getName());
-        map.put("username",secretary.getUsername());
+        map.put("nickname",secretary.getNickname());
         map.put("major_id",secretary.getMajorId());
         map.put("phone",secretary.getPhone());
         List<Secretary> list = super.baseMapper.selectByMap(map);
@@ -68,7 +68,7 @@ public class SecretaryServiceImpl extends ServiceImpl<SecretaryMapper, Secretary
         }
         u.setEnable(1);
         u.setCreateTime(new Date());
-        u.setName(secretary.getUsername());
+        u.setName(secretary.getNickname());
         userService.insert(u);
 
         //再把user信息插入到_user_roel表中

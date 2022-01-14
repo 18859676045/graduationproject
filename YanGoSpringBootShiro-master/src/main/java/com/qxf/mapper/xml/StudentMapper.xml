@@ -11,7 +11,7 @@
 		t.sex,
 		t.phone,
 		t.email,
-		t.student_number AS studentNumber,
+		t.nickname AS nickname,
 		t1.name AS clazzName,
 		t2.name AS majorName,
 		t3.name AS instituteName

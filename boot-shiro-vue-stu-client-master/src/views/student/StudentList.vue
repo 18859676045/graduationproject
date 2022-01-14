@@ -5,7 +5,7 @@
 		<el-col :span="64" class="toolbar" style="padding-bottom: 0px;with:100%;height:100%">
 			<el-form :inline="true" :model="filters" ref="filters">
 				<el-form-item>
-					<el-input placeholder="学生姓名" v-model="filters.keyword1"></el-input>
+					<el-input placeholder="学生学号" v-model="filters.keyword1"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" class="el-icon-search" v-on:click="getFormData1">查询</el-button>
@@ -31,12 +31,12 @@
         label="id">
       </el-table-column> -->
 	  <el-table-column
-	    prop="studentNumber"
-	    label="学号" sortable>
+	    prop="nickname"
+	    label="名称" sortable>
 	  </el-table-column>
 	  <el-table-column
 	    prop="name"
-	    label="学生姓名" sortable>
+	    label="用户名" sortable>
 	  </el-table-column>
 	  <el-table-column
 	    prop="age"
@@ -133,11 +133,11 @@
 			</el-option>
 	   </el-select>
 	</el-form-item>
-	<el-form-item label="姓名" prop="name2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
+	<el-form-item label="学号" prop="name2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
 		<el-input  type="text" v-model="attr.name2" placeholder="请输入学生姓名" auto-complete="off"></el-input>
 	</el-form-item>
-    <el-form-item label="学号" prop="studentNumber" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
-            <el-input  type="text" v-model="attr.studentNumber" placeholder="请输入学生学号" auto-complete="off"></el-input>
+    <el-form-item label="名称" prop="nickname" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
+            <el-input  type="text" v-model="attr.nickname" placeholder="请输入学生学号" auto-complete="off"></el-input>
     </el-form-item>
         <el-form-item label="邮箱" prop="email" :rules="[{ required: true, message: '请输入邮箱', trigger: 'blur' }]">
             <el-input  type="text" v-model="attr.email" placeholder="请输入学生邮箱" auto-complete="off"></el-input>
@@ -182,7 +182,7 @@ export default {
 			},
 			attr: {
 				name2: '',
-                studentNumber:'',
+                nickname:'',
                 email:'',
 				sex2: '',
 				age2: '',
@@ -323,7 +323,7 @@ export default {
 		submitForm(formName) {
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
-					this.addInstitute()
+					this.addStudent()
 				} else {
 					console.log('error submit!!');
 					return false
@@ -335,11 +335,11 @@ export default {
 			this.$refs[formName].resetFields();
 		},
 		// 新增属性
-		async addInstitute() {
+		async addStudent() {
 			let _this = this
 			let params = {
 				name: _this.attr.name2,
-                studentNumber:_this.attr.studentNumber,
+                nickname:_this.attr.nickname,
                 email:_this.attr.email,
 				sex: _this.attr.sex2,
 				age: _this.attr.age2,

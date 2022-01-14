@@ -2,10 +2,9 @@ package com.qxf.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.qxf.ftp.UploadUtil;
-import com.qxf.pojo.Role;
-import com.qxf.pojo.User;
-import com.qxf.service.RoleService;
-import com.qxf.service.UserService;
+import com.qxf.hiswww.domain.TStudentCourseTeacher;
+import com.qxf.pojo.*;
+import com.qxf.service.*;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ExcelUtil;
 import com.qxf.utils.ResultUtil;
@@ -13,10 +12,12 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.security.provider.MD5;
 
 import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
@@ -262,5 +263,168 @@ public class UserController extends BaseController {
         //前端可以通过状态码，判断文件是否上传成功
         return ResultUtil.result(EnumCode.OK.getValue(),"文件上传成功");
     }
+
+    /**
+     * 批量导入用户
+     *
+     */
+    @Autowired
+    TeacherService teacherService;
+    @Autowired
+    CourseService courseService;
+    @Autowired
+    DictService dictService;
+    @Autowired
+    StudentService studentService;
+    @Autowired
+    UserRoleService userRoleService;
+    @Autowired
+    StudentCourseTeacherService studentCourseTeacherService;
+    @RequestMapping(value = "/courseImport")
+    @ResponseBody
+    @Transactional
+    public Object courseExcelImport(@RequestParam("multipartFiles") MultipartFile[] multipartFiles,@RequestParam("instituteId2") String instituteId2,
+                                    @RequestParam("ccourseType") String ccourseType,@RequestParam("majorId2") String majorId2,
+                                    @RequestParam("clazzId2") String clazzId2, @RequestParam("validateStartTime") String validateStartTime,
+                                    @RequestParam("validateEndTime") String validateEndTime) throws IOException {
+
+        if (multipartFiles == null || multipartFiles.length < 1){
+            return ResultUtil.result(EnumCode.INTERNAL_SERVER_ERROR.getValue(),"空数据，导入失败");
+        }
+        for (MultipartFile file : multipartFiles){
+            List<String[]> list = ExcelUtil.readExcel(file);
+            if (list.isEmpty()){
+                return ResultUtil.result(EnumCode.INTERNAL_SERVER_ERROR.getValue(),"空数据，导入失败");
+            }
+            //查询数据库有么有这个实习类型，没有就新增
+            Map<String,Object> map = new HashMap<>();
+            map.put("start_stime",validateStartTime);
+            map.put("end_etime",validateEndTime);
+            map.put("course_type",ccourseType);
+            String courseId = null;
+            if (courseService.selectByMap(map).isEmpty()){
+                Map<String,Object> map1 = new HashMap<>();
+                map1.put("dict_code",ccourseType);
+                List<SysDict> sysDicts = dictService.selectByMap(map1);
+                Course course = new Course();
+                course.setId(UUID.randomUUID().toString().replace("-",""));
+                course.setName(sysDicts.get(0).getDictValue());
+                course.setStartTime(validateStartTime);
+                course.setEndTime(validateEndTime);
+                course.setCourseType(ccourseType);
+                courseService.insert(course);
+                courseId = course.getId();
+            }else {
+                courseId = courseService.selectByMap(map).get(0).getId();
+            }
+
+            //查询数据库的所有角色并且赋值
+            List<Role> allRoles = roleService.findAllRoles();
+            String teacherName = null;
+            String teacherPhone = null;
+            String teacherId = null;
+            List<Teacher> teachers = null;
+
+            for (int i=0;i<list.size();i++){
+                String[] values = list.get(i);
+                //判断老师并且赋值
+                if (!values[2].isEmpty() && !values[3].isEmpty()){
+                    teacherName = values[2];
+                    teacherPhone = values[3];
+
+                    Map<String,Object> objectMap = new HashMap<>();
+                    objectMap.put("name",teacherName);
+                    objectMap.put("phone",teacherPhone);
+                    teachers = teacherService.selectByMap(objectMap);
+                    //没有这个老师就新建
+                    if (teachers.size() == 0){
+                        Teacher teacher = new Teacher();
+                        teacher.setId(UUID.randomUUID().toString().replace("-",""));
+                        teacher.setName(teacherName);
+                        teacher.setPhone(teacherPhone);
+                        teacher.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2Hehg2AJ41ZAADMKjt4FbQ509.png");
+                        teacher.setSex(1);//默认是男
+                        teacherService.insert(teacher);
+                        teacherId = teacher.getId();
+                        //插入用户表
+                        User user = new User();
+                        user.setId(UUID.randomUUID().toString().replace("-",""));
+                        user.setUsername(teacherPhone);
+                        user.setName(teacherName);
+                        user.setCreateTime(new Date());
+                        user.setPassword("d477887b0636e5d87f79cc25c99d7dc9");//初始密码a123456
+                        user.setEnable(1);
+                        user.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2Hehg2AJ41ZAADMKjt4FbQ509.png");
+                        UserRole userRole = new UserRole();
+                        userRole.setUserId(user.getId());
+                        userRole.setRoleId("2");
+                        userRoleService.insert(userRole);
+                        userService.insert(user);
+
+                    }else {
+                        teacherId = teachers.get(0).getId();
+                    }
+                }
+                //判断学生
+                String studentName = values[0];
+                String studentNick = values[1];
+                String studentPhone = values[4];
+                Map<String,Object> m = new HashMap<>();
+                //学号是name，判断是否有这个学生
+                m.put("name",studentName);
+                List<Student> students = studentService.selectByMap(m);
+                String studentId = null;
+                if (students.size() == 0){
+                    Student student = new Student();
+                    student.setId(UUID.randomUUID().toString().replace("-",""));
+                    student.setSex(1);//默认是男
+                    student.setName(studentName);
+                    student.setNickname(studentNick);
+                    student.setPhone(studentPhone);
+                    student.setClazzId(clazzId2);
+                    student.setMajorId(majorId2);
+                    student.setInstituteId(instituteId2);
+                    student.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2He0rSAeek1AABgUvgByVQ494.png");
+                    studentService.insert(student);
+                     studentId = student.getId();
+                    //插入用户表
+                    User user = new User();
+                    user.setId(UUID.randomUUID().toString().replace("-",""));
+                    user.setUsername(studentName);
+                    user.setName(studentNick);
+                    user.setCreateTime(new Date());
+                    user.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2He0rSAeek1AABgUvgByVQ494.png");
+                    user.setPassword("d477887b0636e5d87f79cc25c99d7dc9");//初始密码a123456
+                    user.setEnable(1);
+                    userService.insert(user);
+                    UserRole userRole = new UserRole();
+                    userRole.setUserId(user.getId());
+                    userRole.setRoleId("3");
+                    userRoleService.insert(userRole);
+                }else {
+                     studentId = students.get(0).getId();
+                }
+
+
+                //插入实习,老师,学生表
+                Map<String,Object> mm = new HashMap<>();
+                mm.put("student_id",studentId);
+                mm.put("teacher_id",teacherId);
+                mm.put("course_id",courseId);
+                List<StudentCourseTeacher> studentCourseTeachers = studentCourseTeacherService.selectByMap(mm);
+                if (studentCourseTeachers.size() == 0){
+                    StudentCourseTeacher studentCourseTeacher = new StudentCourseTeacher();
+                    studentCourseTeacher.setCourseId(courseId);
+                    studentCourseTeacher.setStudentId(studentId);
+                    studentCourseTeacher.setTeacherId(teacherId);
+                    studentCourseTeacherService.insert(studentCourseTeacher);
+                }
+
+            }
+        }
+        //前端可以通过状态码，判断文件是否上传成功
+        return ResultUtil.result(EnumCode.OK.getValue(),"文件上传成功");
+    }
+
 
 }

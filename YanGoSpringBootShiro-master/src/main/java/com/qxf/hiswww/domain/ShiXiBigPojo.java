@@ -53,7 +53,7 @@ public class ShiXiBigPojo {
 
     private String sid;
 
-    private String studentNumber;
+    private String nickname;
 
     private String sname;
 

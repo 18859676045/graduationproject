@@ -17,7 +17,7 @@ public class ShixiCourse {
      private String sEmail;
      private String tEmail;
      private String courseType;
-     private String studentNumber;
+     private String nickname;
      private int score;
      private Date startStime;
      private String cname;

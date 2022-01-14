@@ -13,6 +13,9 @@
 				<el-form-item>
 					<el-button type="success" class="el-icon-plus" v-on:click="showDialogForm">新增</el-button>
 				</el-form-item>
+                <el-form-item>
+                    <el-button type="success" class="el-icon-plus" v-on:click="showDialogForm2">批量excel导入新增</el-button>
+                </el-form-item>
 				<el-form-item>
 					<el-button type="danger" class="el-icon-delete" @click="delAttr">删除</el-button>
 				</el-form-item>
@@ -41,12 +44,12 @@
         label="id">
       </el-table-column> -->
                 <el-table-column
-                        prop="studentNumber"
-                        label="学生学号" sortable>
+                        prop="nickname"
+                        label="用户名" sortable>
                 </el-table-column>
 	  <el-table-column
 	    prop="name"
-	    label="学生姓名" sortable>
+	    label="学生学号" sortable>
 	  </el-table-column>
       <el-table-column
         prop="cname"
@@ -137,7 +140,7 @@
 			<el-input  type="text" v-model="attr.name2" placeholder="请输入学生姓名" auto-complete="off"></el-input>
 		</el-form-item>
         <el-form-item label="学生学号" prop="name2" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
-            <el-input  type="text" v-model="attr.studentNumber" placeholder="请输入学生学号" auto-complete="off"></el-input>
+            <el-input  type="text" v-model="attr.nickname" placeholder="请输入学生学号" auto-complete="off"></el-input>
         </el-form-item>
 		<el-form-item label="成绩" prop="credit2" :rules="[{ required: true, message: '请输入成绩', trigger: 'blur' },{validator: 'regexp', pattern: /^([1-9][0-9]{0,1}|100)$/, message: '成绩只能是1-100之间的整数', trigger: 'change,blur'}]">
 			<el-input  type="number" v-model="attr.credit2" placeholder="请输入成绩" auto-complete="off"></el-input>
@@ -162,6 +165,95 @@
 	</div>
 </el-dialog>
 
+
+        <!-- 批量导入实习 -->
+        <el-dialog title="批量导入实习" :visible.sync="dialogFormVisible2">
+            <div style="width:60%;margin: 0 auto">
+                <el-form ref="form" :model="form" :inline="false" label-width="90px" class="demo-ruleForm">
+
+                    <el-form-item label="实习类型" prop="ccourseType" :rules="[{ required: true, message: '请选择实习类型', trigger: 'change,blur' }]">
+                        <el-select v-model="form.ccourseType" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="item in courseTypes"
+                                    :key="item.dictCode"
+                                    :label="item.dictValue"
+                                    :value="item.dictCode">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+
+
+
+                    <el-form-item label="所属学院" prop="instituteId2" :rules="[{ required: true, message: '请输入学院', trigger: 'blur' }]">
+                        <el-select v-model="form.instituteId2" filterable placeholder="请选择" @change="getMajorData">
+                            <el-option
+                                    v-for="item in institutes"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="所属专业" prop="majorId2" :rules="[{ required: true, message: '请输入专业', trigger: 'blur' }]">
+                        <el-select v-model="form.majorId2" filterable placeholder="请选择" @change="getClazzData">
+                            <el-option
+                                    v-for="item in majors"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="所属班级" prop="clazzId2" :rules="[{ required: true, message: '请输入班级', trigger: 'blur' }]">
+                        <el-select v-model="form.clazzId2" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="item in clazzs"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="实习时间" prop="validateTime" >
+                        <el-date-picker
+                                v-model="form.validateTime"
+                                value-format = "yyyy-MM-dd"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期">
+                        </el-date-picker>
+                    </el-form-item>
+
+                    <el-form-item  label="Excel文件：" prop="file">
+                        <el-upload class="upload-demo"
+                                   ref="upload"
+                                   :action="uploadUrl2"
+                                   :before-upload="handleBeforeUpload2"
+                                   :on-error="handleUploadError"
+                                   :before-remove="beforeRemove"
+                                   :auto-upload="false"
+                                   multiple
+                                   :limit="1"
+                                   :on-exceed="handleExceed"
+                                   accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                   :file-list="fileList">
+                            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                            <div slot="tip" class="el-upload__tip" style="display: inline-block;margin-left: 20px">只能上传xls格式的 excel文件</div>
+                        </el-upload>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible2 = false">取 消</el-button>
+                <el-button @click="resetForm('attr')">重置</el-button>
+                <el-button  style="margin-left: 10px;" type="success" @click="submitForm2('form')">确 定</el-button>
+            </div>
+        </el-dialog>
+
+
+
+
         <!-- 详情和修改 -->
         <el-dialog  title="实习学生详情" :visible.sync="dialogDetailEditvisble" width="1100px">
             <div style="width:600px;margin: 0 auto">
@@ -181,11 +273,11 @@
                         </el-select>
                     </el-form-item>
 
-                    <el-form-item label="学生姓名" prop="sname" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.sname" placeholder="请输入学生姓名" auto-complete="off"></el-input>
+                    <el-form-item label="学生学号" prop="sname" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.sname" placeholder="请输入学生学号" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="学生学号" prop="studentNumber" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.studentNumber" placeholder="请输入学生学号" auto-complete="off"></el-input>
+                    <el-form-item label="学生姓名" prop="nickname" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.nickname" placeholder="请输入学生姓名" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="学生手机号" prop="sphone" :rules="[{ required: true, message: '请输入学生手机号', trigger: 'blur' }]">
                         <el-input  type="text" v-model="DetailEditvisbleMessage.sphone" placeholder="请输入学生手机号" auto-complete="off"></el-input>
@@ -215,17 +307,6 @@
 
 
                     <el-form-item label="实习时间" prop="validateTime" >
-                        <!--                        <p>组件值：{{ DetailEditvisbleMessage.validateTime }}</p>-->
-<!--                        <el-date-picker-->
-<!--                                v-model=""-->
-<!--                                type="daterange"-->
-<!--                                range-separator="至"-->
-<!--                                start-placeholder="开始日期"-->
-<!--                                end-placeholder="结束日期"-->
-<!--                                @blur="changePackageTime"-->
-<!--                        >-->
-<!--                        </el-date-picker>-->
-
                         <el-date-picker
                                 v-model="DetailEditvisbleMessage.validateTime"
                                 value-format = "yyyy-MM-dd"
@@ -266,25 +347,12 @@
                 </el-form>
 
 
-
-
-
-
-
-
-
-
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogDetailEditvisble = false">取 消</el-button>
                 <el-button type="primary" @click="submitForm1('submitBigPojo')">提交</el-button>
             </div>
         </el-dialog>
-
-
-
-
-
 
 	</el-row>
 
@@ -301,7 +369,7 @@ export default {
 		    //上传组件
             isAutoUpload: true,
             uploadUrl: 'http://localhost:8089/file/upload',
-            uploadUrl2: 'http://localhost:8089/user/import',
+            uploadUrl2: 'http://localhost:8089/user/courseImport',
             fileList: [],
 
 
@@ -309,8 +377,15 @@ export default {
 			filters: {
 				keyword1: ''
 			},
+            form:{
+                instituteId2:'',
+                ccourseType:'',
+                majorId2:'',
+                clazzId2:'',
+                validateTime:''
+            },
 			attr: {
-                studentNumber:'',
+                nickname:'',
 				name2: '',
 				courseType2: '',
 				credit2: '',
@@ -320,6 +395,9 @@ export default {
 				examStime2:'',
 				examEtime2:''
 			},
+            institutes:[],    //学院列表
+            majors:[],       //专业列表
+            clazzs:[],       //班级列表
 			courseTypes:[],     //实习类型列表
 			teachers:[],       //实习导师列表
 			listLoading: false, // 加载等待
@@ -339,6 +417,7 @@ export default {
 			page2: 1,
 			dialogTableVisible1: false,
 			dialogFormVisible1: false,
+            dialogFormVisible2: false,
             dialogDetailEditvisble:false,
             DetailEditvisbleMessage: {
 			    score:'',
@@ -362,7 +441,7 @@ export default {
           tphone:'',
           //学生表
           sid:'',
-          studentNumber:'',
+          nickname:'',
           sname:'',
           ssex:'',
           sage:'',
@@ -381,7 +460,6 @@ export default {
           validateTime:[]
             },
 
-			dialogFormVisible2: false,
 			innerVisible: false,
 			attrIds: [], // 属性ids集合
 			detailIds: [], // 属性明细ids
@@ -420,7 +498,27 @@ export default {
 			}
 		}
 	},
+    computed: {
+        // 这里定义上传文件时携带的参数，即表单数据
+        upData: function() {
+            return {
+                body: this.form
+            }
+        }
+    },
 	methods: {
+        submitForm2(formName){
+            debugger
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.$refs.upload.submit()
+                } else {
+                    _this.message(true,data.data.msg,'error')
+                    return false
+                }
+            })
+        },
+
 
 	    //下拉框点击后查询老师信息
        async findTeacherMessage(vId){
@@ -451,11 +549,12 @@ export default {
 
 	    //导入
         handleBeforeUpload2(file){
-            debugger
+            let _this = this;
             this.fileTemp = file
             let fileName = file.name
             let fileType = fileName.substring(fileName.lastIndexOf('.') + 1);
-
+            // let user = JSON.parse(sessionStorage.getItem('user'))
+            // console.log(user)
             // 判断上传文件格式
             if (this.fileTemp) {
                 if ((fileType != 'xlsx') && (fileType != 'xls')) {
@@ -473,13 +572,23 @@ export default {
                 return;
             }
 
-            this.uploadUrl = 'http://localhost:8089/user/import'
+            this.uploadUrl = 'http://localhost:8089/user/courseImport'
+            // let formMessage =  JSON.parse(_this.form)
             console.log("开始上传，上传的文件为："+file)
+            console.log("开始上传，携带的数据为："+_this.form)
+
+            debugger
             let formData = new FormData();
             formData.append("multipartFiles", file);
+            formData.append("instituteId2", _this.form.instituteId2);
+            formData.append("ccourseType", _this.form.ccourseType);
+            formData.append("majorId2", _this.form.majorId2);
+            formData.append("clazzId2", _this.form.clazzId2);
+            formData.append("validateStartTime", _this.form.validateTime[0]);
+            formData.append("validateEndTime", _this.form.validateTime[1]);
             axios({
                 method: 'post',
-                url: 'http://localhost:8089/user/import',
+                url: 'http://localhost:8089/user/courseImport',
                 data: formData,
                 headers: {'Content-Type': 'multipart/form-data' }
             }).then((res) => {
@@ -542,7 +651,15 @@ export default {
 			this.dialogFormVisible1 = true
 			this.getCourseType()
 			this.getAllTeacher ()
+
 		},
+        showDialogForm2() {
+            this.dialogFormVisible2 = true
+            this.getCourseType()
+            // this.getClazzData()
+            // this.getMajorData()
+            this.getInstituteData()
+        },
 		// 查询实习类型列表
 		async getCourseType () {
 				let _this = this
@@ -594,7 +711,7 @@ export default {
 		async addCourse() {
 			let _this = this
 			let params = {
-			    studentNumber: _this.attr.studentNumber,
+			    nickname: _this.attr.nickname,
 				name: _this.attr.name2,
 				courseType: _this.attr.courseType2,
                 score: _this.attr.credit2,
@@ -789,7 +906,7 @@ export default {
                 tphone:this.DetailEditvisbleMessage.tphone,
                 //学生表
                 sid:this.DetailEditvisbleMessage.sid,
-                studentNumber:this.DetailEditvisbleMessage.studentNumber,
+                nickname:this.DetailEditvisbleMessage.nickname,
                 sname:this.DetailEditvisbleMessage.sname,
                 ssex:this.DetailEditvisbleMessage.ssex,
                 sage:this.DetailEditvisbleMessage.sage,
@@ -838,11 +955,62 @@ export default {
 			this.pageSize2 = val
 			this.selDetails(this.attrId)
 		},
+
 		// 当前页码改变时触发
 		handleCurrentChange2 (val) {
 			this.startPage2 = val
 			this.selDetails(this.attrId)
 		},
+        // 查询学院列表
+        async getInstituteData () {
+            let _this = this
+            let data = await http.get('institute/findAllInstitute')
+            if(!data.data) {
+                return
+            }
+            if (data.data.status === 200) {
+                _this.institutes = data.data.data
+            } else {
+                _this.message(true,data.data.msg,'error')
+                _this.institutes = []
+            }
+        },
+
+        //获取专业列表
+        async getMajorData (){
+            let _this = this
+            let param = {
+                instituteId: _this.form.instituteId2
+            }
+            let data = await http.get('major/findAllMajor',param);
+            if(!data.data) {
+                return
+            }
+            if (data.data.status === 200) {
+                _this.majors = data.data.data
+            } else {
+                _this.message(true,data.data.msg,'error')
+                _this.majors = []
+            }
+        },
+
+        //获取班级列表
+        async getClazzData (){
+            let _this = this
+            let param = {
+                majorId: _this.form.majorId2
+            }
+            let data = await http.get('clazz/findAllClazz',param);
+            if(!data.data) {
+                return
+            }
+            if (data.data.status === 200) {
+                _this.clazzs = data.data.data
+            } else {
+                _this.message(true,data.data.msg,'error')
+                _this.clazzs = []
+            }
+        },
 		/**
 		 * ifshow: true/false msg: message  type: error/warning/success
 		 */
@@ -860,6 +1028,10 @@ export default {
 	},
 	mounted() {
 		this.getFormData1()
-	}
+	},
+
+
+
+
 }
 </script>

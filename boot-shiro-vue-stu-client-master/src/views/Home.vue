@@ -289,7 +289,7 @@
 				var user =  _this.user
 				if(user) {
 					_this.userform.photoUrl = _this.imgService + user.photoUrl,
-					_this.userform.name = user.username,
+					_this.userform.name = user.nickname,
 					_this.userform.email = user.email
                     // _this.userform.phone = user.phone
                     // _this.userform.age = user.age
@@ -318,9 +318,9 @@
 				let _this = this
         let params = {
 					 id: _this.user.id,
-				   username: _this.userform.name,
+				   nickname: _this.userform.name,
 					 email: _this.userform.email,
-					 photoUrl: _this.uploadImg == ''?_this.user.userImg:_this.uploadImg,
+					 // photoUrl: _this.uploadImg == ''?_this.user.userImg:_this.uploadImg,
                     // phone:_this.userform.phone,
                     //     age:_this.userform.age ,
                     //         sex:  _this.userform.sex

@@ -14,6 +14,8 @@ import com.qxf.service.PersonService;
 import com.qxf.service.UserService;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ResultUtil;
+import com.xiaoleilu.hutool.crypto.SecureUtil;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +72,7 @@ public class AccountCenterController extends BaseController{
     public Object editPassword(@RequestParam("password") String password){
         String userId = super.getUserId();
         User user = userService.selectById(userId);
-        user.setPassword(password);
+        user.setPassword(SecureUtil.md5(password));
         userService.updateById(user);
         return ResultUtil.result(EnumCode.OK.getValue(), "修改成功，重新登陆生效！", "请求成功");
     }

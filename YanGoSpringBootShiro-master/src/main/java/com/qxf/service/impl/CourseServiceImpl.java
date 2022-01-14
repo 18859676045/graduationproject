@@ -69,7 +69,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     public Object addCourse(ShixiCourse course) throws ParseException {
         //查询学生
         TStudentExample tStudentExample = new TStudentExample();
-        tStudentExample.or().andNameEqualTo(course.getName()).andStudentNumberEqualTo(course.getStudentNumber());
+        tStudentExample.or().andNameEqualTo(course.getName()).andNicknameEqualTo(course.getNickname());
 
         TStudent tStudent = tStudentMapper.selectOneByExampleSelective(tStudentExample);
         if (StringUtils.isEmpty(tStudent)) {
@@ -227,7 +227,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         shiXiBigPojo.setSphotoUrl(tStudent.getPhotoUrl());
         shiXiBigPojo.setSphone(tStudent.getPhone());
         shiXiBigPojo.setSsex(tStudent.getSex());
-        shiXiBigPojo.setStudentNumber(tStudent.getStudentNumber());
+        shiXiBigPojo.setNickname(tStudent.getNickname());
         shiXiBigPojo.setSname(tStudent.getName());
         //放入实习信息表
         shiXiBigPojo.setCid(tCourse.getId());
@@ -255,7 +255,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         //查询是否有这个学生，进行修改
         TStudent tStudent = tStudentMapper.selectOneByExample(tStudentExample);
         if (StringUtils.isEmpty(tStudent)) {
-            return ResultUtil.result(EnumCode.NO_STUDENT.getValue(), "添加失败", null);
+            return ResultUtil.result(EnumCode.NO_STUDENT.getValue(), "没有这个学生", null);
         }
         //根据实习类型,实习的开始和结束的时间判断是否有这个实习，
         //如果没有这个实习课程则新增，有的话就直接获取主键(有bug)

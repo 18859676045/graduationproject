@@ -58,10 +58,16 @@
 
 <!--&lt;!&ndash;        //t_courses表&ndash;&gt;-->
 <!--        &lt;!&ndash;表名&ndash;&gt;-->
-<!--        <table tableName="t_company">-->
+<!--        <table tableName="t_student">-->
 <!--            <generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
 <!--        </table>-->
 <!--    </context>-->
+
+
+
+
+
+
 
     <!-- 指定连接数据库的JDBC驱动包所在位置，指定到你本机的完整路径 -->
     <classPathEntry location="E:\mysql-connector-java-5.1.38.jar"/>
@@ -98,8 +104,8 @@
         </javaClientGenerator>
 
         <!-- 数据库表名及对应的Java模型类名 -->
-        <table tableName="t_secretary"
-               domainObjectName="Secretary"
+        <table tableName="t_student_course_teacher"
+               domainObjectName="StudentCourseTeacher"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"

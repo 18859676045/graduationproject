@@ -151,7 +151,7 @@ public class PersonServiceImpl implements PersonService {
             student.setMajorId(vo.getMajorId());
             student.setClazzId(vo.getClazzId());
             student.setName(vo.getSname());
-            student.setStudentNumber(vo.getSnumber());
+            student.setNickname(vo.getSnumber());
             student.setEmail(vo.getSemail());
             student.setSex(Integer.valueOf(vo.getSsex()));
             student.setAge(vo.getSage());

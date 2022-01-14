@@ -16,8 +16,7 @@ import java.io.Serializable;
 public class Student implements Serializable{
     private String id;
     private String name;             //学生姓名
-    @TableField("student_number")
-    private String studentNumber;    //学号
+    private String nickname;    //学号
     private Integer age;             //年龄
     private Integer sex;             //性别
     private String phone;            //联系电话

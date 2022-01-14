@@ -54,11 +54,11 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
 //        if(total!=null){
 //            number = ""+(1000+total);
 //        }
-        String studentNumber = student.getStudentNumber();   //学号
+        String studentNickname = student.getNickname();   //学号
 
         //判断要插入的学生是否存在
         Map<String,Object> map = new HashMap<>();
-        map.put("student_number",studentNumber);
+        map.put("nickname",studentNickname);
         map.put("clazz_id",student.getClazzId().trim());
         map.put("major_id",student.getMajorId().trim());
         map.put("institute_id",student.getInstituteId().trim());
