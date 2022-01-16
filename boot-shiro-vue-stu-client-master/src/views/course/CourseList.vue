@@ -3,9 +3,9 @@
 	<el-row>
 		<!--工具条-->
 		<el-col :span="64" class="toolbar" style="padding-bottom: 0px;with:100%;height:100%">
-			<el-form :inline="true" :model="filters" ref="filters">
+			<el-form :inline="true" :model="filters" ref="filters" v-if="user.roleId != '3'">
 				<el-form-item>
-					<el-input placeholder="学生姓名" v-model="filters.keyword1"></el-input>
+					<el-input placeholder="学生学号" v-model="filters.keyword1"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" class="el-icon-search" v-on:click="getFormData1">查询</el-button>
@@ -13,31 +13,25 @@
 				<el-form-item>
 					<el-button type="success" class="el-icon-plus" v-on:click="showDialogForm">新增</el-button>
 				</el-form-item>
-                <el-form-item>
+                <el-form-item >
                     <el-button type="success" class="el-icon-plus" v-on:click="showDialogForm2">批量excel导入新增</el-button>
                 </el-form-item>
 				<el-form-item>
 					<el-button type="danger" class="el-icon-delete" @click="delAttr">删除</el-button>
 				</el-form-item>
-                <el-upload class="upload-demo"
-                           :action="uploadUrl2"
-                           :before-upload="handleBeforeUpload2"
-                           :on-error="handleUploadError"
-                           :before-remove="beforeRemove"
-                           multiple
-                           :limit="1"
-                           :on-exceed="handleExceed"
-                           accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                           :file-list="fileList">
-                    <el-button size="small" type="primary">批量导入用户</el-button>
-                </el-upload>
+                <el-form-item>
+                    <el-button type="primary" plain @click="exportUser">导出汇总</el-button>
+                </el-form-item>
+<!--                <el-form-item>-->
+<!--                    <el-button type="infor" round @click="exportUserByA">a标签导出</el-button>-->
+<!--                </el-form-item>-->
 			</el-form>
 		</el-col>
 
 		<el-col>
 			<el-table
 			v-loading="listLoading" element-loading-text="拼命加载中" :data="tableData1" @selection-change="handleSelectionChange1">
-			<el-table-column type="selection" width="55">
+			<el-table-column v-if="user.roleId != '3'" type="selection" width="55">
 			</el-table-column>
 <!--      <el-table-column
         prop="id"
@@ -89,14 +83,14 @@
                     </template>
 
                 </el-table-column>
-                <el-table-column label="邮件消息提醒">
+                <el-table-column label="邮件消息提醒"  v-if="user.roleId == '1' || user.roleId == '4'">
                     <template slot-scope="scope">
                         <el-button
                                 size="danger"
                                 @click="setGrade(scope.row.TEmail)">导师打分</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column label="邮件消息通知">
+                <el-table-column label="邮件消息通知" v-if="user.roleId != '3'">
                     <template slot-scope="scope">
                         <el-button
                                 size="danger"
@@ -122,6 +116,9 @@
 		 </div>
 	</el-col>
 
+
+
+
 <!-- 新增属性 -->
 	<el-dialog title="新增实习" :visible.sync="dialogFormVisible1">
 	<div style="width:60%;margin: 0 auto">
@@ -136,17 +133,61 @@
 				</el-option>
 			</el-select>
 		</el-form-item>
-		<el-form-item label="学生姓名" prop="name2" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
-			<el-input  type="text" v-model="attr.name2" placeholder="请输入学生姓名" auto-complete="off"></el-input>
+
+<!--        <el-form-item label="所属学院" prop="instituteId2" :rules="[{ required: true, message: '请输入学院', trigger: 'blur' }]">-->
+<!--            <el-select v-model="form.instituteId2" filterable placeholder="请选择" @change="getMajorData">-->
+<!--                <el-option-->
+<!--                        v-for="item in institutes"-->
+<!--                        :key="item.id"-->
+<!--                        :label="item.name"-->
+<!--                        :value="item.id">-->
+<!--                </el-option>-->
+<!--            </el-select>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="所属专业" prop="majorId2" :rules="[{ required: true, message: '请输入专业', trigger: 'blur' }]">-->
+<!--            <el-select v-model="form.majorId2" filterable placeholder="请选择" @change="getClazzData">-->
+<!--                <el-option-->
+<!--                        v-for="item in majors"-->
+<!--                        :key="item.id"-->
+<!--                        :label="item.name"-->
+<!--                        :value="item.id">-->
+<!--                </el-option>-->
+<!--            </el-select>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="所属班级" prop="clazzId2" :rules="[{ required: true, message: '请输入班级', trigger: 'blur' }]">-->
+<!--            <el-select v-model="form.clazzId2" filterable placeholder="请选择">-->
+<!--                <el-option-->
+<!--                        v-for="item in clazzs"-->
+<!--                        :key="item.id"-->
+<!--                        :label="item.name"-->
+<!--                        :value="item.id">-->
+<!--                </el-option>-->
+<!--            </el-select>-->
+<!--        </el-form-item>-->
+        <el-form-item label="实习时间" prop="validateTime" >
+            <el-date-picker
+                    v-model="attr.validateTime"
+                    value-format = "yyyy-MM-dd"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+            </el-date-picker>
+        </el-form-item>
+
+
+
+		<el-form-item label="学生姓名" prop="nickename" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
+			<el-input  type="text" v-model="attr.nickename" placeholder="请输入学生姓名" auto-complete="off"></el-input>
 		</el-form-item>
         <el-form-item label="学生学号" prop="name2" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
-            <el-input  type="text" v-model="attr.nickname" placeholder="请输入学生学号" auto-complete="off"></el-input>
+            <el-input  type="text" v-model="attr.name2" placeholder="请输入学生学号" auto-complete="off"></el-input>
         </el-form-item>
 		<el-form-item label="成绩" prop="credit2" :rules="[{ required: true, message: '请输入成绩', trigger: 'blur' },{validator: 'regexp', pattern: /^([1-9][0-9]{0,1}|100)$/, message: '成绩只能是1-100之间的整数', trigger: 'change,blur'}]">
 			<el-input  type="number" v-model="attr.credit2" placeholder="请输入成绩" auto-complete="off"></el-input>
 		</el-form-item>
-		<el-form-item label="实习导师" prop="teacherIds" :rules="[{ required: true, message: '至少选择一名实习导师', trigger: 'change,blur' }]">
-			<el-select v-model="attr.teacherIds" multiple filterable placeholder="请选择实习导师">
+		<el-form-item label="实习导师"  prop="teacherIds" :rules="[{ required: true, message: '至少选择一名实习导师', trigger: 'change,blur' }]">
+			<el-select v-model="attr.teacherIds"  filterable placeholder="请选择实习导师">
 				<el-option
 					v-for="item in teachers"
 					:key="item.id"
@@ -231,6 +272,7 @@
                                    :action="uploadUrl2"
                                    :before-upload="handleBeforeUpload2"
                                    :on-error="handleUploadError"
+                                   :on-success="uploadSuccess"
                                    :before-remove="beforeRemove"
                                    :auto-upload="false"
                                    multiple
@@ -287,14 +329,15 @@
                     </el-form-item>
 
                     <el-form-item label="公司名称" prop="gcompanyName">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.gcompanyName" placeholder="请输入公司名称" auto-complete="off"></el-input>
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.gcompanyName" placeholder="请输入公司名称以及地址" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="学生岗位" prop="gstudentsPost">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.gstudentsPost" placeholder="请输入学生岗位" auto-complete="off"></el-input>
+                    <el-form-item label="学生部门/岗位" prop="gstudentsPost">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.gstudentsPost" placeholder="请输入学生部门与岗位" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="公司简介" prop="gcDescribe">
                         <el-input type="textarea" v-model="DetailEditvisbleMessage.gcDescribe" placeholder="公司简介，框可下拉放大"></el-input>
                     </el-form-item>
+
                     <el-form-item label="校外导师名称" prop="goutSupervisor">
                         <el-input  type="text" v-model="DetailEditvisbleMessage.goutSupervisor" placeholder="请输入校外导师名称" auto-complete="off"></el-input>
                     </el-form-item>
@@ -304,10 +347,19 @@
                     <el-form-item label="校外导师联系方式" prop="goutorPhone">
                         <el-input  type="text" v-model="DetailEditvisbleMessage.goutorPhone" placeholder="请输入校外导师联系方式" auto-complete="off"></el-input>
                     </el-form-item>
+                    <el-form-item label="实习方式" prop="gcompanyName">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.practiceWay" placeholder="请输入实习方式" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="疫情防控所在风险" prop="gcompanyName">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.risk" placeholder="疫情防控所在风险（低风险）" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="身体状况" prop="gcompanyName">
+                        <el-input  type="text" v-model="DetailEditvisbleMessage.healthy" placeholder="学生身体状况（良好）" auto-complete="off"></el-input>
+                    </el-form-item>
 
-
-                    <el-form-item label="实习时间" prop="validateTime" >
-                        <el-date-picker
+<!-- v-if="user.roleId != '3'"-->
+                    <el-form-item label="实习时间" prop="validateTime">
+                        <el-date-picker :disabled="this.user.roleId==3"
                                 v-model="DetailEditvisbleMessage.validateTime"
                                 value-format = "yyyy-MM-dd"
                                 type="daterange"
@@ -318,15 +370,16 @@
                     </el-form-item>
 
 
+
 <!--                    <div v-if="DetailEditvisbleMessage.sid == null">-->
                     <el-form-item label="成绩" prop="score" :rules="[{ required: true, message: '请输入成绩', trigger: 'blur' },{validator: 'regexp', pattern: /^([1-9][0-9]{0,1}|100)$/, message: '成绩只能是1-100之间的整数', trigger: 'change,blur'}]">
-                        <el-input  type="number" v-model="DetailEditvisbleMessage.score" placeholder="请输入成绩" auto-complete="off"></el-input>
+                        <el-input :disabled="this.user.roleId==3"  type="number" v-model="DetailEditvisbleMessage.score" placeholder="请输入成绩" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="导师评语" prop="teacherEstimate">
-                        <el-input type="textarea" v-model="DetailEditvisbleMessage.teacherEstimate" placeholder="导师评语，框可下拉放大"></el-input>
+                        <el-input :disabled="this.user.roleId==3" type="textarea" v-model="DetailEditvisbleMessage.teacherEstimate" placeholder="导师评语，框可下拉放大"></el-input>
                     </el-form-item>
                     <el-form-item label="实习导师" prop="tid" :rules="[{ required: true, message: '至少选择一名实习导师', trigger: 'change,blur' }]">
-                        <el-select clearable @change="findTeacherMessage" v-model="DetailEditvisbleMessage.tid" filterable placeholder="请选择实习导师">
+                        <el-select :disabled="this.user.roleId==3" clearable @change="findTeacherMessage" v-model="DetailEditvisbleMessage.tid" filterable placeholder="请选择实习导师">
                             <el-option
                                     v-for="item in teachers"
                                     :key="item.id"
@@ -336,10 +389,10 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="导师手机号" prop="tphone" :rules="[{ required: true, message: '请输入导师手机号', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.tphone" placeholder="请输入导师手机号" auto-complete="off"></el-input>
+                        <el-input  :disabled="this.user.roleId==3" type="text" v-model="DetailEditvisbleMessage.tphone" placeholder="请输入导师手机号" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="导师邮箱" prop="temail" :rules="[{ required: true, message: '请输入导师邮箱', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="DetailEditvisbleMessage.temail" placeholder="请输入导师邮箱" auto-complete="off"></el-input>
+                        <el-input :disabled="this.user.roleId==3" type="text" v-model="DetailEditvisbleMessage.temail" placeholder="请输入导师邮箱" auto-complete="off"></el-input>
                     </el-form-item>
 <!--                    </div>-->
 
@@ -385,7 +438,7 @@ export default {
                 validateTime:''
             },
 			attr: {
-                nickname:'',
+                nickename:'',
 				name2: '',
 				courseType2: '',
 				credit2: '',
@@ -393,8 +446,14 @@ export default {
 				signStime2:'',
 				signEtime2:'',
 				examStime2:'',
-				examEtime2:''
+				examEtime2:'',
+                instituteId2:'',
+                ccourseType:'',
+                majorId2:'',
+                clazzId2:'',
+                validateTime:[]
 			},
+            user:JSON.parse(sessionStorage.getItem("user")),
             institutes:[],    //学院列表
             majors:[],       //专业列表
             clazzs:[],       //班级列表
@@ -420,6 +479,9 @@ export default {
             dialogFormVisible2: false,
             dialogDetailEditvisble:false,
             DetailEditvisbleMessage: {
+                practiceWay:'',
+                risk:'',
+                healthy:'',
 			    score:'',
                 teacherEstimate:'',
                 stcId:'',
@@ -508,15 +570,22 @@ export default {
     },
 	methods: {
         submitForm2(formName){
+            let _this = this
             debugger
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.$refs.upload.submit()
+                    _this.message(true,data.data.msg,'success')
                 } else {
                     _this.message(true,data.data.msg,'error')
                     return false
                 }
             })
+        },
+        uploadSuccess(){
+            let _this = this
+            _this.message(true,"上传成功，请刷新重试",'success')
+            alert("上传成功，请稍后刷新重试")
         },
 
 
@@ -577,7 +646,6 @@ export default {
             console.log("开始上传，上传的文件为："+file)
             console.log("开始上传，携带的数据为："+_this.form)
 
-            debugger
             let formData = new FormData();
             formData.append("multipartFiles", file);
             formData.append("instituteId2", _this.form.instituteId2);
@@ -651,7 +719,7 @@ export default {
 			this.dialogFormVisible1 = true
 			this.getCourseType()
 			this.getAllTeacher ()
-
+            this.getInstituteData()
 		},
         showDialogForm2() {
             this.dialogFormVisible2 = true
@@ -711,11 +779,17 @@ export default {
 		async addCourse() {
 			let _this = this
 			let params = {
-			    nickname: _this.attr.nickname,
+			    nickname: _this.attr.nickename,
 				name: _this.attr.name2,
 				courseType: _this.attr.courseType2,
                 score: _this.attr.credit2,
 				teacherIds: _this.attr.teacherIds,
+                startStime:_this.attr.validateTime[0],
+                endEtime:_this.attr.validateTime[1],
+
+                sinstituteId:_this.attr.instituteId2,
+                smajorId:_this.attr.majorId2,
+                sclazzId:_this.attr.clazzId2,
 			}
 			let data = await http.post("course/add", params)
 
@@ -923,7 +997,11 @@ export default {
                 // cstartStime:this.DetailEditvisbleMessage.cstartStime,
                 // cendEtime:this.DetailEditvisbleMessage.cendEtime,
                 ccourseType:this.DetailEditvisbleMessage.ccourseType,
-                validateTime:this.DetailEditvisbleMessage.validateTime
+                validateTime:this.DetailEditvisbleMessage.validateTime,
+                //风险表
+                healthy:this.DetailEditvisbleMessage.healthy,
+                practiceWay:this.DetailEditvisbleMessage.practiceWay,
+                risk:this.DetailEditvisbleMessage.risk
             }
             let data = await http.post("course/editBigPojo",params )
 
@@ -1010,6 +1088,50 @@ export default {
                 _this.message(true,data.data.msg,'error')
                 _this.clazzs = []
             }
+        },
+        // 导出用户，通过blob
+        exportUser () {
+
+            let u = JSON.parse(sessionStorage.getItem("user"))
+            console.log(u)
+            axios({
+                method: 'post',
+                url: 'http://localhost:8089/user/AllExport',
+                data: {
+                    username: u.username,
+                    roleId: u.roleId,
+                    userId: u.id
+                },
+                responseType: 'blob'
+            }).then((res) => {
+                console.log(res)
+                const link = document.createElement('a')
+                let blob = new Blob([res.data],{type: 'application/vnd.ms-excel'});
+                link.style.display = 'none'
+                link.href = URL.createObjectURL(blob);
+                console.log("href:"+link.href)
+                let num = ''
+                for(let i=0;i < 10;i++){
+                    num += Math.ceil(Math.random() * 10)
+                }
+                link.setAttribute('download', num + '.xls')
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            }).catch(error => {
+                console.log(error)
+            });
+
+
+        },	// 导出用户，通过a标签
+        exportUserByA () {
+            let username = this.filters.keyword
+            const link = document.createElement('a')
+            link.href = "http://localhost:8089/user/AllExport?username="+username
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+
         },
 		/**
 		 * ifshow: true/false msg: message  type: error/warning/success

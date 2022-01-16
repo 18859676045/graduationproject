@@ -30,6 +30,9 @@
 	  <el-table-column
 	    prop="delTime"
 	    label="删除时间" sortable >
+          <template slot-scope="scope">
+              <span>{{scope.row.delTime, "-", false | dataFormat}}</span>
+          </template>
 	  </el-table-column>
                 <el-table-column
                         prop="delUserName"

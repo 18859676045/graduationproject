@@ -33,29 +33,19 @@
     </properties>
 
     <dependencies>
-        <!-- excel导出需要的依赖POI-->
+        <!-- excel导出需要的依赖POI 3.6-->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.6</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>3.14</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.6</version>
+            <version>3.17-beta1</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -234,6 +224,7 @@
     </dependencies>
 
     <build>
+        <finalName>Yango</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

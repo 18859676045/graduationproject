@@ -37,6 +37,19 @@
       #{score,jdbcType=INTEGER}, #{courseId,jdbcType=VARCHAR}, #{teacherEstimate,jdbcType=LONGVARCHAR}
       )
   </insert>
+  <insert id="MyWriteInsert" parameterType="com.qxf.pojo.StudentCourseTeacher">
+
+    insert into t_student_course_teacher (id, student_id, teacher_id,
+                                          score, course_id, teacher_estimate
+    )
+    values (#{id,jdbcType=VARCHAR}, #{studentId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR},
+            #{score,jdbcType=INTEGER}, #{courseId,jdbcType=VARCHAR}, #{teacherEstimate,jdbcType=LONGVARCHAR}
+           )
+  </insert>
+
+
+
+
   <insert id="insertSelective" parameterType="com.qxf.pojo.StudentCourseTeacher">
     insert into t_student_course_teacher
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -80,6 +93,10 @@
       </if>
     </trim>
   </insert>
+
+
+
+
   <update id="updateByPrimaryKeySelective" parameterType="com.qxf.pojo.StudentCourseTeacher">
     update t_student_course_teacher
     <set>

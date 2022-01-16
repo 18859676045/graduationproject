@@ -32,7 +32,7 @@
 <!--                             index跳转-->
 
 <!--                             child.name展示名称-->
-							 <el-menu-item v-for="child in item.children" :index="child.url" :key="child.url" v-if="true">{{child.url}}</el-menu-item>
+							 <el-menu-item v-for="child in item.children" :index="child.url" :key="child.url" v-if="true">{{child.name}}</el-menu-item>
 						 </el-submenu>
 						 <el-menu-item v-if="item.url!='/' && item.children.length>0" :index="item.children[0].url">{{item.children[0].name}}</el-menu-item>
 					 </template>
@@ -128,9 +128,9 @@
 
 
 
-				<el-form-item label="昵称"   prop="name">
-					<el-input type="text" placeholder="用户昵称" auto-complete="off" v-model="userform.name"></el-input>
-				</el-form-item>
+<!--				<el-form-item label="昵称"   prop="name">-->
+<!--					<el-input type="text" placeholder="用户昵称" auto-complete="off" v-model="userform.name"></el-input>-->
+<!--				</el-form-item>-->
 				<el-form-item label="邮箱" prop="email">
 					<el-input type="text" placeholder="用户邮箱" auto-complete="off" v-model="userform.email"></el-input>
 				</el-form-item>

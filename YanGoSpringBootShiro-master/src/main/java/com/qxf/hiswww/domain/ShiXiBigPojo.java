@@ -91,5 +91,11 @@ public class ShiXiBigPojo {
     private String teacherEstimate;
     //前端传来的接收,时间
     private String[] validateTime;
+    // //风险表
+    private String healthy;
+    private String practiceWay;
+    private String risk;
+
+
 
 }

@@ -7,20 +7,16 @@ import com.qxf.hiswww.dao.*;
 import com.qxf.hiswww.domain.*;
 import com.qxf.mapper.CourseMapper;
 import com.qxf.pojo.*;
-import com.qxf.service.CourseService;
-import com.qxf.service.CourseTeacherService;
-import com.qxf.service.GradeService;
+import com.qxf.service.*;
 import com.qxf.utils.EnumCode;
 import com.qxf.utils.ResultUtil;
 import org.apache.shiro.SecurityUtils;
-import org.joda.time.format.DateTimeFormat;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.sql.Driver;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -48,25 +44,86 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     TStudentMapper tStudentMapper;
     @Autowired
     CourseMapper courseMapper;
-
+    @Autowired
+    UserService userService;
+    @Autowired
+    SecretaryService secretaryService;
+    @Autowired
+    TeacherService teacherService;
 
     @Override
     public List<ShixiCourse> getListByPage(Page<ShixiCourse> page, String name) {
-//        TStudentExample tStudentExample = new TStudentExample();
-//        tStudentExample.or().andNameLike(name);
-//        TStudent Students = tStudentMapper.selectOneByExample(tStudentExample);
-//        TStudentCourseTeacherExample st= new TStudentCourseTeacherExample();
-//        st.or().andStudentIdEqualTo(Students.getId());
-//        tStudentCourseTeacherMapper.selectByExample(st);
-
-        return courseMapper.getListByPage(page, name);
+        Subject subject = SecurityUtils.getSubject();
+        User user = (User) subject.getPrincipal();
+        String roleId = user.getRoleId();
+        if(roleId.equals("1")){
+          return   courseMapper.getListByPage(page, name,null,null);
+        }
+        if (roleId.equals("2")){
+            String teacherName = user.getUsername();
+            Map<String,Object> map = new HashMap<>();
+            map.put("phone",teacherName);
+            List<Teacher> teachers = teacherService.selectByMap(map);
+            return  courseMapper.getListByPage(page, name,teachers.get(0).getName(),null);
+        }
+        if (roleId.equals("3")){
+            String studentName = user.getUsername();
+            return  courseMapper.getListByPage(page, studentName,null,null);
+        }
+        if (roleId.equals("4")){
+            String id = user.getId();
+            Secretary secretary = secretaryService.selectById(id);
+            String secretaryMajorId = secretary.getMajorId();
+            return  courseMapper.getListByPage(page, name,null,secretaryMajorId);
+        }
+        return null;
+    }
+    public List<ShixiCourse> selectOutPut(String username,String userId,String roleId) {
+//        Subject subject = SecurityUtils.getSubject();
+//        User user = (User) subject.getPrincipal();
+//        String roleId = user.getRoleId();
+       String name = null;
+        if(roleId.equals("1")){
+            return   courseMapper.selectOutPut( name,null,null);
+        }
+        if (roleId.equals("2")){
+//            String teacherName = user.getUsername();
+            Map<String,Object> map = new HashMap<>();
+            map.put("phone",username);
+            List<Teacher> teachers = teacherService.selectByMap(map);
+            return  courseMapper.selectOutPut(name,teachers.get(0).getName(),null);
+        }
+//        if (roleId.equals("3")){
+//            String studentName = user.getName();
+//            return  courseMapper.selectOutPut(studentName,null,null);
+//        }
+        if (roleId.equals("4")){
+//            String id = user.getId();
+            Secretary secretary = secretaryService.selectById(userId);
+            String secretaryMajorId = secretary.getMajorId();
+            return  courseMapper.selectOutPut(name,null,secretaryMajorId);
+        }
+        return null;
+    }
+    @Override
+    public List<ShixiCourse> selectAll() {
+        return courseMapper.selectAll();
     }
 
 
+    @Autowired
+    StudentCourseTeacherService sctService;
+    @Autowired
+    CourseService courseService;
+    @Autowired
+    DictService dictService;
+    @Autowired
+    StudentCourseTeacherService studentCourseTeacherService;
 
     @Transactional
     @Override
     public Object addCourse(ShixiCourse course) throws ParseException {
+
         //查询学生
         TStudentExample tStudentExample = new TStudentExample();
         tStudentExample.or().andNameEqualTo(course.getName()).andNicknameEqualTo(course.getNickname());
@@ -76,26 +133,61 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
             return ResultUtil.result(EnumCode.NO_PERSON.getValue(), "信息有误");
         }
         //查询实习类型课程
-        String courseType = course.getCourseType();
-        TCourseExample tCourseExample = new TCourseExample();
-        tCourseExample.or().andCourseTypeEqualTo(courseType);
-        TCourse tCourse = tCourseMapper.selectOneByExample(tCourseExample);
+        Map<String,Object> courseMap = new HashMap<>();
+        courseMap.put("start_stime",course.getStartStime());
+        courseMap.put("end_etime",course.getEndEtime());
+        courseMap.put("course_type",course.getCourseType());
+        List<Course> courses = courseService.selectByMap(courseMap);
+        Course TCourse = null;
+        if(courses.size() == 0){
+          Course courseOne = new Course();
+          courseOne.setCourseType(course.getStartStime());
+          courseOne.setStartTime(course.getStartStime());
+          courseOne.setEndTime(course.getEndEtime());
+          courseOne.setCourseType(course.getCourseType());
+          Map<String,Object> dicMap = new HashMap<>();
+          dicMap.put("dict_code",course.getCourseType());
+          List<SysDict> sysDicts = dictService.selectByMap(dicMap);
+          courseOne.setName(sysDicts.get(0).getDictValue());
+            courseService.insert(courseOne);
+          TCourse = courseOne;
+        }else {
+            TCourse = courses.get(0);
+        }
+        String tStudentId = tStudent.getId();
+        Map<String,Object> map = new HashMap<>();
+        map.put("student_id",tStudentId);
+        String[] teacherids = course.getTeacherIds();
+        map.put("teacher_id",teacherids[0]);
+        map.put("course_id",course.getId());
+        List<StudentCourseTeacher> studentCourseTeachers = sctService.selectByMap(map);
+        if (studentCourseTeachers.size()!=0){
+            return ResultUtil.result(EnumCode.EXIST_MESSAGE.getValue(), "已经存在该学生数据！请勿重复添加");
+        }
 
-        //插入t_student_course_teacher中间表，一门课程可以有多个任课老师
+        //插入t_student_course_teacher中间表，假设一门实习课程可以有多个任课老师
         String[] teacherIds = course.getTeacherIds();
         if (teacherIds != null && teacherIds.length > 0) {
             for (int i = 0; i < teacherIds.length; i++) {
                 TStudentCourseTeacher tStudentCourseTeacher = new TStudentCourseTeacher();//新建中间表
-                tStudentCourseTeacher.setCourseId(tCourse.getId());//插入课程ID
+                tStudentCourseTeacher.setCourseId(TCourse.getId());//插入课程ID
                 try {
                     tStudentCourseTeacher.setStudentId(tStudent.getId());//插入学生id
                 } catch (Exception e) {
                     return ResultUtil.result(EnumCode.NO_PERSON.getValue(), "没有这个学生", null);
                 }
-
                 tStudentCourseTeacher.setTeacherId(teacherIds[i]);//插入老师id
                 tStudentCourseTeacher.setScore(course.getScore());//插入分数
                 tStudentCourseTeacherMapper.insertSelective(tStudentCourseTeacher);
+                Map<String,Object> map1 = new HashMap<>();
+                map1.put("student_id",tStudent.getId());
+                map1.put("teacher_id",teacherIds[i]);
+                map1.put("course_id",TCourse.getId());
+                List<StudentCourseTeacher> sctList = studentCourseTeacherService.selectByMap(map1);
+
+                PracticeRisk practiceRisk = new PracticeRisk();
+                practiceRisk.setId(sctList.get(0).getId());
+                practiceRiskService.insert(practiceRisk);
             }
         }
 
@@ -163,6 +255,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     public List<Course> getCourseByTeacher(Page<Course> page, String teacherId) {
         return super.baseMapper.getCourseByTeacher(page, teacherId);
     }
+
+
 
     /**
      * 所有用户：公司管理company,查看学生岗位详情
@@ -235,11 +329,21 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         shiXiBigPojo.setCendEtime(tCourse.getEndEtime());
         shiXiBigPojo.setCstartStime(tCourse.getStartStime());
         shiXiBigPojo.setCname(tCourse.getName());
+//        Map<String,Object> practicMap = new HashMap<>();
+//        practicMap.put("id",tsct.getId());
+        PracticeRisk practiceRisk = practiceRiskService.selectById(tsct.getId());
+        if (!StringUtils.isEmpty(practiceRisk)){
+            shiXiBigPojo.setHealthy(practiceRisk.getHealthy());
+           shiXiBigPojo.setPracticeWay(practiceRisk.getPracticeWay());
+           shiXiBigPojo.setRisk(practiceRisk.getRisk());
+       }
 //        Map map = new HashMap();
         //封装四个数据集合
 //        map.put("student",tStudent);map.put("teacher",tTeacher); map.put("company",company);map.put("course",tCourse);
         return shiXiBigPojo;
     }
+    @Autowired
+    PracticeRiskService practiceRiskService;
     @Autowired
     TSysDictMapper tSysDictMapper;
     @Autowired
@@ -269,16 +373,23 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         String date1 = shiXiBigPojo.getValidateTime()[0];
         String date2 = shiXiBigPojo.getValidateTime()[1];
         Course tCourse = tCourseMapper.myWriteSelectByStratEndType(date1,date2,shiXiBigPojo.getCcourseType());
-
+//        Map<String,Object> practicMap = new HashMap<>();
+//        practicMap.put("id",shiXiBigPojo.getStcId());
+//        List<PracticeRisk> practiceRisks = practiceRiskService.selectByMap(practicMap);
+        PracticeRisk practiceRisk = practiceRiskService.selectById(shiXiBigPojo.getStcId());
+        if (!StringUtils.isEmpty(practiceRisk)){
+            practiceRisk.setPracticeWay(shiXiBigPojo.getPracticeWay());
+            practiceRisk.setRisk(shiXiBigPojo.getRisk());
+            practiceRisk.setHealthy(shiXiBigPojo.getHealthy());
+            practiceRiskService.updateById(practiceRisk);
+        }
 
         String courseId = null;
         //当为空时，新增一个实习课程course类
         if(StringUtils.isEmpty(tCourse)){
                 WCourse course = new WCourse();
                 course.setId(UUID.randomUUID().toString().replace("-",""));
-                //截取年月日，其他时分秒不截取
-//                Date d1 = this.strConvertD(date1);
-//                Date d2 = this.strConvertD(date2);
+
                 course.setStartStime(date1);
                 course.setEndEtime(date2);
                 course.setName(shiXiBigPojo.getCname());
@@ -338,12 +449,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         return ResultUtil.result(EnumCode.OK.getValue(), "添加成功");
     }
 
-    public static Date strConvertD(String dateStr) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public static LocalDate strConvertD(String dateStr) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
-            Date parse = sdf.parse(dateStr);
+            LocalDate parse = LocalDate.parse(dateStr, fmt);
             return parse;
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

@@ -12,7 +12,23 @@ export default {
 	name: 'app',
 	components: {
 	}
+
+    // created() {
+    //     document.addEventListener("visibilitychange", function () {
+    //         if (store.getters.token != getToken()) {
+    //             location.reload();
+    //         }
+    //     });
+    //
+    //     getToken(function () {
+    //      let cookie =  document.cookie
+    //         alert(cookie)
+    //     })
+    //
+    //
+    // }
 }
+
 
 </script>
 

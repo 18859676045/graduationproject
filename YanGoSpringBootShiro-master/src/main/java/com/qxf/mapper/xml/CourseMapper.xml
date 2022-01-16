@@ -4,21 +4,86 @@
 
 	<!--查询列表-->
 	<select id="getListByPage" parameterType="string" resultType="com.qxf.pojo.ShixiCourse">
-		SELECT DISTINCT sct.id,s.nickname,
+		SELECT DISTINCT sct.id,s.nickname,pr.practice_way AS practiceWay , pr.risk,pr.healthy,
 	 	s.name,s.phone,sct.score,c.start_stime AS startStime,s.email AS sEmail,t.email AS tEmail,c.`name` As cname,c.end_etime AS endEtime,t.`name` AS tname,t.phone AS tphone
 		from
 		t_student s ,
 		t_student_course_teacher sct,
 		t_course c,
-		t_course_teacher ct,
-		t_teacher t
+		t_teacher t,
+		t_practice_risk pr
 		where s.id = sct.student_id
 		<if test=" name != null and name != '' ">
 			AND s.name like CONCAT('%',#{name},'%')
 		</if>
+		<if test=" tname != null and tname != '' ">
+			AND t.name = #{tname}
+		</if>
+		<if test=" secMajorId != null and secMajorId != '' ">
+			AND s.major_id = #{secMajorId}
+		</if>
 		and t.id = sct.teacher_id
 		and c.id = sct.course_id
+		and sct.id = pr.id
 	</select>
+	<!--查询列表-->
+	<select id="selectOutPut" parameterType="string" resultType="com.qxf.pojo.ShixiCourse">
+		SELECT DISTINCT sct.id,s.nickname,pr.practice_way AS practiceWay , pr.risk,pr.healthy,
+						dic.dict_value AS TeacherPost,
+		                tc.company_name As companyName ,tc.students_post AS studentsPost,
+						tc.out_supervisor AS outsupervisor,tc.supervisor_post AS supervisorPost,tc.outor_phone AS outorPhone,
+		s.name,s.phone,sct.score,c.start_stime AS startStime,s.email AS sEmail,t.email AS tEmail,c.`name` As cname,c.end_etime AS endEtime,t.`name` AS tname,t.phone AS tphone
+		from
+		t_student s ,
+		t_student_course_teacher sct,
+		t_course c,
+		t_teacher t,
+		t_practice_risk pr,
+		t_company tc,
+		t_sys_dict dic
+		where s.id = sct.student_id
+		<if test=" name != null and name != '' ">
+			AND s.name like CONCAT('%',#{name},'%')
+		</if>
+		<if test=" tname != null and tname != '' ">
+			AND t.name = #{tname}
+		</if>
+		<if test=" secMajorId != null and secMajorId != '' ">
+			AND s.major_id = #{secMajorId}
+		</if>
+		and t.id = sct.teacher_id
+		and c.id = sct.course_id
+		and sct.id = pr.id
+		and tc.studnet_id = sct.student_id
+		and tc.course_id = sct.course_id
+		and dic.dict_code = t.title
+	</select>
+
+	<select id="selectAll" resultType="com.qxf.pojo.ShixiCourse">
+		SELECT DISTINCT sct.id,s.nickname,pr.practice_way AS practiceWay , pr.risk,pr.healthy,
+		dic.dict_value AS TeacherPost,
+		tc.company_name As companyName ,tc.students_post AS studentsPost,
+		tc.out_supervisor AS outsupervisor,tc.supervisor_post AS supervisorPost,tc.outor_phone AS outorPhone,
+		s.name,s.phone,sct.score,c.start_stime AS startStime,s.email AS sEmail,t.email AS tEmail,c.`name` As cname,c.end_etime AS endEtime,t.`name` AS tname,t.phone AS tphone
+		from
+		t_student s ,
+		t_student_course_teacher sct,
+		t_course c,
+		t_teacher t,
+		t_practice_risk pr,
+		t_company tc,
+		t_sys_dict dic
+		where s.id = sct.student_id
+
+		and t.id = sct.teacher_id
+		and c.id = sct.course_id
+		and sct.id = pr.id
+		and tc.studnet_id = sct.student_id
+		and tc.course_id = sct.course_id
+		and dic.dict_code = t.title
+
+	</select>
+
 
     <!--查询学生所有未选课程-->
 	<select id="getNotSelectedCourse" parameterType="string" resultType="com.qxf.pojo.Course">
@@ -84,4 +149,5 @@
 			  INNER JOIN t_teacher t ON ct.teacher_id = t.id
 			AND t.id=#{teacherId}
 	</select>
+
 </mapper>

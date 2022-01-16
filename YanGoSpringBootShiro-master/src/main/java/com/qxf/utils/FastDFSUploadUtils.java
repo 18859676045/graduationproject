@@ -2,24 +2,30 @@ package com.qxf.utils;
 
 import org.csource.common.MyException;
 import org.csource.fastdfs.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
  * @ Author 王炜雯
  * @ Date 2021/7/18  15:15
  */
+
 public class FastDFSUploadUtils {
 
     public static void main(String[] args) {
 //        fileUpload("C:/Users/Administrator/Desktop/新建文件夹/17级及19专升本毕业实习材料","excel");
 //        http://47.97.105.41/ 20 , group1 6 ,
-        String fileName ="http://47.97.105.41/group1/M00/00/00/rB9y_2HdonyABq4bAACtOYu9dic803.jpg";
-//        fileDelete("group1","M00/00/00/rB9y_2HdonyABq4bAACtOYu9dic803.jpg");
-        String substring = fileName.substring(20, 26);
+//        byte[] bytes = fileDownload("group2", "M00/00/00/CgAEBWHjyomATNptAABgUvgByVQ289.png");
+//        System.out.println(bytes);
+       String  str = "M00/00/00/CgAEBWHjyomATNptAABgUvgByVQ289.png";
+        String substring = str.substring(10);
         System.out.println(substring);
-        String substring2 = fileName.substring(27);
-        System.out.println(substring2);
+
 
     }
 
@@ -82,15 +88,17 @@ public class FastDFSUploadUtils {
     /**
      * 下载文件方法
      */
-    public static byte[] fileDownload(String group,String remote_fileName){
+    public static byte[] fileDownload(String localFilePath,String group,String remote_fileName){
 
         byte[] num=null;
         try {
+            File file = new File(localFilePath);
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
             //1. 获取StorageClient对象
             StorageClient storageClient = getStorageClient();
             //2.下载文件 返回0表示成功，其它均表示失败
              num = storageClient.download_file(group, remote_fileName);
-            System.out.println(num);
+            bos.write(num);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (MyException e) {
@@ -98,7 +106,7 @@ public class FastDFSUploadUtils {
         }finally {
             closeFastDFS();
         }
-        return num;
+        return null;
     }
     /**
      * 删除方法

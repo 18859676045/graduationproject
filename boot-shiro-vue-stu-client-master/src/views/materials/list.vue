@@ -11,10 +11,10 @@
 					<el-button type="primary" class="el-icon-search" v-on:click="getFormData1">查询</el-button>
 				</el-form-item>
                 <el-form-item>
-                    <el-button type="danger" class="el-icon-delete" @click="batchDelete">删除</el-button>
+                    <el-button type="danger" class="el-icon-delete" v-if="user.roleId != '3'" @click="batchDelete">删除</el-button>
                 </el-form-item>
 
-                <el-upload
+                <el-upload v-if="user.roleId != '3'"
                         class="upload-demo"
                         action="https://jsonplaceholder.typicode.com/posts/"
                         :on-preview="handlePreview"
@@ -23,7 +23,7 @@
                         :on-error="handleUploadError"
                         :before-remove="beforeRemove"
                         multiple
-                        :limit="1"
+                        :limit="3"
                         :on-exceed="handleExceed"
                         :file-list="fileList">
                     <el-button size="small" type="primary">点击上传</el-button>
@@ -50,6 +50,9 @@
 	  <el-table-column
 	    prop="uploadTime"
 	    label="上传时间" sortable >
+          <template slot-scope="scope">
+              <span>{{scope.row.uploadTime, "-", false | dataFormat}}</span>
+          </template>
 	  </el-table-column>
                 <el-table-column
                         prop="size"
@@ -65,8 +68,20 @@
                 </el-table-column>
                 <el-table-column
                         prop="lastdownTime"
-                        label="最后下载时间" sortable dataformatas="YYYY-MM-DD HH:mm:ss">
+                        label="最后下载时间" sortable >
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.lastdownTime">{{scope.row.lastdownTime, "-", false | dataFormat}}</span>
+                        <span v-else>尚未下载</span>
+                    </template>
+
                 </el-table-column>
+<!--                <el-table-column label="预览">-->
+<!--                    <template slot-scope="scope">-->
+<!--                        <el-button-->
+<!--                                size="success"-->
+<!--                                @click="preDown (scope.row.id)">预览</el-button>-->
+<!--                    </template>-->
+<!--                </el-table-column>-->
                 <el-table-column label="下载">
                     <template slot-scope="scope">
                         <el-button
@@ -114,7 +129,8 @@ export default {
 				majorId2: '',
 				instituteId: ''
 			},
-			institutes:[],    //学院列表
+            user:JSON.parse(sessionStorage.getItem("user")),
+            institutes:[],    //学院列表
 			majors:[],       //专业列表
 			listLoading: false, // 加载等待
 			pageSizes1: [30, 50, 80, 100],
@@ -154,10 +170,28 @@ export default {
                 return
             }
             if (data.data.status === 200) {
+                // alert(data.data.msg);
                 _this.message(true,data.data.msg,'success')
                 window.location.href=data.data.data
             } else {
                 _this.message(true,data.data.msg,'error')
+            }
+        },
+        async preDown(){
+            console.log(id)
+            let _this = this
+            let params = {
+                id:id
+            }
+            let data = await http.get('materials/preDown',params)
+            if(!data.data) {
+                return
+            }
+            if (data.data.status === 200) {
+                _this.message(true,data.data.msg,'success')
+                window.location.href=data.data.data
+            } else {
+                _this.message(true,"预览失败，稍后再试",'error')
             }
         },
 
@@ -166,7 +200,7 @@ export default {
             window.location.href = `/file/download?fileName=` + this.form.fileName
         },
         handleExceed(files, fileList) {//当前限制选择 5 个文件，本次选择了 1 个文件，共选择了 2 个文件
-            this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+            this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
         },
         beforeRemove(file, fileList) {
             return this.$confirm(`确定移除 ${ file.name }？`);
@@ -180,7 +214,7 @@ export default {
             //          position: 'bottom-right'
             //        })
         },
-        //测试上传文件(注意web的上下文)
+        //上传文件(注意web的上下文)
         handleBeforeUpload(file){
             let user = JSON.parse(sessionStorage.getItem("user"))
             this.uploadUrl = 'http://localhost:8089/materials/upload'

@@ -2,6 +2,7 @@ package com.qxf.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.qxf.ftp.UploadUtil;
+import com.qxf.hiswww.domain.ShiXiBigPojo;
 import com.qxf.hiswww.domain.TStudentCourseTeacher;
 import com.qxf.pojo.*;
 import com.qxf.service.*;
@@ -9,7 +10,9 @@ import com.qxf.utils.EnumCode;
 import com.qxf.utils.ExcelUtil;
 import com.qxf.utils.ResultUtil;
 import org.apache.ibatis.annotations.Param;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -90,11 +94,11 @@ public class UserController extends BaseController {
      * @desc: 查询用户
      */
     @RequestMapping(value = "/list",method = RequestMethod.GET)
-    public Object findUserByPage(Integer startPage,Integer pageSize) {
+    public Object findUserByPage(Integer startPage,Integer pageSize,String username) {
 
         Page<User> page = new Page<User>(startPage,pageSize);
         User user = new User();
-        List<User> list = userService.findUserByPage(page,user);
+        List<User> list = userService.findUserByPage(page,user,username);
         return ResultUtil.result(EnumCode.OK.getValue(), "请求成功", list, page.getTotal());
     }
 
@@ -280,6 +284,7 @@ public class UserController extends BaseController {
     UserRoleService userRoleService;
     @Autowired
     StudentCourseTeacherService studentCourseTeacherService;
+
     @RequestMapping(value = "/courseImport")
     @ResponseBody
     @Transactional
@@ -348,7 +353,7 @@ public class UserController extends BaseController {
                         teacherId = teacher.getId();
                         //插入用户表
                         User user = new User();
-                        user.setId(UUID.randomUUID().toString().replace("-",""));
+                        user.setId(teacherId);
                         user.setUsername(teacherPhone);
                         user.setName(teacherName);
                         user.setCreateTime(new Date());
@@ -389,7 +394,7 @@ public class UserController extends BaseController {
                      studentId = student.getId();
                     //插入用户表
                     User user = new User();
-                    user.setId(UUID.randomUUID().toString().replace("-",""));
+                    user.setId(studentId);
                     user.setUsername(studentName);
                     user.setName(studentNick);
                     user.setCreateTime(new Date());
@@ -412,19 +417,239 @@ public class UserController extends BaseController {
                 mm.put("teacher_id",teacherId);
                 mm.put("course_id",courseId);
                 List<StudentCourseTeacher> studentCourseTeachers = studentCourseTeacherService.selectByMap(mm);
+
                 if (studentCourseTeachers.size() == 0){
                     StudentCourseTeacher studentCourseTeacher = new StudentCourseTeacher();
+//                    String  sctId = UUID.randomUUID().toString().replace("-","");
+//                    studentCourseTeacher.setId(sctId);
                     studentCourseTeacher.setCourseId(courseId);
                     studentCourseTeacher.setStudentId(studentId);
                     studentCourseTeacher.setTeacherId(teacherId);
                     studentCourseTeacherService.insert(studentCourseTeacher);
-                }
 
+                    Map<String,Object> sctmap = new HashMap<>();
+                    sctmap.put("student_id",studentId);
+                    sctmap.put("teacher_id",teacherId);
+                    sctmap.put("course_id",courseId);
+                    List<StudentCourseTeacher> stc = studentCourseTeacherService.selectByMap(sctmap);
+                    String sctId = stc.get(0).getId();
+
+                    PracticeRisk practiceRisk = practiceRiskService.selectById(sctId);
+                    if (StringUtils.isEmpty(practiceRisk)){
+                        PracticeRisk practiceRisk1 = new PracticeRisk();
+                        practiceRisk1.setId(sctId);
+                        practiceRiskService.insert(practiceRisk1);
+                    }
+                }
             }
         }
         //前端可以通过状态码，判断文件是否上传成功
         return ResultUtil.result(EnumCode.OK.getValue(),"文件上传成功");
     }
+
+
+
+    @Autowired
+    PracticeRiskService practiceRiskService;
+
+
+    /**
+     * 导出实习的报表，这里get和post请求复用了该方法，仅仅是为了测试
+     *
+     * @return
+     */
+    @RequestMapping(value = "/courseExport")
+    @ResponseBody
+    public void courseExport(@RequestBody(required = false) User user,String username,HttpServletResponse response) throws Exception {
+        if (user ==null && !StringUtils.isEmpty(username)){
+            //GET 请求的参数
+            user = new User();
+            user.setUsername(username);
+        }
+        Page<ShixiCourse> page = new Page<>(1,65535);
+        //获取数据
+        List<ShixiCourse> list = courseService.getListByPage(page, null);//传递搜索的name
+
+        //excel标题
+        String[] title = {"学号", "姓名", "指导老师", "联系电话","学生联系电话"};
+
+        //excel文件名
+        String fileName = System.currentTimeMillis() + ".xls";
+
+        //sheet名
+        String sheetName = "实习信息";
+
+        //没有数据就传入null吧，Excel工具类有对null判断
+        String [][] content = null;
+        String teacherName = null;
+        String teacherPhone = null;
+        int startCount = 0;
+        int endCount = 0;
+        // 第一步，创建一个HSSFWorkbook，对应一个Excel文件
+        HSSFWorkbook workbook  = new HSSFWorkbook();
+        // 第二步，在workbook中添加一个sheet,对应Excel文件中的sheet
+        HSSFSheet sheet = workbook .createSheet(sheetName);
+
+        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制
+        HSSFRow row = sheet.createRow(0);
+
+        // 第四步，创建单元格样式，并设置值表头 设置表头居中
+        HSSFCellStyle style = workbook .createCellStyle();
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
+
+        //声明单元格
+        HSSFCell cell = null;
+
+        //创建标题
+        for(int i=0;i<title.length;i++){
+            //创建一个单元格
+            cell = row.createCell(i);
+            //给单元格赋值
+            cell.setCellValue(title[i]);
+            //给单元格设置样式
+            cell.setCellStyle(style);
+        }
+
+        if (list != null && list.size() > 0){
+            content = new String[list.size()][title.length];
+
+            for (int i = 0; i < list.size(); i++) {
+                content[i] = new String[title.length];
+                ShixiCourse obj = list.get(i);
+                content[i][0] = obj.getName();
+                content[i][1] = obj.getNickname();
+
+                if (obj.getTname().equals(teacherName) ){
+                    content[i][2] = null;
+                    content[i][3] = null;
+//                    ++ endCount ;
+                }if (!obj.getTname().equals(teacherName)){
+//                    startCount ++ ;
+//                    CellRangeAddress regionTName = new CellRangeAddress(startCount, endCount, 2, 2);
+//                    CellRangeAddress regionTPhone = new CellRangeAddress(startCount, endCount, 3, 3);
+                    content[i][2] = obj.getTname();
+                    content[i][3] = obj.getTphone();
+                }
+                teacherName = obj.getTname();
+            }
+        }
+
+
+        //创建内容
+        if (content != null && content[0].length > 0){
+            for(int i=0;i<content.length;i++){
+                //从第二行开始创建数据填充的行，下标为1
+                row = sheet.createRow(i + 1);
+                for(int j=0;j<content[i].length;j++){
+                    if (content[i][j].isEmpty()){
+
+                    }
+                    //将内容按顺序赋给对应的列对象
+                    row.createCell(j).setCellValue(content[i][j]);
+                }
+            }
+        }
+
+
+        //创建HSSFWorkbook
+        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content);
+
+        //响应到客户端
+        try {
+//            fileName = new String(fileName.getBytes(), "UTF-8");
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            OutputStream os = response.getOutputStream();
+            wb.write(os);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    /**
+     * 导出实习汇总
+     *
+     */
+    /**
+     * 导出报表
+     *@RequestParam("username") String username,@RequestParam("userId") String userId,
+     *                                 @RequestParam("roleId")String roleId,
+     * @return
+     */
+    @RequestMapping(value = "/AllExport")
+    @ResponseBody
+    public void allCourseExport(HttpServletResponse response) throws Exception {
+
+
+        //获取数据
+        List<ShixiCourse> list = courseService.selectAll();//传递搜索的name
+
+        //excel标题
+        String[] title = {"序号", "学号", "姓名", "联系方式","实习周数（起讫日期）","实习方式",
+                        "实习单位名称、所在县市区", "实习部门/岗位", "姓名","职务", "联系方式","姓名",
+                        "职称", "联系方式", "实习单位所在地疫情防控等级", "实习学生身体状况","实行形式（线上/线下）",};
+        //excel文件名
+        String fileName = System.currentTimeMillis() + ".xls";
+//        String newName  = null;
+
+        //sheet名
+        String sheetName = "实习汇总表";
+
+        //没有数据就传入null吧，Excel工具类有对null判断
+        String[][] content = null;
+
+        if (list != null && list.size() > 0) {
+            content = new String[list.size()][14];
+
+            for (int i = 0; i < list.size(); i++) {
+                content[i] = new String[17];
+                ShixiCourse obj = list.get(i);
+                content[i][0] = String.valueOf(i + 1);
+                content[i][1] = obj.getName();
+                content[i][2] = obj.getNickname();
+                content[i][3] = obj.getPhone();
+                content[i][4] = obj.getEndEtime() + "-" + obj.getEndEtime();
+                content[i][5] = obj.getPracticeWay();
+                content[i][6] = obj.getCompanyName();
+                content[i][7] = obj.getStudentsPost();
+                content[i][8] = obj.getOutsupervisor();
+                content[i][9] = obj.getSupervisorPost();
+                content[i][10] = obj.getOutorPhone();
+                content[i][11] = obj.getTname();
+                content[i][12] = obj.getTeacherPost();
+                content[i][13] = obj.getTphone();
+                content[i][14] = obj.getRisk();
+                content[i][15] = obj.getHealthy();
+                content[i][16] = "线下";
+            }
+        }
+
+        //创建HSSFWorkbook
+        HSSFWorkbook wb = ExcelUtil.getHSSFWorkbook(sheetName, title, content);
+
+        //响应到客户端
+        try {
+//            fileName = new String(fileName.getBytes(), "UTF-8");
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            OutputStream os = response.getOutputStream();
+            wb.write(os);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+
 
 
 }

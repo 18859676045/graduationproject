@@ -24,7 +24,7 @@
         loginLoading: false,
         ruleForm2: {
           account: 'admin',
-          checkPass: 'a123456a'
+          checkPass: 'a666666'
         },
         rules2: {
           account: [
@@ -58,7 +58,7 @@
           _this.message(true,data.data.msg,'success')
             console.log(data.data.data);
           sessionStorage.setItem('user', JSON.stringify(data.data.data))
-          _this.$router.push({ path: '/user/list' })
+          _this.$router.push({ path: '/Main' })
         } else {
            _this.message(true,data.data.msg,'error')
         }

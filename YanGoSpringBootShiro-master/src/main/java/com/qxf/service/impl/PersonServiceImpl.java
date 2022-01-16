@@ -60,16 +60,18 @@ public class PersonServiceImpl implements PersonService {
         //管理员，老师
         if (role.getId().equals("1") || role.getId().equals("2")){
             Map<String,Object> map = new HashMap<>();
-            map.put("name",user.getUsername());
+            map.put("phone",user.getUsername());
             List<Teacher> teachers = teacherService.selectByMap(map);
             if (teachers.size()!=0) {
                 Teacher teacher = teachers.get(0);
                 editUserVo.setTeacher(teacher);
-                Map<String,Object> map2 = new HashMap<>();
-                map2.put("dict_code",teacher.getTitle());
-                List<SysDict> sysDicts = dictService.selectByMap(map2);
-                SysDict sysDict = sysDicts.get(0);
-                editUserVo.setTeacherPost(sysDict.getDictValue());
+                if (!StringUtils.isEmpty(teacher.getTitle())){
+                    Map<String,Object> map2 = new HashMap<>();
+                    map2.put("dict_code",teacher.getTitle());
+                    List<SysDict> sysDicts = dictService.selectByMap(map2);
+                    SysDict sysDict = sysDicts.get(0);
+                    editUserVo.setTeacherPost(sysDict.getDictValue());
+                }
             }
         }
         //,教务秘书
@@ -126,19 +128,24 @@ public class PersonServiceImpl implements PersonService {
         boolean result = false;
         //老师
         if (roleId.equals("2")){
-
             Map<String,Object> map = new HashMap<>();
-            map.put("name",username);
+            map.put("phone",username);
             //修改teacher表
             List<Teacher> teachers = teacherService.selectByMap(map);
             Teacher teacher = teachers.get(0);
             teacher.setEmail(vo.getTemail());
             teacher.setName(vo.getTname());
+            //查询职称并赋值
+            Map<String,Object> dicmap = new HashMap<>();
+            dicmap.put("dict_code",vo.getTitle2());
+            List<SysDict> sysDicts = dictService.selectByMap(dicmap);
+            teacher.setTitleName(sysDicts.get(0).getDictValue());
+            teacher.setTitle(vo.getTitle2());
             teacher.setAge(vo.getTage());
             teacher.setSex(Integer.valueOf(vo.getTsex()));
             teacher.setPhone(vo.getTphone());
             user.setEmail(vo.getTemail());
-            user.setUsername(vo.getTname());
+            user.setUsername(vo.getTphone());
              result = teacherService.updateById(teacher);
         }
         //学生
@@ -151,7 +158,7 @@ public class PersonServiceImpl implements PersonService {
             student.setMajorId(vo.getMajorId());
             student.setClazzId(vo.getClazzId());
             student.setName(vo.getSname());
-            student.setNickname(vo.getSnumber());
+            student.setNickname(vo.getSnickname());
             student.setEmail(vo.getSemail());
             student.setSex(Integer.valueOf(vo.getSsex()));
             student.setAge(vo.getSage());
@@ -169,6 +176,7 @@ public class PersonServiceImpl implements PersonService {
             Secretary secretary = secretaries.get(0);
             secretary.setEmail(vo.getJemail());
             secretary.setName(vo.getJname());
+            secretary.setNickname(vo.getJnickname());
             secretary.setAge(vo.getJage());
             secretary.setPhone(vo.getJphone());
             secretary.setSex(vo.getJsex());

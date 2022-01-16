@@ -8,4 +8,6 @@ import com.qxf.pojo.StudentCourseTeacher;
  * @ Date 2022/1/14  0:43
  */
 public interface StudentCourseTeacherService extends IService<StudentCourseTeacher> {
+
+    int MyWriterInsert(StudentCourseTeacher studentCourseTeacher);
 }

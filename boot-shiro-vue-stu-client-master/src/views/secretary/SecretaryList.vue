@@ -122,8 +122,8 @@
 
 
 
-	<el-form-item label="用户名" prop="name2" :rules="[{ required: true, message: '请输入教秘姓名', trigger: 'blur' }]">
-		<el-input  type="text" v-model="attr.name2" placeholder="请输入教秘姓名" auto-complete="off"></el-input>
+	<el-form-item label="用户名" prop="name2" :rules="[{ required: true, message: '请输入教秘用户名（登陆用户名）', trigger: 'blur' }]">
+		<el-input  type="text" v-model="attr.name2" placeholder="请输入教秘用户名（登陆用户名）" auto-complete="off"></el-input>
 	</el-form-item>
         <el-form-item label="姓名" prop="username2" :rules="[{ required: true, message: '请输入教秘姓名', trigger: 'blur' }]">
             <el-input  type="text" v-model="attr.username2" placeholder="请输入教秘姓名" auto-complete="off"></el-input>

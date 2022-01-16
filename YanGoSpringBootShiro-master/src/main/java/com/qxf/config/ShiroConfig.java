@@ -3,9 +3,14 @@ package com.qxf.config;
 import com.qxf.shiro.AuthRealm;
 import com.qxf.shiro.CredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.SessionListener;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +18,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Configuration
 public class ShiroConfig {
@@ -83,14 +87,41 @@ public class ShiroConfig {
      * 自定义session，后期有条件用jwt
      */
     @Bean
-    public DefaultWebSessionManager getDefaultWebSessionManager() {
+    public DefaultWebSessionManager sessionManager() {
+
+        Cookie cookie = this.cookieDAO();
+        cookie.setHttpOnly(true);
         DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
 //        defaultWebSessionManager.setGlobalSessionTimeout(1000 * 60);// 会话过期时间，单位：毫秒(在无操作时开始计时)--->一分钟,用于测试
         defaultWebSessionManager.setGlobalSessionTimeout(86400000);//一天
-        defaultWebSessionManager.setSessionValidationSchedulerEnabled(true);
-        defaultWebSessionManager.setSessionIdCookieEnabled(true);
+        defaultWebSessionManager.setSessionIdCookie(cookie);
         return defaultWebSessionManager;
     }
+
+    @Bean
+    public Cookie cookieDAO() {
+        String substring = UUID.randomUUID().toString().replace("-", "").substring(2, 9);
+        Cookie cookie=new org.apache.shiro.web.servlet.SimpleCookie(substring);
+        cookie.setName(substring);
+        return cookie;
+    }
+
+//    @Bean
+//    public SimpleCookie rememberMeCookie(){
+//        SimpleCookie simpleCookie = new SimpleCookie();
+//        simpleCookie.setHttpOnly(true);
+//        simpleCookie.setMaxAge(86400000);
+//        return simpleCookie;
+//    }
+//    @Bean
+//    public CookieRememberMeManager rememberMeManager(){
+//        CookieRememberMeManager ccrmm = new CookieRememberMeManager();
+//        ccrmm.setCookie(this.rememberMeCookie());
+//        return ccrmm;
+//    }
+
+
+
 
 
     /**

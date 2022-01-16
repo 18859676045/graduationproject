@@ -59,7 +59,7 @@ public class AccountCenterController extends BaseController{
         String roleId = super.getRoleId();
         Integer integer = personService.updateMessage(userId, roleId, recelveVo);
         if (integer==1){
-            return ResultUtil.result(EnumCode.OK.getValue(), "请求成功", "请求成功");
+            return ResultUtil.result(EnumCode.OK.getValue(), "请求成功，重新登陆生效", "请求成功");
         }
          return ResultUtil.result(EnumCode.EXCPTION_ERROR.getValue(), "请求失败", null);
     }

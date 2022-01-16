@@ -18,10 +18,7 @@ import com.qxf.utils.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @ Author 王炜雯
@@ -45,6 +42,7 @@ public class SecretaryServiceImpl extends ServiceImpl<SecretaryMapper, Secretary
     public Object insertSecretary(Secretary secretary) {
         //判断教秘是否存在
         Map<String,Object> map = new HashMap<>();
+        secretary.setId(UUID.randomUUID().toString().replace("-",""));
         map.put("name",secretary.getName());
         map.put("nickname",secretary.getNickname());
         map.put("major_id",secretary.getMajorId());
@@ -54,10 +52,12 @@ public class SecretaryServiceImpl extends ServiceImpl<SecretaryMapper, Secretary
             throw new MyException(ResultUtil.result(EnumCode.BAD_REQUEST.getValue(),"该教秘已存在",null));
         }
         //插入教秘
+        secretary.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2He0rSAeek1AABgUvgByVQ494.png");
         super.baseMapper.insert(secretary);
         //把教秘信息插入到t_user表和t_user_roel表，使得教秘可以用姓名和默认密码a123456登录
         User u = new User();
         u.setId(secretary.getId());
+        u.setName(secretary.getNickname());
         u.setUsername(secretary.getName().trim());
         u.setPassword("d477887b0636e5d87f79cc25c99d7dc9");
         if(secretary.getPhotoUrl()!=null){

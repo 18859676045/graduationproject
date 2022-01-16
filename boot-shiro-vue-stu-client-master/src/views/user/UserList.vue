@@ -4,7 +4,7 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.keyword" placeholder="姓名"></el-input>
+					<el-input v-model="filters.keyword" placeholder="用户名"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary"  class="el-icon-search" :loading="selLoading" v-on:click="getUsers">查询</el-button>
@@ -19,11 +19,11 @@
 					<el-button type="danger" class="el-icon-delete" @click="delUser">删除</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" plain @click="exportUser">blob导出</el-button>
+					<el-button type="primary" plain @click="exportUser">批量导出用户</el-button>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="infor" round @click="exportUserByA">a标签导出</el-button>
-				</el-form-item>
+<!--				<el-form-item>-->
+<!--					<el-button type="infor" round @click="exportUserByA">a标签导出</el-button>-->
+<!--				</el-form-item>-->
 				<el-form-item>
 				   <el-upload class="upload-demo"
 								 :action="uploadUrl2"
@@ -51,7 +51,7 @@
 			</el-table-column>
 	    <!-- <el-table-column prop="id" label="id"  sortable>
 				</el-table-column> -->
-			<el-table-column prop="username" label="姓名"  sortable>
+			<el-table-column prop="username" label="用户名"  sortable>
 			</el-table-column>
 			<el-table-column prop="email" label="邮箱"  sortable>
 			</el-table-column>
@@ -104,6 +104,7 @@
 		<el-form-item label="用户名"   prop="name">
 	    <el-input type="text" placeholder="用户名" auto-complete="off" v-model="ruleForm.name"></el-input>
 	  </el-form-item>
+
 		<el-form-item label="邮箱" prop="email">
 			<el-input type="text" placeholder="用户邮箱" auto-complete="off" v-model="ruleForm.email"></el-input>
 		</el-form-item>
@@ -131,23 +132,23 @@
 				</el-switch>
 			</el-form-item>
 
-		<el-form-item>
-		   <a href="http://localhost:8089/file/download?fileName=11.xls">下载附件</a>
-		 </el-form-item>
-		 <el-form-item>
-		   <el-upload class="upload-demo"
-						 :auto-upload='isAutoUpload'
-						 :action="uploadUrl"
-						 :before-upload="handleBeforeUpload"
-						 :on-error="handleUploadError"
-						 :before-remove="beforeRemove"
-						 multiple
-						 :limit="5"
-						 :on-exceed="handleExceed"
-						 :file-list="fileList">
-		      <el-button size="small" type="primary">点击上传</el-button>
-		   </el-upload>
-		</el-form-item>
+<!--		<el-form-item>-->
+<!--		   <a href="http://localhost:8089/file/download?fileName=11.xls">下载附件</a>-->
+<!--		 </el-form-item>-->
+<!--		 <el-form-item>-->
+<!--		   <el-upload class="upload-demo"-->
+<!--						 :auto-upload='isAutoUpload'-->
+<!--						 :action="uploadUrl"-->
+<!--						 :before-upload="handleBeforeUpload"-->
+<!--						 :on-error="handleUploadError"-->
+<!--						 :before-remove="beforeRemove"-->
+<!--						 multiple-->
+<!--						 :limit="5"-->
+<!--						 :on-exceed="handleExceed"-->
+<!--						 :file-list="fileList">-->
+<!--		      <el-button size="small" type="primary">点击上传</el-button>-->
+<!--		   </el-upload>-->
+<!--		</el-form-item>-->
 
 
 	  </el-form>

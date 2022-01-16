@@ -38,7 +38,7 @@ public interface UserService extends IService<User>{
     /**
      * @desc: 查询用户
      */
-    List<User> findUserByPage(Page<User> page, User user);
+    List<User> findUserByPage(Page<User> page, User user,String username);
 
     /**
      * @desc: 批量删除用户

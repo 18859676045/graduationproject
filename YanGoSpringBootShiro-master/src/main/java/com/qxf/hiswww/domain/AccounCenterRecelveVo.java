@@ -16,9 +16,11 @@ public class AccounCenterRecelveVo {
     private Integer tage;
     private String tphone;
     private String temail;
+    private String title2;
     //教学秘书
     private String jid;
     private String jname;
+    private String jnickname;
     private String jsex;
     private Integer jage;
     private String jphone;
@@ -28,7 +30,7 @@ public class AccounCenterRecelveVo {
     private String clazzId;
     private String majorId;
     private String instituteId;
-    private String snumber;
+    private String snickname;
     private String semail;
     private String ssex;
     private String sname;

@@ -19,12 +19,16 @@ import java.util.List;
 public interface CourseMapper extends BaseMapper<Course>{
 
     //查询实习管理
-    List<ShixiCourse> getListByPage(Page<ShixiCourse> page, @Param("name") String name);
+    List<ShixiCourse> getListByPage(Page<ShixiCourse> page, @Param("name") String name,@Param("tname") String tname,@Param("secMajorId")String secMajorId);
 
+    //批量导出汇总实习
+    List<ShixiCourse> selectOutPut(@Param("name") String name,@Param("tname") String tname,@Param("secMajorId")String secMajorId);
 
     List<Course> getNotSelectedCourse(Page<Course> page, @Param("studentId") String studentId);
 
     List<Course> getSelectedCourse(Page<Course> page, @Param("studentId") String studentId);
 
     List<Course> getCourseByTeacher(Page<Course> page, @Param("teacherId") String teacherId);
+
+    List<ShixiCourse> selectAll();
 }

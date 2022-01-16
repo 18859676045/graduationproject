@@ -31,12 +31,16 @@ public class MessageController {
             return ResultUtil.result(EnumCode.BAD_EMAIL.getValue(), "邮箱错误");
         }else {
             try {
-                MailUtils.sendMail(email,content,"阳光学院实习材料管理系统的提醒");
+                boolean mes = MailUtils.sendMail(email, content, "阳光学院实习材料管理系统的提醒");
+                if (mes){
+                    return ResultUtil.result(EnumCode.OK.getValue(), "发送成功");
+                }
+
             }catch (Exception e){
                 e.printStackTrace();
                 return ResultUtil.result(EnumCode.BAD_EMAIL.getValue(), "邮箱错误");
             }
         }
-        return ResultUtil.result(EnumCode.OK.getValue(), "发送成功");
+        return ResultUtil.result(EnumCode.BAD_EMAIL.getValue(), "邮箱错误");
     }
 }

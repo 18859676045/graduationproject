@@ -54,13 +54,15 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper,Teacher> imple
         if(list!=null && list.size()>0){
             throw new MyException(ResultUtil.result(EnumCode.BAD_REQUEST.getValue(),"该老师已存在",null));
         }
+        teacher.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2Hehg2AJ41ZAADMKjt4FbQ509.png");
         super.baseMapper.insert(teacher);
 
         //把老师信息插入到t_user表和t_user_roel表，使得老师可以用姓名和默认密码a123456登录
         User u = new User();
         u.setId(teacher.getId());
-        u.setUsername(teacher.getName().trim());
+        u.setUsername(teacher.getPhone());
         u.setPassword("d477887b0636e5d87f79cc25c99d7dc9");
+        u.setName(teacher.getName());
         if(teacher.getPhotoUrl()!=null){
             u.setPhotoUrl(teacher.getPhotoUrl().trim());
         }

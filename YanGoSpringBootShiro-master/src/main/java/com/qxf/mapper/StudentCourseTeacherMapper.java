@@ -10,6 +10,9 @@ public interface StudentCourseTeacherMapper extends BaseMapper<StudentCourseTeac
 
     int insertSelective(StudentCourseTeacher record);
 
+    int MyWriteInsert(StudentCourseTeacher record);
+
+
     StudentCourseTeacher selectByPrimaryKey(String id);
 
     int updateByPrimaryKeySelective(StudentCourseTeacher record);

@@ -54,7 +54,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
 //        if(total!=null){
 //            number = ""+(1000+total);
 //        }
-        String studentNickname = student.getNickname();   //学号
+        String studentNickname = student.getNickname();
 
         //判断要插入的学生是否存在
         Map<String,Object> map = new HashMap<>();
@@ -69,12 +69,15 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
 
         //插入学生
 //        student.setStudentNumber(studentNumber);
+        student.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2He0rSAeek1AABgUvgByVQ494.png");
         super.baseMapper.insert(student);
 
         //把学生信息插入到t_user表和t_user_roel表，使得学生可以用姓名和默认密码a123456登录
         User u = new User();
         u.setId(student.getId());
         u.setUsername(student.getName().trim());
+        u.setName(studentNickname);
+
         u.setPassword("d477887b0636e5d87f79cc25c99d7dc9");
         if(student.getPhotoUrl()!=null){
             u.setPhotoUrl(student.getPhotoUrl().trim());

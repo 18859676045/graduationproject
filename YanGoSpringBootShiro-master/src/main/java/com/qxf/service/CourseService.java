@@ -19,6 +19,8 @@ import java.util.Map;
 public interface CourseService extends IService<Course>{
     List<ShixiCourse> getListByPage(Page<ShixiCourse> page, String name);
 
+    public List<ShixiCourse> selectOutPut(String username,String userId,String roleId);
+
     Object addCourse(ShixiCourse course) throws ParseException;
 
     ShiXiBigPojo findOnePost(String id);
@@ -33,5 +35,7 @@ public interface CourseService extends IService<Course>{
     Object addCourseToStudent(Course course);
 
     List<Course> getCourseByTeacher(Page<Course> page,String teacherId);
+
+    List<ShixiCourse> selectAll();
 
 }

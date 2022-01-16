@@ -31,6 +31,7 @@
                     <p>创建</p>
                 </template>
                 {{ user. createTime}}
+
             </el-descriptions-item>
             <el-descriptions-item>
                 <template slot="label">
@@ -213,7 +214,7 @@
                     <i class="el-icon-tickets"></i>
                     学号
                 </template>
-                <el-tag size="small">{{ student.studentNumber }}</el-tag>
+                <el-tag size="small">{{ student.name }}</el-tag>
             </el-descriptions-item>
         </el-descriptions>
 
@@ -244,10 +245,20 @@
             <el-input  type="number" v-model="teacher1.age" placeholder="请输入老师年龄" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="联系电话" prop="phone" :rules="[{ required: true, message: '请输入老师联系电话', trigger: 'blur' },{validator: 'regexp', pattern: /^[1][3,4,5,7,8,9][0-9]{9}$/, message: '手机号码不正确', trigger: 'change,blur'}]">
-            <el-input  type="text" v-model="teacher1.phone" placeholder="请输入老师联系电话" auto-complete="off"></el-input>
+            <el-input  type="text" v-model="teacher1.phone" placeholder="请输入老师联系电话(登陆用户名)" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="老师邮箱" prop="email" :rules="[{ required: true, message: '请输入老师邮箱', trigger: 'blur' }]">
             <el-input  type="text" v-model="teacher1.email" placeholder="请输入老师邮箱" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="职称" prop="title2" :rules="[{ required: true, message: '请选择职称', trigger: 'blur' }]">
+            <el-select v-model="teacher1.title2" filterable placeholder="请选择">
+                <el-option
+                        v-for="item in titles"
+                        :key="item.dictCode"
+                        :label="item.dictValue"
+                        :value="item.dictCode">
+                </el-option>
+            </el-select>
         </el-form-item>
 
 	</el-form>
@@ -265,8 +276,11 @@
             <div style="width:60%;margin: 0 auto">
                 <el-form ref="secretary1" :model="secretary1" :inline="false" label-width="90px" class="demo-ruleForm">
 
-                    <el-form-item label="秘书名称" prop="name" :rules="[{ required: true, message: '请输入秘书名称', trigger: 'blur' }]">
+                    <el-form-item label="用户名" prop="name" :rules="[{ required: true, message: '请输入秘书用户名', trigger: 'blur' }]">
                         <el-input  type="text" v-model="secretary1.name" placeholder="请输入秘书名称" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="秘书名称" prop="nickname" :rules="[{ required: true, message: '请输入秘书名称', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="secretary1.nickname" placeholder="请输入秘书名称" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="性别" prop="sex" :rules="[{ required: true, message: '请选择性别', trigger: 'blur' }]">
                         <el-select v-model="secretary1.sex" filterable placeholder="请选择">
@@ -333,11 +347,11 @@
                             </el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="姓名" prop="name" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="student1.name" placeholder="请输入学生姓名" auto-complete="off"></el-input>
+                    <el-form-item label="姓名" prop="nickname" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="student1.nickname" placeholder="请输入学生姓名" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="学号" prop="studentNumber" :rules="[{ required: true, message: '请输入学生学号', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="student1.studentNumber" placeholder="请输入学生学号" auto-complete="off"></el-input>
+                    <el-form-item label="学号" prop="name" :rules="[{ required: true, message: '请输入学生学号(即修改用户名)', trigger: 'blur' }]">
+                        <el-input  type="text" v-model="student1.name" placeholder="请输入学生学号" auto-complete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="邮箱" prop="email" :rules="[{ required: true, message: '请输入邮箱', trigger: 'blur' }]">
                         <el-input  type="text" v-model="student1.email" placeholder="请输入学生邮箱" auto-complete="off"></el-input>
@@ -387,6 +401,7 @@ export default {
             institutes:[],    //学院列表
             majors:[],       //专业列表
             clazzs:[],       //班级列表
+            titles:[],
 			dialogFormVisible1: false,
 			dialogFormVisible2: false,
             dialogFormVisible3: false,
@@ -411,6 +426,7 @@ export default {
                 teacherPost: ""
             },
             teacher1:{
+                title2:'',
                 age: 1,
                 email: "",
                 id: "",
@@ -450,7 +466,7 @@ export default {
                 phone: "",
                 photoUrl: "",
                 sex: "",
-                username: "教学秘书"
+                nickname: ""
             },
             student:{
                 age: 0,
@@ -499,6 +515,7 @@ export default {
         showDialogForm1(){
             this.dialogFormVisible1 = true
             this.getSexData()
+            this.getTitleData()
         },
         //学生
         showDialogForm2(){
@@ -546,9 +563,11 @@ export default {
                 tage:_this.teacher1.age,
                 tphone:_this.teacher1.phone,
                 temail:_this.teacher1.email,
+                title2:_this.teacher1.title2,
                 //教学秘书
                 jid:_this.secretary.id,
                 jname:_this.secretary1.name,
+                jnickname:_this.secretary1.nickname,
                 jsex:_this.secretary1.sex,
                 jage:_this.secretary1.age,
                 jphone:_this.secretary1.phone,
@@ -558,7 +577,7 @@ export default {
                 clazzId:_this.clazz.id,
                 majorId:_this.major.id,
                 instituteId:_this.institute.id,
-                snumber: _this.student1.studentNumber,
+                snickname: _this.student1.studentNumber,
                 semail: _this.student1.email,
                 ssex: _this.student1.sex,
                 sname:_this.student1.name,
@@ -617,11 +636,12 @@ export default {
                     _this.teacher.sex = JSON.stringify(res.teacher.sex)
 
                     _this.teacher1 = Object.assign({},res.teacher)
-                    _this.teacher1.sex = Object.assign({},JSON.stringify(res.teacher.sex))
-                    // console.log( Object.assign({},JSON.stringify(res.teacher.sex)))
+                    // _this.teacher1.sex = Object.assign({},JSON.stringify(res.teacher.sex))
+                    console.log( _this.teacher1.sex)
                 }
                 if (res.teacherPost!=null){
                     _this.teacher.teacherPost = res.teacherPost
+                    _this.teacher1.teacherPost = Object.assign({},res.teacherPost)
                 }
                 if (res.student!=null){
                     _this.student = res.student
@@ -717,6 +737,23 @@ export default {
             } else {
                 _this.message(true,data.data.msg,'error')
                 _this.clazzs = []
+            }
+        },
+        // 查询职称列表
+        async getTitleData () {
+            let _this = this
+            let param = {
+                dictTypeCode: 'TEACHER_TYPE'
+            }
+            let data = await http.get('dict/findListByDictTypeCode',param)
+            if(!data.data) {
+                return
+            }
+            if (data.data.status === 200) {
+                _this.titles = data.data.data
+            } else {
+                _this.message(true,data.data.msg,'error')
+                _this.titles = []
             }
         },
 		/**

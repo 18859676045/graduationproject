@@ -104,8 +104,8 @@
         </javaClientGenerator>
 
         <!-- 数据库表名及对应的Java模型类名 -->
-        <table tableName="t_student_course_teacher"
-               domainObjectName="StudentCourseTeacher"
+        <table tableName="t_practice_risk"
+               domainObjectName="PracticeRisk"
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false"

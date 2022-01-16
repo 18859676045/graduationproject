@@ -140,8 +140,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     @Override
-    public List<User> findUserByPage(Page<User> page, User user) {
-        return super.baseMapper.findUserByPage(page,user);
+    public List<User> findUserByPage(Page<User> page, User user,String username) {
+        return super.baseMapper.findUserByPage(page,user,username);
     }
 
     @Override

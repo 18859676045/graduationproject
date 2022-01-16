@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,7 +81,12 @@ public class FastDfsController extends BaseController{
                         FastDfs fastDfs = new FastDfs();
                         fastDfs.setId(UUID.randomUUID().toString().replace("-", ""));
                         fastDfs.setFileName(fileName);
-                        String str = "http://47.97.105.41/" + uploadArray[0]+ "/" + uploadArray[1];
+                        String str = null;
+                        if (uploadArray[0].equals("group1")){
+                            str = "http://47.97.105.41/" + uploadArray[0]+ "/" + uploadArray[1];
+                        }else if (uploadArray[0].equals("group2")){
+                            str = "http://1.15.188.251/" + uploadArray[0]+ "/" + uploadArray[1];
+                        }
                         fastDfs.setFilePath(str);
                         fastDfs.setDownCount(0);
                         fastDfs.setUploadTime(new Date());
@@ -116,6 +122,13 @@ public class FastDfsController extends BaseController{
     @GetMapping("/dowload")
     public Object dowload(@RequestParam("id")String id){
         FastDfs fastDfs = fastDfsService.selectById(id);
+//        String filePath = fastDfs.getFilePath();
+//        String group = filePath.substring(20, 26);
+//        String remote_fileName = filePath.substring(27);
+//        String localPate = "C:/YanGoMaterialsSystem/"+remote_fileName.substring(10);
+//        FastDFSUploadUtils.fileDownload(localPate, group, remote_fileName);
+
+
         fastDfs.setLastdownTime(new Date());
         fastDfs.setDownCount(fastDfs.getDownCount()+1);
         fastDfsService.updateById(fastDfs);
@@ -125,9 +138,28 @@ public class FastDfsController extends BaseController{
         fastDfsUser.setFastdfsId(fastDfs.getId());
         boolean insert = fastDfsUserService.insert(fastDfsUser);
         if(insert){
-            return ResultUtil.result(EnumCode.OK.getValue(), "请求成功",fastDfs.getFilePath());
+            return ResultUtil.result(EnumCode.OK.getValue(), "文件下载成功",fastDfs.getFilePath()+"?parameter=1");
         }
         return ResultUtil.result(EnumCode.BAD_DOWN.getValue(), "下载失败");
+    }
+
+    /**
+     * 文件预览
+     * @param id
+     * @return
+     */
+    @GetMapping("/preDown")
+    public Object preDown(@RequestParam("id")String id){
+        FastDfs fastDfs = fastDfsService.selectById(id);
+//        fastDfs.setLastdownTime(new Date());
+//        fastDfs.setDownCount(fastDfs.getDownCount()+1);
+//        fastDfsService.updateById(fastDfs);
+//        String userId = super.getUserId();
+//        FastDfsUser fastDfsUser = new FastDfsUser();
+//        fastDfsUser.setUserId(userId);
+//        fastDfsUser.setFastdfsId(fastDfs.getId());
+//        boolean insert = fastDfsUserService.insert(fastDfsUser);
+            return ResultUtil.result(EnumCode.OK.getValue(), "请求成功",fastDfs.getFilePath());
     }
 
     @Autowired
@@ -158,9 +190,23 @@ public class FastDfsController extends BaseController{
            String fileExtName=fileName.substring(fileName.lastIndexOf(".")+1);
 
            String[] uploadArray= FastDFSUploadUtils.fileUpload(buffFile,fileExtName);
+           User stu = userService.selectById(userId);
+           if (!StringUtils.isEmpty(stu.getPhotoUrl())){
+               String filePath = stu.getPhotoUrl();
+               String group = filePath.substring(20, 26);
+               String remote_fileName = filePath.substring(27);
+               //删除旧头像
+               FastDFSUploadUtils.fileDelete(group, remote_fileName);
+           }
+
 
            if (uploadArray!=null&&uploadArray.length==2){
-               String str = "http://47.97.105.41/"+uploadArray[0] +"/"+ uploadArray[1];
+               String str = null;
+               if (uploadArray[0].equals("group1")){
+                   str = "http://47.97.105.41/" + uploadArray[0]+ "/" + uploadArray[1];
+               }else if (uploadArray[0].equals("group2")){
+                   str = "http://1.15.188.251/" + uploadArray[0]+ "/" + uploadArray[1];
+               }
                /**判断角色，插入不同的表
                 * 2.导师
                 * 3.学生

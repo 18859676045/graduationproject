@@ -4,6 +4,8 @@ import com.qxf.hiswww.dao.*;
 import com.qxf.hiswww.domain.*;
 import com.qxf.pojo.User;
 import com.qxf.service.UserService;
+import com.xiaoleilu.hutool.http.HttpRequest;
+import com.xiaoleilu.hutool.http.HttpResponse;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -12,13 +14,19 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
-
+import static jdk.nashorn.internal.objects.NativeString.substring;
 
 
 public class AuthRealm extends AuthorizingRealm {
@@ -100,6 +108,7 @@ public class AuthRealm extends AuthorizingRealm {
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
         String name = upToken.getUsername();
         String pass = String.valueOf(upToken.getPassword());
+
         User u = new User();
         u.setUsername(name);
         u.setPassword(pass);
