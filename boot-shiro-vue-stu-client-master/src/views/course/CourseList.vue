@@ -481,6 +481,7 @@ export default {
             DetailEditvisbleMessage: {
                 practiceWay:'',
                 risk:'',
+                riskId:'',
                 healthy:'',
 			    score:'',
                 teacherEstimate:'',
@@ -863,6 +864,13 @@ export default {
 
         //提醒导师打分
         async setGrade(email){
+            // this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+            //     confirmButtonText: '确定',
+            //     cancelButtonText: '取消',
+            //     type: 'warning'
+            // }).catch(() => {
+            //     this.message(true,'已取消删除','warning')
+            // })
             let _this=this;
 		    console.log(email)
             if (email == null){
@@ -1001,7 +1009,8 @@ export default {
                 //风险表
                 healthy:this.DetailEditvisbleMessage.healthy,
                 practiceWay:this.DetailEditvisbleMessage.practiceWay,
-                risk:this.DetailEditvisbleMessage.risk
+                risk:this.DetailEditvisbleMessage.risk,
+                riskId:this.DetailEditvisbleMessage.riskId
             }
             let data = await http.post("course/editBigPojo",params )
 

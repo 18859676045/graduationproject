@@ -66,54 +66,6 @@ public class CourseController {
     }
 
 
-    //学生：我的未选课程
-    @GetMapping("/choice")
-    public Object getNotSelectedCourse(Integer startPage, Integer pageSize, HttpSession session){
-        Page<Course> page = new Page<>(startPage,pageSize);
-        User user = (User) session.getAttribute("user");
-        List<Course> list = courseService.getNotSelectedCourse(page,user.getId());
-        return ResultUtil.result(EnumCode.OK.getValue(),"请求成功",list,page.getTotal());
-    }
-
-    //学生：我的课程列表
-    @GetMapping("/mycourse")
-    public Object getSelectedCourse(Integer startPage, Integer pageSize, HttpSession session){
-        Page<Course> page = new Page<>(startPage,pageSize);
-        User user = (User) session.getAttribute("user");
-        if(user == null){
-            user = (User) SecurityUtils.getSubject().getPrincipal();
-            session.setAttribute("user",user);
-        }
-        try {
-            List<Course> list = courseService.getSelectedCourse(page,user.getId());
-            return ResultUtil.result(EnumCode.OK.getValue(),"请求成功",list,page.getTotal());
-        }
-        catch (Exception e){
-            return ResultUtil.result(EnumCode.NO_Count.getValue(), "您没有成绩",null,null);
-        }
-
-
-    }
-
-    //学生：将未选课程添加到我的课程
-    @PostMapping("/student")
-    public Object addCourseToStudent(Course course){
-        return courseService.addCourseToStudent(course);
-    }
-
-    //老师：个人中心-课程中心列表
-    @GetMapping("/center")
-    public Object getCourseByTeacher(Integer startPage, Integer pageSize, HttpSession session){
-        Page<Course> page = new Page<>(startPage,pageSize);
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        try {
-        List<Course> list = courseService.getCourseByTeacher(page,user.getId());
-            return ResultUtil.result(EnumCode.OK.getValue(),"请求成功",list,page.getTotal());
-        } catch (Exception e){
-        return ResultUtil.result(EnumCode.NO_Count.getValue(), "您没有成绩",null,null);
-    }
-    }
-
     //所有用户：公司管理company,查看学生岗位详情
     @GetMapping("/company")
     public Object findOnePost(String id){

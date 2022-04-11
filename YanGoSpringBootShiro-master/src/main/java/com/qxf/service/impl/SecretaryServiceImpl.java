@@ -38,6 +38,9 @@ public class SecretaryServiceImpl extends ServiceImpl<SecretaryMapper, Secretary
         return super.baseMapper.getSecretaryByPage(page,name);
     }
 
+    @Autowired
+    SecretaryService secretaryService;
+
     @Override
     public Object insertSecretary(Secretary secretary) {
         //判断教秘是否存在
@@ -48,7 +51,12 @@ public class SecretaryServiceImpl extends ServiceImpl<SecretaryMapper, Secretary
         map.put("major_id",secretary.getMajorId());
         map.put("phone",secretary.getPhone());
         List<Secretary> list = super.baseMapper.selectByMap(map);
-        if(list!=null && list.size()>0){
+
+        Map<String,Object> m2 = new HashMap<>();
+        m2.put("username",secretary.getName());
+        List<User> users = userService.selectByMap(m2);
+
+        if(users.size()!=0 && list.size()!=0){
             throw new MyException(ResultUtil.result(EnumCode.BAD_REQUEST.getValue(),"该教秘已存在",null));
         }
         //插入教秘

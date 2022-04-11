@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,8 +70,17 @@ public class AccountCenterController extends BaseController{
     @Autowired
     UserService userService;
     @RequestMapping("/security")
-    public Object editPassword(@RequestParam("password") String password){
+    public Object editPassword(@RequestParam("password") String password , @RequestParam("formerPass")String formerPass){
         String userId = super.getUserId();
+
+        String dataPassword = SecureUtil.md5(formerPass);
+        Map<String,Object> map = new HashMap<>();
+        map.put("username",super.getUserName());
+        map.put("password",dataPassword);
+        List<User> users = userService.selectByMap(map);
+        if (users.isEmpty()){
+            return ResultUtil.result(EnumCode.BAD_PASSWORD.getValue(), EnumCode.BAD_PASSWORD.getText());
+        }
         User user = userService.selectById(userId);
         user.setPassword(SecureUtil.md5(password));
         userService.updateById(user);

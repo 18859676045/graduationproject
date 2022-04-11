@@ -106,20 +106,6 @@ public class ShiroConfig {
         return cookie;
     }
 
-//    @Bean
-//    public SimpleCookie rememberMeCookie(){
-//        SimpleCookie simpleCookie = new SimpleCookie();
-//        simpleCookie.setHttpOnly(true);
-//        simpleCookie.setMaxAge(86400000);
-//        return simpleCookie;
-//    }
-//    @Bean
-//    public CookieRememberMeManager rememberMeManager(){
-//        CookieRememberMeManager ccrmm = new CookieRememberMeManager();
-//        ccrmm.setCookie(this.rememberMeCookie());
-//        return ccrmm;
-//    }
-
 
 
 

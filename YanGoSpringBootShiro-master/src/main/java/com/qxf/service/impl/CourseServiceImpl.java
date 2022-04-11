@@ -355,7 +355,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
     @Transactional
     public Object editBigPojo(ShiXiBigPojo shiXiBigPojo) {
         TStudentExample tStudentExample = new TStudentExample();
-        tStudentExample.or().andNameEqualTo(shiXiBigPojo.getSname()).andNameEqualTo(shiXiBigPojo.getSname());
+        tStudentExample.or().andNameEqualTo(shiXiBigPojo.getSname()).andNicknameEqualTo(shiXiBigPojo.getNickname());
         //查询是否有这个学生，进行修改
         TStudent tStudent = tStudentMapper.selectOneByExample(tStudentExample);
         if (StringUtils.isEmpty(tStudent)) {
@@ -377,11 +377,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
 //        practicMap.put("id",shiXiBigPojo.getStcId());
 //        List<PracticeRisk> practiceRisks = practiceRiskService.selectByMap(practicMap);
         PracticeRisk practiceRisk = practiceRiskService.selectById(shiXiBigPojo.getStcId());
-        if (!StringUtils.isEmpty(practiceRisk)){
+        if (!StringUtils.isEmpty(shiXiBigPojo.getPracticeWay())||!StringUtils.isEmpty(shiXiBigPojo.getRisk())||!StringUtils.isEmpty(shiXiBigPojo.getHealthy())){
             practiceRisk.setPracticeWay(shiXiBigPojo.getPracticeWay());
             practiceRisk.setRisk(shiXiBigPojo.getRisk());
             practiceRisk.setHealthy(shiXiBigPojo.getHealthy());
             practiceRiskService.updateById(practiceRisk);
+        }else {
+            return ResultUtil.result(EnumCode.RISK_NULL.getValue(),EnumCode.RISK_NULL.getText());
         }
 
         String courseId = null;
@@ -392,8 +394,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
 
                 course.setStartStime(date1);
                 course.setEndEtime(date2);
-                course.setName(shiXiBigPojo.getCname());
-                course.setCourseType(shiXiBigPojo.getCcourseType());
+                String ccourseType = shiXiBigPojo.getCcourseType();
+                //根据实习数据字典查询实习类型名称
+                TSysDictExample tSysDictExample = new TSysDictExample();
+                tSysDictExample.or().andDictCodeEqualTo(ccourseType);
+                TSysDict sysDict = tSysDictMapper.selectOneByExample(tSysDictExample);
+                course.setName(sysDict.getDictValue());
+                course.setCourseType(ccourseType);
                 wCourseMapper.insert(course);
                 courseId = course.getId();
         }else {
@@ -409,6 +416,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
         tStudentCourseTeacher.setTeacherEstimate(shiXiBigPojo.getTeacherEstimate());
         tStudentCourseTeacherMapper.updateByPrimaryKeySelective(tStudentCourseTeacher);
         //修改学生信息
+        tStudent.setName(shiXiBigPojo.getSname());
+        tStudent.setNickname(shiXiBigPojo.getNickname());
         tStudent.setEmail(shiXiBigPojo.getSemail());
         tStudent.setPhone(shiXiBigPojo.getSphone());
         tStudentMapper.updateByPrimaryKeySelective(tStudent);
@@ -434,7 +443,7 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper,Course> implemen
             tCompany.setStudentsPost(shiXiBigPojo.getGstudentsPost());
             tCompany.setcDescribe(shiXiBigPojo.getGcDescribe());
             tCompany.setOutSupervisor(shiXiBigPojo.getGoutSupervisor());
-            tCompany.setSupervisorPost(shiXiBigPojo.getGstudentsPost());
+            tCompany.setSupervisorPost(shiXiBigPojo.getSupervisorPost());
             tCompany.setOutorPhone(shiXiBigPojo.getGoutorPhone());
             tCompany.setStudnetId(tStudent.getId());
             tCompany.setCourseId(courseId);

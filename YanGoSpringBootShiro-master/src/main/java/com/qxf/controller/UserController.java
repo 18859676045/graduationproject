@@ -48,47 +48,7 @@ public class UserController extends BaseController {
     @Autowired
     private RoleService roleService;
 
-    /**
-     * 上传用户头像
-     */
-    @ResponseBody
-    @RequestMapping(value = "/uploadHander", method = RequestMethod.POST)
-    public String uploadLogo(HttpServletRequest request) {
-        uploadImg = new HashMap<String, String>();
-        uploadImg = UploadUtil.uploadImage(request, "vue_shiro_photo/userImg");
-        return uploadImg.get("pic");
-    }
 
-    @RequestMapping("/upload")
-    @ResponseBody
-    public String handleFileUpload(MultipartFile file) {
-        if (!file.isEmpty()) {
-            try {
-                /*
-                 * 这段代码执行完毕之后，图片上传到了工程的跟路径； 大家自己扩散下思维，如果我们想把图片上传到
-                 * d:/files大家是否能实现呢？ 等等;
-                 * 这里只是简单一个例子,请自行参考，融入到实际中可能需要大家自己做一些思考，比如： 1、文件路径； 2、文件名；
-                 * 3、文件格式; 4、文件大小的限制;
-                 */
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(file.getOriginalFilename())));
-                System.out.println(file.getName());
-                out.write(file.getBytes());
-                out.flush();
-                out.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return "上传失败," + e.getMessage();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "上传失败," + e.getMessage();
-            }
-
-            return "上传成功";
-
-        } else {
-            return "上传失败，因为文件是空的.";
-        }
-    }
 
     /**
      * @desc: 查询用户
@@ -259,7 +219,7 @@ public class UserController extends BaseController {
 //                }else if (values[4].equals("学生")){
 //                    user.setRoleId("3");
 //                }else if (values[4].equals("教学秘书")){
-//                    user.setRoleId("a4ea24e68fc342c2a52286702061a022");
+//                    user.setRoleId("4");
 //                }
                 userService.addUser(user);
             }
@@ -269,7 +229,7 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 批量导入用户
+     * 批量实习导入
      *
      */
     @Autowired

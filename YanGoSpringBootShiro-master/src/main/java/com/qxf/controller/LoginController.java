@@ -28,10 +28,19 @@ public class LoginController extends BaseController{
     private LoginLogService loginLogService;
 
 //    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @Autowired
+    SystemController systemController;
+
 
     @PostMapping("/login")
-    public Object login(String name,String pass, HttpSession session, HttpServletRequest request) {
+    public Object login(String name,String pass,String verify , HttpSession session, HttpServletRequest request) {
 
+        String cacheCaptcha = (String) session.getAttribute("check");
+        if (verify.equals(cacheCaptcha)) {
+            session.removeAttribute("check");
+        } else {
+            return ResultUtil.result(EnumCode.BAD_CHECK.getValue(), EnumCode.BAD_CHECK.getText());
+        }
             User user = new User();
             user.setUsername(name);
             user.setPassword(pass);

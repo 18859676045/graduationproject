@@ -8,7 +8,7 @@ import com.qxf.pojo.Teacher;
 import java.util.List;
 
 /**
- * @Auther: qiuxinfa
+ * @Auther: wangweiwen
  * @Date: 2019/11/24
  * @Description: com.qxf.service
  */

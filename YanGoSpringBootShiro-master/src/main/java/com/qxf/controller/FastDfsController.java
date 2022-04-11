@@ -215,13 +215,14 @@ public class FastDfsController extends BaseController{
                User user = userService.selectById(userId);
                String userName = user.getUsername();
                Map<String,Object> map = new HashMap<>();
-               map.put("name",userName);
                if(roleId.equals("2")){
+                   map.put("phone",userName);
                    List<Teacher> teachers = teacherService.selectByMap(map);
                    Teacher teacher = teachers.get(0);
                    teacher.setPhotoUrl(str);
                    teacherService.updateById(teacher);
                }if(roleId.equals("3")){
+                   map.put("name",userName);
                    List<Student> students = studentService.selectByMap(map);
                    Student student = students.get(0);
                    student.setPhotoUrl(str);
@@ -229,7 +230,7 @@ public class FastDfsController extends BaseController{
                }
                user.setPhotoUrl(str);
                userService.updateById(user);
-               return ResultUtil.result(EnumCode.OK.getValue(), "上传成功");
+               return ResultUtil.result(EnumCode.OK.getValue(), "上传成功,重新登陆生效！");
            }
        }catch (Exception e){
            e.printStackTrace();

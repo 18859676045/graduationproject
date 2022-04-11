@@ -3,11 +3,14 @@
 
 
         <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" >
+            <el-form-item label="原密码" prop="formerPass">
+                <el-input  type="password"  placeholder="请输入原密码" auto-complete="off" v-model="ruleForm.formerPass" autocomplete="off"></el-input>
+            </el-form-item>
             <el-form-item label="密码" prop="pass">
                 <el-input  type="password"  placeholder="密码以字母开头，长度在6~18之间，只能包含字符、数字和下划线" auto-complete="off" v-model="ruleForm.pass" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="确认密码" prop="checkPass">
-                <el-input type="password" placeholder="与密码一致" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
+                <el-input type="password" placeholder="与新密码一致" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
             </el-form-item>
 
             <el-form-item>
@@ -63,12 +66,17 @@ export default {
             ruleForm: {
                 pass: '',
                 checkPass: '',
-                age: ''
+                age: '',
+                formerPass:''
             },
             rules: {
                 pass: [
                     { required: true, message: '请输入密码', trigger: 'blur' },
                     {validator: 'regexp', pattern: /^[a-zA-Z]\w{5,17}$/, message: '密码格式不正确', trigger: 'change,blur'}
+                ],
+                formerPass: [
+                    { required: true, message: '请输入原密码', trigger: 'blur' },
+
                 ],
                 checkPass: [
                     { required: true, message: '请再次输入密码', trigger: 'blur' },
@@ -93,6 +101,7 @@ export default {
             let _this = this
             let params = {
                 password: md5(_this.ruleForm.pass),
+                formerPass: md5(_this.ruleForm.formerPass),
             }
             let data = await http.post('account/security', params)
 

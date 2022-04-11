@@ -1,8 +1,10 @@
 package com.qxf.service.impl;
 
 import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.qxf.hiswww.dao.TUserMapper;
 import com.qxf.hiswww.domain.AccounCenterRecelveVo;
 import com.qxf.hiswww.domain.TUser;
+import com.qxf.hiswww.domain.TUserExample;
 import com.qxf.pojo.*;
 import com.qxf.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +63,8 @@ public class PersonServiceImpl implements PersonService {
         if (role.getId().equals("1") || role.getId().equals("2")){
             Map<String,Object> map = new HashMap<>();
             map.put("phone",user.getUsername());
-            List<Teacher> teachers = teacherService.selectByMap(map);
-            if (teachers.size()!=0) {
-                Teacher teacher = teachers.get(0);
+            Teacher teacher = teacherService.selectById(user.getId());
+            if (!StringUtils.isEmpty(teacher)) {
                 editUserVo.setTeacher(teacher);
                 if (!StringUtils.isEmpty(teacher.getTitle())){
                     Map<String,Object> map2 = new HashMap<>();
@@ -120,19 +121,17 @@ public class PersonServiceImpl implements PersonService {
      * （判断roleid为：2.导师3.学生4.教学秘书）
      * 返回1成功，返回1失败
      */
+    @Autowired
+    TUserMapper tUserMapper;
     @Transactional
     public Integer updateMessage(String userId, String roleId, AccounCenterRecelveVo vo){
         User user = userService.selectById(userId);
-        Role role = roleService.selectById(roleId);
         String username = user.getUsername();
         boolean result = false;
         //老师
         if (roleId.equals("2")){
-            Map<String,Object> map = new HashMap<>();
-            map.put("phone",username);
             //修改teacher表
-            List<Teacher> teachers = teacherService.selectByMap(map);
-            Teacher teacher = teachers.get(0);
+            Teacher teacher = teacherService.selectById(userId);
             teacher.setEmail(vo.getTemail());
             teacher.setName(vo.getTname());
             //查询职称并赋值
@@ -145,15 +144,12 @@ public class PersonServiceImpl implements PersonService {
             teacher.setSex(Integer.valueOf(vo.getTsex()));
             teacher.setPhone(vo.getTphone());
             user.setEmail(vo.getTemail());
-            user.setUsername(vo.getTphone());
+            user.setName(vo.getTname());
              result = teacherService.updateById(teacher);
         }
         //学生
         else if (roleId.equals("3")){
-            Map<String,Object> map = new HashMap<>();
-            map.put("name",username);
-            List<Student> students = studentService.selectByMap(map);
-            Student student = students.get(0);
+            Student student = studentService.selectById(userId);
             student.setInstituteId(vo.getInstituteId());
             student.setMajorId(vo.getMajorId());
             student.setClazzId(vo.getClazzId());
@@ -164,16 +160,13 @@ public class PersonServiceImpl implements PersonService {
             student.setAge(vo.getSage());
             student.setPhone(vo.getSphone());
             user.setEmail(vo.getSemail());
-            user.setUsername(vo.getSname());
+            user.setName(vo.getSnickname());
             result = studentService.updateById(student);
 
         }
         //教学秘书
        else if (roleId.equals("4")){
-            Map<String,Object> map = new HashMap<>();
-            map.put("name",username);
-            List<Secretary> secretaries = secretaryService.selectByMap(map);
-            Secretary secretary = secretaries.get(0);
+            Secretary secretary = secretaryService.selectById(userId);
             secretary.setEmail(vo.getJemail());
             secretary.setName(vo.getJname());
             secretary.setNickname(vo.getJnickname());
@@ -182,13 +175,21 @@ public class PersonServiceImpl implements PersonService {
             secretary.setSex(vo.getJsex());
             secretary.setMajorId(vo.getMajorId());
             user.setEmail(vo.getJemail());
-            user.setUsername(vo.getJname());
+            user.setName(vo.getJnickname());
              result = secretaryService.updateById(secretary);
         }
        else {
            //管理员和其他角色不修改
            result = true;
         }
+//       TUserExample tUserExample = new TUserExample();
+//       tUserExample.or().andUsernameEqualTo(user.getUsername());
+//       TUser tUser = tUserMapper.selectOneByExample(tUserExample);
+//       if (tUser.getId().isEmpty()){
+//           return 0;
+//       }else {
+//
+//       }
         boolean b = userService.updateById(user);
        if (b && result){
            return 1;

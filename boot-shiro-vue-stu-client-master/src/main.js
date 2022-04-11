@@ -90,10 +90,10 @@ router.beforeEach((to, from, next) => {
       }
     }
     if (allow) {
-      console.log('有权限进入' + to.path);
+      // console.log('有权限进入' + to.path);
       next()
     } else {
-      console.log('没有权限进入' + to.path);
+      // console.log('没有权限进入' + to.path);
       next({ path: '/404' })
     }
   } else {

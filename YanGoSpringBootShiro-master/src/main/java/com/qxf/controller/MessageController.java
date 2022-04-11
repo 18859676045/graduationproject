@@ -27,20 +27,11 @@ public class MessageController {
 //        String content="消息提醒："+tUser.getName()+"("+tUser.getUsername()+")"+
         String content=   "<br>您在阳光学院实习材料管理系统，还有资料未填完全请您尽快登陆！！" +
                 "<br>谢谢";
-        if (email.isEmpty()){
-            return ResultUtil.result(EnumCode.BAD_EMAIL.getValue(), "邮箱错误");
-        }else {
-            try {
-                boolean mes = MailUtils.sendMail(email, content, "阳光学院实习材料管理系统的提醒");
-                if (mes){
-                    return ResultUtil.result(EnumCode.OK.getValue(), "发送成功");
-                }
-
-            }catch (Exception e){
-                e.printStackTrace();
-                return ResultUtil.result(EnumCode.BAD_EMAIL.getValue(), "邮箱错误");
-            }
+        boolean mes = MailUtils.sendMail(email, content, "阳光学院实习材料管理系统的提醒");
+        if (mes){
+            return ResultUtil.result(EnumCode.OK.getValue(), "发送成功");
         }
-        return ResultUtil.result(EnumCode.BAD_EMAIL.getValue(), "邮箱错误");
+
+        return ResultUtil.result(EnumCode.BAD_EMAIL.getValue(), "用户邮箱错误！！");
     }
 }

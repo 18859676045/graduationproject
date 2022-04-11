@@ -23,7 +23,7 @@
                         :on-error="handleUploadError"
                         :before-remove="beforeRemove"
                         multiple
-                        :limit="3"
+                        :limit="2"
                         :on-exceed="handleExceed"
                         :file-list="fileList">
                     <el-button size="small" type="primary">点击上传</el-button>
@@ -37,7 +37,7 @@
 			v-loading="listLoading" element-loading-text="拼命加载中"
       :data="tableData1"
 			@selection-change="handleSelectionChange1">
-			<el-table-column type="selection" width="55">
+			<el-table-column type="selection"  width="55"  v-if="user.roleId != '3'">
 			</el-table-column>
 <!--      <el-table-column
         prop="id"
@@ -200,7 +200,7 @@ export default {
             window.location.href = `/file/download?fileName=` + this.form.fileName
         },
         handleExceed(files, fileList) {//当前限制选择 5 个文件，本次选择了 1 个文件，共选择了 2 个文件
-            this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+            this.$message.warning(`当前限制选择 2 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
         },
         beforeRemove(file, fileList) {
             return this.$confirm(`确定移除 ${ file.name }？`);

@@ -42,6 +42,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper,Teacher> imple
         return super.baseMapper.getListByPage(page,name);
     }
 
+
     @Transactional
     @Override
     public Object addTeacher(Teacher teacher) {
@@ -51,7 +52,13 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper,Teacher> imple
         map.put("age",teacher.getAge());
         map.put("phone",teacher.getPhone().trim());
         List<Teacher> list = selectByMap(map);
-        if(list!=null && list.size()>0){
+
+        Map<String,Object> m2 = new HashMap<>();
+        m2.put("username",teacher.getPhone());
+        List<User> users = userService.selectByMap(m2);
+
+
+        if(list!=null || users.get(0).getId().isEmpty() && list.size()>0){
             throw new MyException(ResultUtil.result(EnumCode.BAD_REQUEST.getValue(),"该老师已存在",null));
         }
         teacher.setPhotoUrl("http://47.97.105.41/group1/M00/00/00/rB9y_2Hehg2AJ41ZAADMKjt4FbQ509.png");

@@ -70,9 +70,10 @@ public final class MailUtils {
     public static void main(String[] args) throws Exception { // 做测试用
 
 
-            MailUtils.sendMail("5675799@qq.com", "请问你是福建龙岩的林江吗。" +
-                    "我也是阳光学院的", "交友邮件");
-            System.out.println("发送成功");
+        boolean mes = MailUtils.sendMail("1111@qq.com", "。" +
+                "", "交友邮件");
+
+        System.out.println(mes);
 
     }
 

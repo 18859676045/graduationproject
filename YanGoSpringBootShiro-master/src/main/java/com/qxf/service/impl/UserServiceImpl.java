@@ -122,18 +122,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         String roleId = user.getRoleId();
         if (roleId.equals("2")){
             Teacher teacher = new Teacher();
-            teacher.setName(user.getName());
+            teacher.setPhone(user.getUsername());
+            teacher.setName(user.getUsername());
             teacher.setEmail(user.getEmail());
+            teacher.setSex(1);
             teacherService.insert(teacher);
         }if (roleId.equals("3")){
             Student student = new Student();
             student.setEmail(user.getEmail());
-            student.setName(user.getName());
+            student.setNickname(user.getUsername());
+            student.setName(user.getUsername());
+            student.setInstituteId("271c18020e6a11ea85a85c93a27933da");
+            student.setMajorId("46fda4a6e1b14ae3b209ea9f8c0b45a0");
+            student.setClazzId("f2cf445115c545ef96bba33a62ee5a6a");
+            student.setSex(1);
             studentService.insert(student);
         }if (roleId.equals("4")){
             Secretary secretary = new Secretary();
-            secretary.setName(user.getName());
+            secretary.setName(user.getUsername());
+            secretary.setNickname(user.getUsername());
             secretary.setEmail(user.getEmail());
+            secretary.setMajorId("46fda4a6e1b14ae3b209ea9f8c0b45a0");
+            secretary.setInstituteId("271c18020e6a11ea85a85c93a27933da");
+            secretary.setSex("1");
             secretaryService.insert(secretary);
         }
         return ResultUtil.result(EnumCode.OK.getValue(), "新增成功");

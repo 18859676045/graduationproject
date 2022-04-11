@@ -95,7 +95,6 @@ public class ShiXiBigPojo {
     private String healthy;
     private String practiceWay;
     private String risk;
-
-
+    private String riskId;
 
 }

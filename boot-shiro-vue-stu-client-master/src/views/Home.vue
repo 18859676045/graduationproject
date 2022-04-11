@@ -13,7 +13,7 @@
 				<el-dropdown trigger="hover">
 					<span class="el-dropdown-link userinfo-inner"><img :src=this.user.photoUrl /> 欢迎您,{{nickName}}</span>
 					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item>我的消息</el-dropdown-item>
+<!--						<el-dropdown-item>我的消息</el-dropdown-item>-->
 						<el-dropdown-item @click.native="personalCenter">修改资料</el-dropdown-item>
 						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
 					</el-dropdown-menu>
@@ -156,8 +156,8 @@
 		</div>
 		<div slot="footer" class="dialog-footer">
 	    <el-button @click="dialogVisible = false">取 消</el-button>
-			<el-button @click="resetForm('userform')">重置</el-button>
-	    <el-button type="primary" @click="submitForm('userform')">确 定</el-button>
+<!--			<el-button @click="resetForm('userform')">重置</el-button>-->
+	    <el-button type="primary" @click="submitForm('userform')">确定修改邮箱</el-button>
 	  </div>
 		</el-dialog>
 		</el-col>
@@ -335,7 +335,7 @@
 			},
 			handleAvatarSuccess(res, file) {
 			    if (res.status == 200){
-                    this.$message.success('上传成功!');
+                    this.$message.success('上传成功,重新登陆生效!');
                 }else {
                     this.$message.error('上传失败，请稍后再试!');
                 }

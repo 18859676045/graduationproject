@@ -19,25 +19,25 @@
 					<el-button type="danger" class="el-icon-delete" @click="delUser">删除</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" plain @click="exportUser">批量导出用户</el-button>
+					<el-button type="primary" plain @click="exportUser">批量导出用户信息</el-button>
 				</el-form-item>
 <!--				<el-form-item>-->
 <!--					<el-button type="infor" round @click="exportUserByA">a标签导出</el-button>-->
 <!--				</el-form-item>-->
-				<el-form-item>
-				   <el-upload class="upload-demo"
-								 :action="uploadUrl2"
-								 :before-upload="handleBeforeUpload2"
-								 :on-error="handleUploadError"
-								 :before-remove="beforeRemove"
-								 multiple
-								 :limit="1"
-								 :on-exceed="handleExceed"
-								 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-								 :file-list="fileList">
-				      <el-button size="small" type="primary">批量导入用户</el-button>
-				   </el-upload>
-				</el-form-item>
+<!--				<el-form-item>-->
+<!--				   <el-upload class="upload-demo"-->
+<!--								 :action="uploadUrl2"-->
+<!--								 :before-upload="handleBeforeUpload2"-->
+<!--								 :on-error="handleUploadError"-->
+<!--								 :before-remove="beforeRemove"-->
+<!--								 multiple-->
+<!--								 :limit="1"-->
+<!--								 :on-exceed="handleExceed"-->
+<!--								 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"-->
+<!--								 :file-list="fileList">-->
+<!--				      <el-button size="small" type="primary">批量导入用户</el-button>-->
+<!--				   </el-upload>-->
+<!--				</el-form-item>-->
 <!-- 				<el-form-item>
 					<el-button type="primary" class="el-icon-edit" @click="toueditor">百度富文本框</el-button>
 				</el-form-item> -->
@@ -124,6 +124,7 @@
 					</el-option>
 			 </el-select>
 			</el-form-item>
+
 			<el-form-item label="是否启用">
 				<el-switch
 					v-model="ruleForm.switchValue"
@@ -365,6 +366,10 @@
 			// 添加用户
 			async addUser() {
 				let _this = this
+                if(_this.ruleForm.role == "4"){
+                    _this.message(true,"教学秘书角色请往学院管理，教秘添加！！",'error')
+                }
+                else {
 				let params = {
            username: _this.ruleForm.name,
 					 password: md5(_this.ruleForm.pass1),
@@ -386,7 +391,8 @@
            _this.message(true,data.data.msg,'error')
 				}
 				this.getUsers()
-			},
+			}
+                },
 			// 删除用户
 			delUser (id) {
 				if (this.userIds.length === 0) {

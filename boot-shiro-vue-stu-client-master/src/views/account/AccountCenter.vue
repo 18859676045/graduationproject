@@ -250,8 +250,8 @@
         <el-form-item label="老师邮箱" prop="email" :rules="[{ required: true, message: '请输入老师邮箱', trigger: 'blur' }]">
             <el-input  type="text" v-model="teacher1.email" placeholder="请输入老师邮箱" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="职称" prop="title2" :rules="[{ required: true, message: '请选择职称', trigger: 'blur' }]">
-            <el-select v-model="teacher1.title2" filterable placeholder="请选择">
+        <el-form-item label="职称" prop="title" :rules="[{ required: true, message: '请选择职称', trigger: 'blur' }]">
+            <el-select v-model="teacher1.title" filterable placeholder="请选择">
                 <el-option
                         v-for="item in titles"
                         :key="item.dictCode"
@@ -276,9 +276,9 @@
             <div style="width:60%;margin: 0 auto">
                 <el-form ref="secretary1" :model="secretary1" :inline="false" label-width="90px" class="demo-ruleForm">
 
-                    <el-form-item label="用户名" prop="name" :rules="[{ required: true, message: '请输入秘书用户名', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="secretary1.name" placeholder="请输入秘书名称" auto-complete="off"></el-input>
-                    </el-form-item>
+<!--                    <el-form-item label="用户名" prop="name" :rules="[{ required: true, message: '请输入秘书用户名', trigger: 'blur' }]">-->
+<!--                        <el-input  type="text" v-model="secretary1.name" placeholder="请输入秘书名称" auto-complete="off"></el-input>-->
+<!--                    </el-form-item>-->
                     <el-form-item label="秘书名称" prop="nickname" :rules="[{ required: true, message: '请输入秘书名称', trigger: 'blur' }]">
                         <el-input  type="text" v-model="secretary1.nickname" placeholder="请输入秘书名称" auto-complete="off"></el-input>
                     </el-form-item>
@@ -350,9 +350,9 @@
                     <el-form-item label="姓名" prop="nickname" :rules="[{ required: true, message: '请输入学生姓名', trigger: 'blur' }]">
                         <el-input  type="text" v-model="student1.nickname" placeholder="请输入学生姓名" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="学号" prop="name" :rules="[{ required: true, message: '请输入学生学号(即修改用户名)', trigger: 'blur' }]">
-                        <el-input  type="text" v-model="student1.name" placeholder="请输入学生学号" auto-complete="off"></el-input>
-                    </el-form-item>
+<!--                    <el-form-item label="学号" prop="name" :rules="[{ required: true, message: '请输入学生学号(即修改用户名)', trigger: 'blur' }]">-->
+<!--                        <el-input  type="text" v-model="student1.name" placeholder="请输入学生学号" auto-complete="off"></el-input>-->
+<!--                    </el-form-item>-->
                     <el-form-item label="邮箱" prop="email" :rules="[{ required: true, message: '请输入邮箱', trigger: 'blur' }]">
                         <el-input  type="text" v-model="student1.email" placeholder="请输入学生邮箱" auto-complete="off"></el-input>
                     </el-form-item>
@@ -426,7 +426,6 @@ export default {
                 teacherPost: ""
             },
             teacher1:{
-                title2:'',
                 age: 1,
                 email: "",
                 id: "",
@@ -563,7 +562,7 @@ export default {
                 tage:_this.teacher1.age,
                 tphone:_this.teacher1.phone,
                 temail:_this.teacher1.email,
-                title2:_this.teacher1.title2,
+                title2:_this.teacher1.title,
                 //教学秘书
                 jid:_this.secretary.id,
                 jname:_this.secretary1.name,
@@ -577,7 +576,7 @@ export default {
                 clazzId:_this.clazz.id,
                 majorId:_this.major.id,
                 instituteId:_this.institute.id,
-                snickname: _this.student1.studentNumber,
+                snickname: _this.student1.nickname,
                 semail: _this.student1.email,
                 ssex: _this.student1.sex,
                 sname:_this.student1.name,
@@ -637,7 +636,7 @@ export default {
 
                     _this.teacher1 = Object.assign({},res.teacher)
                     // _this.teacher1.sex = Object.assign({},JSON.stringify(res.teacher.sex))
-                    console.log( _this.teacher1.sex)
+                    console.log(_this.teacher1)
                 }
                 if (res.teacherPost!=null){
                     _this.teacher.teacherPost = res.teacherPost
@@ -750,6 +749,7 @@ export default {
                 return
             }
             if (data.data.status === 200) {
+                console.log(data.data.data)
                 _this.titles = data.data.data
             } else {
                 _this.message(true,data.data.msg,'error')
