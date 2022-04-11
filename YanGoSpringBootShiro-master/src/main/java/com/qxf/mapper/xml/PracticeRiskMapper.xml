@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qxf.mapper.PracticeRiskMapper">
+  <resultMap id="BaseResultMap" type="com.qxf.pojo.PracticeRisk">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="practice_way" jdbcType="VARCHAR" property="practiceWay" />
+    <result column="risk" jdbcType="VARCHAR" property="risk" />
+    <result column="healthy" jdbcType="VARCHAR" property="healthy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, practice_way, risk, healthy
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_practice_risk
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_practice_risk
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.qxf.pojo.PracticeRisk">
+    insert into t_practice_risk (id, practice_way, risk, 
+      healthy)
+    values (#{id,jdbcType=VARCHAR}, #{practiceWay,jdbcType=VARCHAR}, #{risk,jdbcType=VARCHAR}, 
+      #{healthy,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qxf.pojo.PracticeRisk">
+    insert into t_practice_risk
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="practiceWay != null">
+        practice_way,
+      </if>
+      <if test="risk != null">
+        risk,
+      </if>
+      <if test="healthy != null">
+        healthy,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="practiceWay != null">
+        #{practiceWay,jdbcType=VARCHAR},
+      </if>
+      <if test="risk != null">
+        #{risk,jdbcType=VARCHAR},
+      </if>
+      <if test="healthy != null">
+        #{healthy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qxf.pojo.PracticeRisk">
+    update t_practice_risk
+    <set>
+      <if test="practiceWay != null">
+        practice_way = #{practiceWay,jdbcType=VARCHAR},
+      </if>
+      <if test="risk != null">
+        risk = #{risk,jdbcType=VARCHAR},
+      </if>
+      <if test="healthy != null">
+        healthy = #{healthy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qxf.pojo.PracticeRisk">
+    update t_practice_risk
+    set practice_way = #{practiceWay,jdbcType=VARCHAR},
+      risk = #{risk,jdbcType=VARCHAR},
+      healthy = #{healthy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
